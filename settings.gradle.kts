@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "CafeApp"
-include ':app'
+include(":app")
