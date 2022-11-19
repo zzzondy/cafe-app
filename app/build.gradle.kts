@@ -1,6 +1,18 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id(Plugins.ksp) version Plugins.kspVersion
+}
+
+kotlin {
+    sourceSets {
+        debug {
+            kotlin.srcDir("build/generated/ksp/debug/kotlin")
+        }
+        release {
+            kotlin.srcDir("build/generated/ksp/release/kotlin")
+        }
+    }
 }
 
 android {
@@ -23,6 +35,13 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        debug {
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -70,4 +89,8 @@ dependencies {
     androidTestImplementation(Dependencies.Testing.androidJUnit)
     androidTestImplementation(Dependencies.Testing.espresso)
     androidTestImplementation(Dependencies.Testing.composeTests)
+
+    // Compose Destinations
+    implementation(Dependencies.ComposeDestinations.core)
+    ksp(Dependencies.ComposeDestinations.ksp)
 }
