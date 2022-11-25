@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    id(Plugins.androidApplication)
+    id(Plugins.kotlinAndroid)
     id(Plugins.ksp) version Plugins.kspVersion
 }
 
@@ -16,7 +16,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.cafeaapp"
+    namespace = "com.cafeapp"
     compileSdk = Config.compileSdk
 
     defaultConfig {
@@ -93,4 +93,10 @@ dependencies {
     // Compose Destinations
     implementation(Dependencies.ComposeDestinations.core)
     ksp(Dependencies.ComposeDestinations.ksp)
+
+    // Domain
+    implementation(project(":domain"))
+
+    // Data
+    implementation(project(":data"))
 }

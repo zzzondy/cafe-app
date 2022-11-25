@@ -35,4 +35,18 @@ object Dependencies {
         const val core = "io.github.raamcosta.compose-destinations:core:$composeDestinationsVersion"
         const val ksp = "io.github.raamcosta.compose-destinations:ksp:$composeDestinationsVersion"
     }
+
+    object Paging {
+        private const val pagingVersion = "3.1.1"
+        const val common = "androidx.paging:paging-common-ktx:$pagingVersion"
+    }
+
+    object Google {
+        const val gms = "com.google.gms:google-services:4.3.14"
+    }
+
+    object Firebase {
+        const val bom = "com.google.firebase:firebase-bom:31.0.2"
+        const val firestore = "com.google.firebase:firebase-firestore-ktx"
+    }
 }
