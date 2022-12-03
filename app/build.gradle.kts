@@ -2,6 +2,9 @@ plugins {
     id(Plugins.androidApplication)
     id(Plugins.kotlinAndroid)
     id(Plugins.ksp) version Plugins.kspVersion
+    id(Plugins.kapt)
+    id(Plugins.daggerHilt)
+    id(Plugins.gms)
 }
 
 kotlin {
@@ -17,7 +20,7 @@ kotlin {
 
 android {
     namespace = "com.cafeapp"
-    compileSdk = Config.compileSdk
+    compileSdk = 33
 
     defaultConfig {
         applicationId = Config.applicationId
@@ -30,6 +33,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        signingConfig = signingConfigs.getByName("debug")
     }
 
     buildTypes {
@@ -78,6 +82,7 @@ dependencies {
     // Ui
     implementation(Dependencies.Compose.ui)
     implementation(Dependencies.Compose.material)
+    implementation(Dependencies.Compose.constraintLayout)
 
     // Compose tooling
     implementation(Dependencies.Compose.composeTooling)
@@ -99,4 +104,21 @@ dependencies {
 
     // Data
     implementation(project(":data"))
+
+    // Hilt
+    implementation(Dependencies.Hilt.hilt)
+    implementation(Dependencies.Hilt.hiltCompose)
+    kapt(Dependencies.Hilt.hiltAndroidCompiler)
+    kapt(Dependencies.Hilt.hiltCompiler)
+
+    // Firebase
+    implementation(platform(Dependencies.Firebase.bom))
+    implementation(Dependencies.Firebase.firestore)
+
+    // Paging
+    implementation(Dependencies.Paging.compose)
+
+    // Coil
+    implementation(Dependencies.Coil.compose)
+
 }

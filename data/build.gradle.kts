@@ -1,18 +1,19 @@
 plugins {
     id(Plugins.androidLibrary)
     id(Plugins.kotlinAndroid)
-    id(Plugins.gms)
+//    id(Plugins.gms)
 }
 
 android {
-    namespace = "com.cafeapp"
-    compileSdk = Config.compileSdk
+    namespace = "com.cafeapp.data"
+    compileSdk = 33
 
     defaultConfig {
         minSdk = Config.minSdk
         targetSdk = Config.targetSdk
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig = signingConfigs.getByName("debug")
 //        consumerProguardFiles("consumer-rules.pro")
     }
 

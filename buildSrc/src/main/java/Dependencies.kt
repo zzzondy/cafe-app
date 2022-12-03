@@ -10,6 +10,9 @@ object Dependencies {
         const val composeToolingPreview = "androidx.compose.ui:ui-tooling-preview:$composeVersion"
         const val composeTooling = "androidx.compose.ui:ui-tooling:$composeVersion"
         const val testManifest = "androidx.compose.ui:ui-test-manifest:$composeVersion"
+
+        // Constraint layout
+        const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     }
 
     object Lifecycle {
@@ -39,6 +42,7 @@ object Dependencies {
     object Paging {
         private const val pagingVersion = "3.1.1"
         const val common = "androidx.paging:paging-common-ktx:$pagingVersion"
+        const val compose = "androidx.paging:paging-compose:1.0.0-alpha17"
     }
 
     object Google {
@@ -48,5 +52,18 @@ object Dependencies {
     object Firebase {
         const val bom = "com.google.firebase:firebase-bom:31.0.2"
         const val firestore = "com.google.firebase:firebase-firestore-ktx"
+    }
+
+    object Hilt {
+        private const val hiltVersion = "2.44"
+
+        const val hilt = "com.google.dagger:hilt-android:$hiltVersion"
+        const val hiltAndroidCompiler = "com.google.dagger:hilt-android-compiler:$hiltVersion"
+        const val hiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0"
+        const val hiltCompiler = "androidx.hilt:hilt-compiler:1.0.0"
+    }
+
+    object Coil {
+        const val compose = "io.coil-kt:coil-compose:2.2.2"
     }
 }

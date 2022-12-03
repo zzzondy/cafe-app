@@ -6,7 +6,7 @@ import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.cafeapp.R
-import com.cafeapp.ui.screens.destinations.FoodListDestination
+import com.cafeapp.ui.screens.destinations.FoodListScreenDestination
 import com.cafeapp.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 
@@ -15,6 +15,14 @@ enum class BottomBarDestinations(
     val icon: ImageVector,
     @StringRes val label: Int
 ) {
-    FoodList(direction = FoodListDestination, icon = Icons.Rounded.List, R.string.food_list),
-    ProfileScreen(direction = ProfileScreenDestination, icon = Icons.Rounded.Person, R.string.profile),
+    FoodListScreen(
+        direction = FoodListScreenDestination,
+        icon = Icons.Rounded.List,
+        R.string.food_list
+    ),
+    ProfileScreen(
+        direction = ProfileScreenDestination,
+        icon = Icons.Rounded.Person,
+        R.string.profile
+    ),
 }

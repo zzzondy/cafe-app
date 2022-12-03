@@ -2,28 +2,27 @@ package com.cafeapp.data.food_list.remote.repository
 
 import com.cafeapp.data.food_list.remote.models.FoodRemote
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 
 class RemoteFoodListRepositoryImpl(private val fireStore: FirebaseFirestore) :
     RemoteFoodListRepository {
-    override suspend fun getPagedFoodList(page: Int, limit: Long): List<FoodRemote> {
-        var result: List<FoodRemote> = listOf()
-        fireStore.collection(FOOD_COLLECTION)
+    override suspend fun getPagedFoodList(page: Int, limit: Int): List<FoodRemote> {
+        return fireStore.collection(FOOD_COLLECTION)
+            .orderBy(ID)
             .startAt(page)
-            .limit(limit)
+            .limit(limit.toLong())
             .get()
-            .addOnSuccessListener { res ->
-                result = res.documents.map { document ->
-                    toFoodRemote(
-                        document.data!![ID],
-                        document.data!![NAME],
-                        document.data!![DESC],
-                        document.data!![PRICE],
-                        document.data!![IMAGE]
-                    )
-                }
-            }
+            .await()
+            .documents.map { document ->
+                toFoodRemote(
+                    document.data!![ID],
+                    document.data!![NAME],
+                    document.data!![DESC],
+                    document.data!![PRICE],
+                    document.data!![IMAGE]
+                )
 
-        return result
+            }
     }
 
     private fun toFoodRemote(vararg data: Any?): FoodRemote {

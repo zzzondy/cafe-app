@@ -6,6 +6,7 @@ buildscript {
 
     dependencies {
         classpath(Dependencies.Google.gms)
+        classpath(Plugins.daggerHiltProject)
     }
 
 }

@@ -4,4 +4,7 @@
     <string name="food_list">Еда</string>
     <string name="profile">Профиль</string>
     <string name="cart">Корзина</string>
+    <string name="rubles">%d руб.</string>
+    <string name="food_image">Картинка еды</string>
+    <string name="cart_desc">Корзина</string>
 </resources>

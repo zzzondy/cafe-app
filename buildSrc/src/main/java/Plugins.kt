@@ -5,4 +5,7 @@ object Plugins {
     const val androidLibrary = "com.android.library"
     const val kotlinAndroid = "org.jetbrains.kotlin.android"
     const val gms = "com.google.gms.google-services"
+    const val kapt = "kotlin-kapt"
+    const val daggerHilt = "dagger.hilt.android.plugin"
+    const val daggerHiltProject = "com.google.dagger:hilt-android-gradle-plugin:2.44"
 }
