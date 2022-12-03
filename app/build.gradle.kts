@@ -84,6 +84,10 @@ dependencies {
     implementation(Dependencies.Compose.material)
     implementation(Dependencies.Compose.constraintLayout)
 
+    // Accompanist
+    implementation(Dependencies.Accompanist.placeholder)
+    implementation(Dependencies.Accompanist.flowLayouts)
+
     // Compose tooling
     implementation(Dependencies.Compose.composeTooling)
     debugImplementation(Dependencies.Compose.composeToolingPreview)

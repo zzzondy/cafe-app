@@ -1,20 +1,20 @@
 package com.cafeapp.ui.screens.food_list
 
-import androidx.compose.foundation.layout.padding
+
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavOptionsBuilder
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.cafeapp.domain.models.Food
-import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.R
 import com.cafeapp.ui.util.UiText
 import com.ramcosta.composedestinations.annotation.Destination
@@ -51,9 +51,48 @@ fun FoodListScreen(
 @Composable
 fun FoodList(foodList: Flow<PagingData<Food>>, modifier: Modifier = Modifier) {
     val items = foodList.collectAsLazyPagingItems()
-    LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = modifier) {
-        items(items.itemCount) { index: Int ->
-            FoodItem(food = items[index]!!)
+    val listState = rememberLazyGridState()
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        LazyVerticalGrid(
+            state = listState,
+            columns = GridCells.Fixed(FoodListConfig.GRID_CELLS_COUNT),
+            modifier = Modifier.wrapContentHeight()
+        ) {
+            items(items.itemCount) { index: Int ->
+                FoodItem(food = items[index]!!)
+            }
+
+            items.apply {
+                when {
+                    loadState.refresh is LoadState.Loading -> {
+                        items(FoodListConfig.PLACEHOLDER_ITEMS_COUNT) {
+                            FoodItem(food = null)
+                        }
+                    }
+
+                    loadState.append is LoadState.Error -> {
+                        item(span = { GridItemSpan(this.maxLineSpan) }) {
+                            ErrorWhenAppend()
+                        }
+                    }
+
+                }
+            }
+        }
+        items.apply {
+            when {
+                loadState.refresh is LoadState.Error -> {
+                    ErrorWhenRefresh()
+                }
+            }
         }
     }
+}
+
+private object FoodListConfig {
+    const val GRID_CELLS_COUNT = 2
+    const val PLACEHOLDER_ITEMS_COUNT = 4
 }

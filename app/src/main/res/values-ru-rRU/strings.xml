@@ -7,4 +7,7 @@
     <string name="rubles">%d руб.</string>
     <string name="food_image">Картинка еды</string>
     <string name="cart_desc">Корзина</string>
+    <string name="refresh_error">Произошла техническая ошибка, попробуйте позже</string>
+    <string name="no_wifi">Картинка отсутствия интернета</string>
+    <string name="some_error">Технические неполадки</string>
 </resources>

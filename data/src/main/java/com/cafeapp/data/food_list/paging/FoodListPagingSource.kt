@@ -19,6 +19,10 @@ class FoodListPagingSource(private val remoteFoodListRepository: RemoteFoodListR
             val currentPage = (params.key ?: 1)
             val data = remoteFoodListRepository.getPagedFoodList(currentPage, params.loadSize).map { it.toFoodDomain() }
 
+            if (data.isEmpty()) {
+                throw IOException()
+            }
+
             LoadResult.Page(
                 data = data,
                 prevKey = if (currentPage == 1) null else currentPage - params.loadSize,

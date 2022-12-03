@@ -22,7 +22,8 @@ object Dependencies {
 
         const val core = "androidx.core:core-ktx:$coreVersion"
         const val activity = "androidx.activity:activity-compose:$activityVersion"
-        const val lifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleRuntimeVersion"
+        const val lifecycleRuntime =
+            "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleRuntimeVersion"
     }
 
     object Testing {
@@ -65,5 +66,14 @@ object Dependencies {
 
     object Coil {
         const val compose = "io.coil-kt:coil-compose:2.2.2"
+    }
+
+    object Accompanist {
+        private const val accompanistVersion = "0.28.0"
+
+        const val placeholder =
+            "com.google.accompanist:accompanist-placeholder-material:$accompanistVersion"
+
+        const val flowLayouts = "com.google.accompanist:accompanist-flowlayout:$accompanistVersion"
     }
 }

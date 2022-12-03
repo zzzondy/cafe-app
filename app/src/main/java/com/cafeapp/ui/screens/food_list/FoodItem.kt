@@ -20,15 +20,24 @@ import com.cafeapp.R
 import com.cafeapp.domain.models.Food
 import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.ui.util.UiText
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FoodItem(food: Food) {
+fun FoodItem(food: Food?) {
     Card(
         onClick = { /*TODO*/ },
         modifier = Modifier
             .padding(16.dp)
-            .size(150.dp, 250.dp),
+            .size(150.dp, 250.dp)
+            .placeholder(
+                visible = food == null,
+                shape = CardDefaults.shape,
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                highlight = PlaceholderHighlight.shimmer()
+            ),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
     ) {
         ConstraintLayout(
@@ -64,7 +73,7 @@ fun FoodItem(food: Food) {
 
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(food.imageUrl)
+                    .data(food?.imageUrl ?: "")
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(R.string.food_image),
@@ -72,15 +81,15 @@ fun FoodItem(food: Food) {
             )
 
             Text(
-                text = UiText.DynamicText(food.name).asString(),
+                text = UiText.DynamicText(food?.name ?: "").asString(),
                 style = MaterialTheme.typography.labelLarge,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
                 modifier = Modifier.layoutId(FoodItemConstraintsTags.name)
-                )
+            )
 
             Text(
-                text = UiText.StringResource(R.string.rubles, food.price).asString(),
+                text = UiText.StringResource(R.string.rubles, food?.price ?: 0).asString(),
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.layoutId(FoodItemConstraintsTags.priceText)
             )
@@ -109,14 +118,15 @@ private object FoodItemConstraintsTags {
 @Composable
 fun FoodItemPreview() {
     CafeAppTheme {
-        FoodItem(
-            food = Food(
-                1,
-                "Teriyaki Chicken Casserole",
-                220,
-                "коричневый рис, куриная грудка, соевый соус, вода, чеснок",
-                "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg"
-            )
-        )
+//        FoodItem(
+//            food = Food(
+//                1,
+//                "Teriyaki Chicken Casserole",
+//                220,
+//                "коричневый рис, куриная грудка, соевый соус, вода, чеснок",
+//                "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg"
+//            )
+//        )
+        FoodItem(food = null)
     }
 }

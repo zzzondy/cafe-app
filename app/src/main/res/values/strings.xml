@@ -6,4 +6,7 @@
     <string name="rubles">%d rub.</string>
     <string name="food_image">Food image</string>
     <string name="cart_desc">Cart</string>
+    <string name="refresh_error">Some error occurred when fetching data</string>
+    <string name="no_wifi">No wifi image</string>
+    <string name="some_error">Some error</string>
 </resources>
