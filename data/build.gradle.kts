@@ -46,6 +46,7 @@ dependencies {
     // Firebase
     implementation(platform(Dependencies.Firebase.bom))
     implementation(Dependencies.Firebase.firestore)
+    implementation(Dependencies.Firebase.authentication)
 
     // Paging
     implementation(Dependencies.Paging.common)

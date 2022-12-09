@@ -10,4 +10,15 @@
     <string name="refresh_error">Произошла техническая ошибка, попробуйте позже</string>
     <string name="no_wifi">Картинка отсутствия интернета</string>
     <string name="some_error">Технические неполадки</string>
+    <string name="profile_explanation">Войдите или зарегистрируйтесь, чтобы добавлять продукты в корзину, а также видеть историю ваших заказов.</string>
+    <string name="sign_in">Вход</string>
+    <string name="user_photo">Фото пользователя</string>
+    <string name="user_name">Имя Фамилия</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="lock_image">Картинка замка</string>
+    <string name="visibility_password_image">Картинка смены видимости пароля</string>
+    <string name="email_image">Картинка почты</string>
+    <string name="clear_image">Картинка очистки</string>
 </resources>

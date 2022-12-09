@@ -52,7 +52,9 @@ object Dependencies {
 
     object Firebase {
         const val bom = "com.google.firebase:firebase-bom:31.0.2"
+
         const val firestore = "com.google.firebase:firebase-firestore-ktx"
+        const val authentication = "com.google.firebase:firebase-auth-ktx"
     }
 
     object Hilt {
