@@ -1,11 +1,10 @@
 package com.cafeapp.ui.screens.profile.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cafeapp.core.providers.dispatchers.DispatchersProvider
+import com.cafeapp.domain.auth.states.SignInResult
 import com.cafeapp.domain.auth.usecase.SignInUserUseCase
-import com.cafeapp.domain.auth.states.Result
 import com.cafeapp.ui.screens.profile.login.states.LoadingState
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenEvent
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenState
@@ -42,15 +41,17 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch(dispatchersProvider.io) {
             withContext(dispatchersProvider.main) { _loadingState.value = LoadingState.Loading }
             when (val result = signInUserUseCase(email, password)) {
-                is Result.Success -> {
+                is SignInResult.Success -> {
                     _loginScreenState.value =
-                        LoginScreenState.SuccessfullySignIn(result.data)
-                    Log.d("TAG", loginScreenState.value.toString())
+                        LoginScreenState.SuccessfullySignIn(result.user)
                 }
 
-                is Result.Failed -> {
-                    _loginScreenState.value = LoginScreenState.Failed
-                    Log.d("TAG", loginScreenState.value.toString())
+                is SignInResult.NetworkUnavailableError -> {
+                    _loginScreenState.value = LoginScreenState.NetworkUnavailable
+                }
+
+                is SignInResult.WrongCredentialsError -> {
+                    _loginScreenState.value = LoginScreenState.WrongCredentialsError
                 }
             }
             withContext(dispatchersProvider.main) { _loadingState.value = LoadingState.NotLoading }

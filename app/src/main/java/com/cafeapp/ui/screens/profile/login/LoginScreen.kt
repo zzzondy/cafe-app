@@ -8,22 +8,20 @@ import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,22 +32,56 @@ import com.cafeapp.ui.screens.profile.login.states.LoginScreenState
 import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.ui.util.UiText
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
-fun LoginScreen(loginViewModel: LoginViewModel = hiltViewModel()) {
+fun LoginScreen(
+    navigator: DestinationsNavigator,
+    loginViewModel: LoginViewModel = hiltViewModel()
+) {
+    val loginScreenState by loginViewModel.loginScreenState.collectAsState()
+    val loadingState by loginViewModel.loadingState.collectAsState()
+
+    LaunchedEffect(key1 = loginScreenState) {
+        if (loginScreenState is LoginScreenState.SuccessfullySignIn) {
+            navigator.popBackStack()
+        }
+    }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
+    ) { paddingValues ->
+        LoginScreenPart(
+            loadingState = loadingState,
+            loginScreenState = loginScreenState,
+            onEvent = loginViewModel::onEvent,
+            modifier = Modifier.padding(paddingValues)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LoginScreenPart(
+    loadingState: LoadingState,
+    loginScreenState: LoginScreenState,
+    onEvent: (event: LoginScreenEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val email = rememberSaveable { mutableStateOf("") }
 
     val password = rememberSaveable { mutableStateOf("") }
     val passwordHidden = rememberSaveable { mutableStateOf(true) }
     val passwordTextFieldFocusRequester = FocusRequester()
 
-    val loadingState = loginViewModel.loadingState.collectAsState()
-    val loginScreenState = loginViewModel.loginScreenState.collectAsState()
+    val isError = loginScreenState is LoginScreenState.WrongCredentialsError
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        if (loadingState.value == LoadingState.Loading)
+    val focusManager = LocalFocusManager.current
+
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (loadingState == LoadingState.Loading)
             CircularProgressIndicator()
 
         Column(
@@ -57,11 +89,21 @@ fun LoginScreen(loginViewModel: LoginViewModel = hiltViewModel()) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (loginScreenState is LoginScreenState.NetworkUnavailable) {
+                Text(
+                    text = UiText.StringResource(R.string.network_unavailable).asString(),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8 .dp)
+                )
+            }
+
             OutlinedTextField(
                 value = email.value,
                 onValueChange = {
                     email.value = it
-                    loginViewModel.onEvent(LoginScreenEvent.EmailFieldChanged(it))
+                    onEvent(LoginScreenEvent.EmailFieldChanged(it))
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -90,6 +132,15 @@ fun LoginScreen(loginViewModel: LoginViewModel = hiltViewModel()) {
                         }
                     }
                 },
+                supportingText = {
+                    if (isError) {
+                        Text(
+                            text = UiText.StringResource(R.string.sign_in_error).asString(),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                isError = isError,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
@@ -99,7 +150,7 @@ fun LoginScreen(loginViewModel: LoginViewModel = hiltViewModel()) {
                 value = password.value,
                 onValueChange = {
                     password.value = it
-                    loginViewModel.onEvent(LoginScreenEvent.PasswordFieldChanged(it))
+                    onEvent(LoginScreenEvent.PasswordFieldChanged(it))
                 },
                 singleLine = true,
                 visualTransformation = if (passwordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
@@ -128,6 +179,15 @@ fun LoginScreen(loginViewModel: LoginViewModel = hiltViewModel()) {
                         )
                     }
                 },
+                supportingText = {
+                    if (isError) {
+                        Text(
+                            text = UiText.StringResource(R.string.sign_in_error).asString(),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                isError = isError,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp)
@@ -136,12 +196,13 @@ fun LoginScreen(loginViewModel: LoginViewModel = hiltViewModel()) {
 
             Button(
                 onClick = {
-                    loginViewModel.onEvent(
+                    onEvent(
                         LoginScreenEvent.SignIn(
                             email = email.value,
                             password = password.value
                         )
                     )
+                    focusManager.clearFocus()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -165,6 +226,6 @@ fun LoginScreen(loginViewModel: LoginViewModel = hiltViewModel()) {
 @Composable
 fun LoginScreenPreview() {
     CafeAppTheme {
-        LoginScreen()
+//        LoginScreen()
     }
 }

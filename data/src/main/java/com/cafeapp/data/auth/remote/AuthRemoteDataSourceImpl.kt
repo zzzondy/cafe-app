@@ -1,7 +1,9 @@
 package com.cafeapp.data.auth.remote
 
+import android.util.Log
 import com.cafeapp.data.auth.remote.models.RemoteUser
-import com.cafeapp.data.auth.remote.states.RemoteResult
+import com.cafeapp.data.auth.remote.states.RemoteSignInResult
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseUser
@@ -11,17 +13,19 @@ class AuthRemoteDataSourceImpl(private val firebaseAuth: FirebaseAuth) : AuthRem
     override val user: RemoteUser?
         get() = firebaseAuth.currentUser?.toRemoteUser()
 
-    override suspend fun signUpUser(email: String, password: String): RemoteResult<RemoteUser> {
+    override suspend fun signUpUser(email: String, password: String): RemoteSignInResult {
         val createdUser = firebaseAuth.createUserWithEmailAndPassword(email, password).await().user
-        return if (createdUser != null) RemoteResult.Success(createdUser.toRemoteUser()) else RemoteResult.Failed()
+        return if (createdUser != null) RemoteSignInResult.Success(createdUser.toRemoteUser()) else RemoteSignInResult.WrongCredentialsError
     }
 
-    override suspend fun signInUser(email: String, password: String): RemoteResult<RemoteUser> {
+    override suspend fun signInUser(email: String, password: String): RemoteSignInResult {
         return try {
             val currentUser = firebaseAuth.signInWithEmailAndPassword(email, password).await().user
-            if (currentUser != null) RemoteResult.Success(currentUser.toRemoteUser()) else RemoteResult.Failed()
+            if (currentUser != null) RemoteSignInResult.Success(currentUser.toRemoteUser()) else RemoteSignInResult.WrongCredentialsError
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            RemoteSignInResult.WrongCredentialsError
         } catch (e: Exception) {
-            RemoteResult.Failed()
+            RemoteSignInResult.NetworkUnavailableError
         }
     }
 

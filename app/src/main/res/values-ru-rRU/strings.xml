@@ -21,4 +21,7 @@
     <string name="visibility_password_image">Картинка смены видимости пароля</string>
     <string name="email_image">Картинка почты</string>
     <string name="clear_image">Картинка очистки</string>
+    <string name="sign_in_error">Неправильный логин или пароль</string>
+    <string name="network_unavailable">Ошибка получения данных</string>
+    <string name="ok">OK</string>
 </resources>

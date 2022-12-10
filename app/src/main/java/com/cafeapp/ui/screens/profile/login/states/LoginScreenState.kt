@@ -4,6 +4,7 @@ import com.cafeapp.domain.models.User
 
 sealed class LoginScreenState {
     data class SuccessfullySignIn(val user: User) : LoginScreenState()
-    object Failed : LoginScreenState()
+    object WrongCredentialsError : LoginScreenState()
+    object NetworkUnavailable : LoginScreenState()
     object Initially : LoginScreenState()
 }
