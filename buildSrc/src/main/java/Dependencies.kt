@@ -38,6 +38,8 @@ object Dependencies {
 
         const val core = "io.github.raamcosta.compose-destinations:core:$composeDestinationsVersion"
         const val ksp = "io.github.raamcosta.compose-destinations:ksp:$composeDestinationsVersion"
+        const val animationsCore =
+            "io.github.raamcosta.compose-destinations:animations-core:$composeDestinationsVersion"
     }
 
     object Paging {
@@ -77,5 +79,10 @@ object Dependencies {
             "com.google.accompanist:accompanist-placeholder-material:$accompanistVersion"
 
         const val flowLayouts = "com.google.accompanist:accompanist-flowlayout:$accompanistVersion"
+    }
+
+    object Coroutines {
+        const val firebaseCoroutines =
+            "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1"
     }
 }

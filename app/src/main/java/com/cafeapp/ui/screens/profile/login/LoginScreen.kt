@@ -1,9 +1,12 @@
 package com.cafeapp.ui.screens.profile.login
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Lock
@@ -14,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,7 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.ui.screens.profile.login.states.LoadingState
+import com.cafeapp.ui.screens.destinations.SignUpScreenDestination
+import com.cafeapp.ui.screens.profile.states.LoadingState
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenEvent
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenState
 import com.cafeapp.ui.theme.CafeAppTheme
@@ -35,7 +40,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination(style = LoginScreenTransitions::class)
 @Composable
 fun LoginScreen(
     navigator: DestinationsNavigator,
@@ -51,16 +56,31 @@ fun LoginScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text(text = UiText.StringResource(R.string.sign_in).asString()) },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = stringResource(R.string.arrow_back_image)
+                        )
+                    }
+                }
+            )
+        }
     ) { paddingValues ->
         LoginScreenPart(
             loadingState = loadingState,
             loginScreenState = loginScreenState,
             onEvent = loginViewModel::onEvent,
+            onSignUpClick = { navigator.navigate(SignUpScreenDestination) },
             modifier = Modifier.padding(paddingValues)
         )
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +88,7 @@ private fun LoginScreenPart(
     loadingState: LoadingState,
     loginScreenState: LoginScreenState,
     onEvent: (event: LoginScreenEvent) -> Unit,
+    onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val email = rememberSaveable { mutableStateOf("") }
@@ -89,13 +110,24 @@ private fun LoginScreenPart(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (loginScreenState is LoginScreenState.NetworkUnavailable) {
+            Image(
+                painter = painterResource(R.drawable.ic_app_logo),
+                contentDescription = stringResource(
+                    R.string.app_logo_image
+                ),
+                modifier = Modifier
+                    .size(192.dp)
+                    .padding(bottom = 64.dp),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+            )
+
+            AnimatedVisibility(visible = loginScreenState is LoginScreenState.NetworkUnavailable) {
                 Text(
                     text = UiText.StringResource(R.string.network_unavailable).asString(),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8 .dp)
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                 )
             }
 
@@ -103,7 +135,6 @@ private fun LoginScreenPart(
                 value = email.value,
                 onValueChange = {
                     email.value = it
-                    onEvent(LoginScreenEvent.EmailFieldChanged(it))
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -150,7 +181,6 @@ private fun LoginScreenPart(
                 value = password.value,
                 onValueChange = {
                     password.value = it
-                    onEvent(LoginScreenEvent.PasswordFieldChanged(it))
                 },
                 singleLine = true,
                 visualTransformation = if (passwordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
@@ -159,6 +189,7 @@ private fun LoginScreenPart(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 label = { Text(text = UiText.StringResource(R.string.password).asString()) },
                 leadingIcon = {
                     Icon(
@@ -204,6 +235,7 @@ private fun LoginScreenPart(
                     )
                     focusManager.clearFocus()
                 },
+                enabled = email.value.isNotEmpty() && password.value.isNotEmpty(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp)
@@ -212,7 +244,7 @@ private fun LoginScreenPart(
             }
 
             OutlinedButton(
-                onClick = { /*TODO*/ }, modifier = Modifier
+                onClick = onSignUpClick, modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 8.dp)
             ) {

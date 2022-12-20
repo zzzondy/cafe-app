@@ -23,4 +23,11 @@
     <string name="sign_in_error">Wrong email or password</string>
     <string name="network_unavailable">Network unavailable</string>
     <string name="ok">OK</string>
+    <string name="arrow_back_image">Arrow back image</string>
+    <string name="app_logo_image">App logo image</string>
+    <string name="email_is_empty">Email is empty</string>
+    <string name="is_not_email">Enter email</string>
+    <string name="password_is_short">Length is at least 8</string>
+    <string name="not_contains_letters_digits">Must contains letters and digits</string>
+    <string name="not_contains_lower_upper_letters">Must contains lower and upper case letters</string>
 </resources>

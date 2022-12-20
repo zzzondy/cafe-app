@@ -1,4 +1,4 @@
-package com.cafeapp.ui.screens.profile.login.states
+package com.cafeapp.ui.screens.profile.states
 
 enum class LoadingState {
     Loading, NotLoading

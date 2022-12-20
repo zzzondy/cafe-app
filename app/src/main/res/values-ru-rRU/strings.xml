@@ -14,7 +14,7 @@
     <string name="sign_in">Вход</string>
     <string name="user_photo">Фото пользователя</string>
     <string name="user_name">Имя Фамилия</string>
-    <string name="sign_up">Зарегистрироваться</string>
+    <string name="sign_up">Регистрация</string>
     <string name="email">Email</string>
     <string name="password">Пароль</string>
     <string name="lock_image">Картинка замка</string>
@@ -24,4 +24,11 @@
     <string name="sign_in_error">Неправильный логин или пароль</string>
     <string name="network_unavailable">Ошибка получения данных</string>
     <string name="ok">OK</string>
+    <string name="arrow_back_image">Картинка стрелки назад</string>
+    <string name="app_logo_image">Логотип приложения</string>
+    <string name="email_is_empty">Почта не может быть пустой</string>
+    <string name="is_not_email">Введите почту</string>
+    <string name="password_is_short">Длина не меньше 8</string>
+    <string name="not_contains_letters_digits">Должен содержать буквы и цифры</string>
+    <string name="not_contains_lower_upper_letters">Должен содержать буквы в двух регистрах</string>
 </resources>

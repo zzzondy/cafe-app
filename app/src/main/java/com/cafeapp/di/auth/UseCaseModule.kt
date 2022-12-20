@@ -4,6 +4,8 @@ import com.cafeapp.domain.auth.manager.UserManager
 import com.cafeapp.domain.auth.usecase.ObserveCurrentUserUseCase
 import com.cafeapp.domain.auth.usecase.SignInUserUseCase
 import com.cafeapp.domain.auth.usecase.SignUpUserUseCase
+import com.cafeapp.domain.auth.usecase.validation.ValidateEmailUseCase
+import com.cafeapp.domain.auth.usecase.validation.ValidatePasswordUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,4 +30,14 @@ class UseCaseModule {
     @Provides
     fun provideObserveCurrentUserUseCase(userManager: UserManager): ObserveCurrentUserUseCase =
         ObserveCurrentUserUseCase(userManager)
+
+
+    @ViewModelScoped
+    @Provides
+    fun provideValidateEmailUseCase(): ValidateEmailUseCase = ValidateEmailUseCase()
+
+
+    @ViewModelScoped
+    @Provides
+    fun provideValidatePasswordUseCase(): ValidatePasswordUseCase = ValidatePasswordUseCase()
 }

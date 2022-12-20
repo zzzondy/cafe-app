@@ -1,12 +1,12 @@
 package com.cafeapp.data.food_list.remote.repository
 
-import com.cafeapp.data.food_list.remote.models.FoodRemote
+import com.cafeapp.data.food_list.remote.models.RemoteFood
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class RemoteFoodListRepositoryImpl(private val fireStore: FirebaseFirestore) :
     RemoteFoodListRepository {
-    override suspend fun getPagedFoodList(page: Int, limit: Int): List<FoodRemote> {
+    override suspend fun getPagedFoodList(page: Int, limit: Int): List<RemoteFood> {
         return fireStore.collection(FOOD_COLLECTION)
             .orderBy(ID)
             .startAt(page)
@@ -21,12 +21,11 @@ class RemoteFoodListRepositoryImpl(private val fireStore: FirebaseFirestore) :
                     document.data!![PRICE],
                     document.data!![IMAGE]
                 )
-
             }
     }
 
-    private fun toFoodRemote(vararg data: Any?): FoodRemote {
-        return FoodRemote(
+    private fun toFoodRemote(vararg data: Any?): RemoteFood {
+        return RemoteFood(
             id = data[0].toString().toLong(),
             name = data[1].toString(),
             description = data[2].toString(),

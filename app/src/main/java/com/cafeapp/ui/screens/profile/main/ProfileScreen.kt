@@ -23,6 +23,7 @@ import coil.request.ImageRequest
 import com.cafeapp.R
 import com.cafeapp.domain.models.User
 import com.cafeapp.ui.screens.destinations.LoginScreenDestination
+import com.cafeapp.ui.screens.profile.ProfileScreenTransitions
 import com.cafeapp.ui.screens.profile.main.states.UserAuthState
 import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.ui.util.UiText
@@ -30,7 +31,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination(style = ProfileScreenTransitions::class)
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel = hiltViewModel(),

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.cafeapp.core.providers.dispatchers.DispatchersProvider
 import com.cafeapp.domain.auth.states.SignInResult
 import com.cafeapp.domain.auth.usecase.SignInUserUseCase
-import com.cafeapp.ui.screens.profile.login.states.LoadingState
+import com.cafeapp.ui.screens.profile.states.LoadingState
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenEvent
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,18 +32,16 @@ class LoginViewModel @Inject constructor(
             is LoginScreenEvent.SignIn -> {
                 signIn(event.email, event.password)
             }
-            is LoginScreenEvent.PasswordFieldChanged -> {}
-            is LoginScreenEvent.EmailFieldChanged -> {}
         }
     }
 
     private fun signIn(email: String, password: String) {
         viewModelScope.launch(dispatchersProvider.io) {
-            withContext(dispatchersProvider.main) { _loadingState.value = LoadingState.Loading }
-            when (val result = signInUserUseCase(email, password)) {
+            _loadingState.value = LoadingState.Loading
+            when (signInUserUseCase(email, password)) {
                 is SignInResult.Success -> {
                     _loginScreenState.value =
-                        LoginScreenState.SuccessfullySignIn(result.user)
+                        LoginScreenState.SuccessfullySignIn
                 }
 
                 is SignInResult.NetworkUnavailableError -> {
@@ -53,8 +51,11 @@ class LoginViewModel @Inject constructor(
                 is SignInResult.WrongCredentialsError -> {
                     _loginScreenState.value = LoginScreenState.WrongCredentialsError
                 }
+                is SignInResult.OtherError -> {
+                    _loginScreenState.value = LoginScreenState.NetworkUnavailable
+                }
             }
-            withContext(dispatchersProvider.main) { _loadingState.value = LoadingState.NotLoading }
+            _loadingState.value = LoadingState.NotLoading
         }
     }
 }

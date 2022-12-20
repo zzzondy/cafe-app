@@ -100,7 +100,7 @@ dependencies {
     androidTestImplementation(Dependencies.Testing.composeTests)
 
     // Compose Destinations
-    implementation(Dependencies.ComposeDestinations.core)
+    implementation(Dependencies.ComposeDestinations.animationsCore)
     ksp(Dependencies.ComposeDestinations.ksp)
 
     // Domain
@@ -125,5 +125,8 @@ dependencies {
 
     // Coil
     implementation(Dependencies.Coil.compose)
+
+    // Coroutines
+    implementation(Dependencies.Coroutines.firebaseCoroutines)
 
 }
