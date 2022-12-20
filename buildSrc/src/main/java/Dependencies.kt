@@ -27,10 +27,12 @@ object Dependencies {
     }
 
     object Testing {
-        const val junit = "junit:junit:4.13.2"
+        const val junit = "org.junit.jupiter:junit-jupiter:5.9.1"
         const val androidJUnit = "androidx.test.ext:junit:1.1.3"
         const val espresso = "androidx.test.espresso:espresso-core:3.4.0"
         const val composeTests = "androidx.compose.ui:ui-test-junit4:1.2.1"
+        const val mockito = "org.mockito.kotlin:mockito-kotlin:4.1.0"
+        const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
     }
 
     object ComposeDestinations {

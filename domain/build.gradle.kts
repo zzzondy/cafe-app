@@ -8,6 +8,14 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation(Dependencies.Paging.common)
+
+    testImplementation(Dependencies.Testing.junit)
+    testImplementation(Dependencies.Testing.mockito)
+    testImplementation(Dependencies.Testing.coroutines)
 }
