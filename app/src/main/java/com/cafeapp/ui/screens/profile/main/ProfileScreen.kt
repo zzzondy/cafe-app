@@ -5,7 +5,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,8 +25,11 @@ import coil.request.ImageRequest
 import com.cafeapp.R
 import com.cafeapp.domain.models.User
 import com.cafeapp.ui.screens.destinations.LoginScreenDestination
+import com.cafeapp.ui.screens.destinations.SignUpScreenDestination
 import com.cafeapp.ui.screens.profile.ProfileScreenTransitions
+import com.cafeapp.ui.screens.profile.main.states.ProfileEvent
 import com.cafeapp.ui.screens.profile.main.states.UserAuthState
+import com.cafeapp.ui.screens.profile.states.LoadingState
 import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.ui.util.UiText
 import com.ramcosta.composedestinations.annotation.Destination
@@ -38,6 +43,7 @@ fun ProfileScreen(
     navigator: DestinationsNavigator
 ) {
     val currentAuthState = profileViewModel.userAuthState.collectAsState().value
+    val loadingState by profileViewModel.loadingState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -58,12 +64,16 @@ fun ProfileScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             when (currentAuthState) {
-                is UserAuthState.Authenticated -> AuthenticatedStateScreen(currentAuthState.user)
+                is UserAuthState.Authenticated -> AuthenticatedStateScreen(
+                    user = currentAuthState.user,
+                    onEvent = profileViewModel::onEvent,
+                    loadingState = loadingState
+                )
                 is UserAuthState.NotAuthenticated -> NotAuthenticatedStateScreen(onSignInClick = {
                     navigator.navigate(
                         LoginScreenDestination
                     )
-                })
+                }, onSignUpClick = { navigator.navigate(SignUpScreenDestination) })
             }
             SettingsPartOfScreen()
         }
@@ -76,7 +86,7 @@ private fun SettingsPartOfScreen() {
 }
 
 @Composable
-private fun NotAuthenticatedStateScreen(onSignInClick: () -> Unit) {
+private fun NotAuthenticatedStateScreen(onSignInClick: () -> Unit, onSignUpClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -91,6 +101,7 @@ private fun NotAuthenticatedStateScreen(onSignInClick: () -> Unit) {
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)
         )
+
         Button(
             onClick = onSignInClick,
             modifier = Modifier
@@ -100,16 +111,30 @@ private fun NotAuthenticatedStateScreen(onSignInClick: () -> Unit) {
             Text(text = UiText.StringResource(R.string.sign_in).asString())
         }
 
+        OutlinedButton(
+            onClick = onSignUpClick, modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 8.dp)
+        ) {
+            Text(text = UiText.StringResource(R.string.sign_up).asString())
+        }
+
     }
 }
 
 @Composable
-private fun AuthenticatedStateScreen(user: User) {
+private fun AuthenticatedStateScreen(
+    user: User,
+    onEvent: (ProfileEvent) -> Unit,
+    loadingState: LoadingState
+) {
     ConstraintLayout(
         constraintSet = ConstraintSet {
             val userPicture = createRefFor(AuthenticatedStateScreenTags.userPicture)
             val userName = createRefFor(AuthenticatedStateScreenTags.userName)
             val userEmail = createRefFor(AuthenticatedStateScreenTags.userEmail)
+            val signOutButton = createRefFor(AuthenticatedStateScreenTags.signOutButton)
+            val loading = createRefFor(AuthenticatedStateScreenTags.loading)
 
             constrain(userPicture) {
                 start.linkTo(parent.start, 16.dp)
@@ -127,6 +152,19 @@ private fun AuthenticatedStateScreen(user: User) {
                 start.linkTo(userName.start)
                 end.linkTo(userName.end)
                 top.linkTo(userName.bottom, 8.dp)
+            }
+
+            constrain(signOutButton) {
+                start.linkTo(userEmail.start)
+                end.linkTo(userEmail.end)
+                top.linkTo(userEmail.bottom, 16.dp)
+            }
+
+            constrain(loading) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
             }
         },
         modifier = Modifier.fillMaxWidth()
@@ -160,6 +198,18 @@ private fun AuthenticatedStateScreen(user: User) {
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.layoutId(AuthenticatedStateScreenTags.userEmail)
         )
+
+        OutlinedButton(
+            onClick = { onEvent(ProfileEvent.SignOutClicked) },
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+            modifier = Modifier.layoutId(AuthenticatedStateScreenTags.signOutButton)
+        ) {
+            Text(text = UiText.StringResource(R.string.sign_out).asString())
+        }
+
+        if (loadingState == LoadingState.Loading) {
+            CircularProgressIndicator(modifier = Modifier.layoutId(AuthenticatedStateScreenTags.loading))
+        }
     }
 }
 
@@ -167,13 +217,15 @@ private object AuthenticatedStateScreenTags {
     const val userPicture = "userPicture"
     const val userName = "userName"
     const val userEmail = "userEmail"
+    const val signOutButton = "signOutButton"
+    const val loading = "loading"
 }
 
 @Preview
 @Composable
 fun NotAuthenticatedStateScreenPreview() {
     CafeAppTheme {
-        NotAuthenticatedStateScreen(onSignInClick = {})
+        NotAuthenticatedStateScreen(onSignInClick = {}, onSignUpClick = {})
     }
 }
 
@@ -187,7 +239,7 @@ fun AuthenticatedStateScreenPreview() {
                 "artemr19032006@yandex.ru",
                 null,
                 "Artyom Rodionov"
-            )
+            ), onEvent = {}, LoadingState.NotLoading
         )
     }
 }

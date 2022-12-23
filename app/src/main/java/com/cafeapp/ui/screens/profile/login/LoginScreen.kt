@@ -2,6 +2,7 @@ package com.cafeapp.ui.screens.profile.login
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,10 +32,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.ui.screens.destinations.SignUpScreenDestination
-import com.cafeapp.ui.screens.profile.states.LoadingState
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenEvent
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenState
+import com.cafeapp.ui.screens.profile.states.LoadingState
 import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.ui.util.UiText
 import com.ramcosta.composedestinations.annotation.Destination
@@ -75,7 +76,6 @@ fun LoginScreen(
             loadingState = loadingState,
             loginScreenState = loginScreenState,
             onEvent = loginViewModel::onEvent,
-            onSignUpClick = { navigator.navigate(SignUpScreenDestination) },
             modifier = Modifier.padding(paddingValues)
         )
     }
@@ -88,7 +88,6 @@ private fun LoginScreenPart(
     loadingState: LoadingState,
     loginScreenState: LoginScreenState,
     onEvent: (event: LoginScreenEvent) -> Unit,
-    onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val email = rememberSaveable { mutableStateOf("") }
@@ -101,7 +100,12 @@ private fun LoginScreenPart(
 
     val focusManager = LocalFocusManager.current
 
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(modifier = modifier
+        .fillMaxSize()
+        .pointerInput(Unit) {
+            detectTapGestures { focusManager.clearFocus() }
+        }, contentAlignment = Alignment.Center
+    ) {
         if (loadingState == LoadingState.Loading)
             CircularProgressIndicator()
 
@@ -241,14 +245,6 @@ private fun LoginScreenPart(
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp)
             ) {
                 Text(text = UiText.StringResource(R.string.sign_in).asString())
-            }
-
-            OutlinedButton(
-                onClick = onSignUpClick, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp)
-            ) {
-                Text(text = UiText.StringResource(R.string.sign_up).asString())
             }
         }
     }

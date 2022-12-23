@@ -1,7 +1,8 @@
-package com.cafeapp.ui.screens.profile.signUp
+package com.cafeapp.ui.screens.profile.signUp_flow.signUp
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,13 +27,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
 import com.cafeapp.domain.auth.states.validation.ValidationEmailResult
 import com.cafeapp.domain.auth.states.validation.ValidationPasswordResult
-import com.cafeapp.ui.screens.profile.signUp.states.SignUpScreenEvent
+import com.cafeapp.ui.screens.destinations.UserDataScreenDestination
+import com.cafeapp.ui.screens.profile.signUp_flow.SignUpSharedViewModel
+import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEvent
+import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenState
 import com.cafeapp.ui.screens.profile.states.LoadingState
 import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.ui.util.UiText
@@ -43,12 +49,17 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun SignUpScreen(
     navigator: DestinationsNavigator,
+    signUpSharedViewModel: SignUpSharedViewModel,
     signUpViewModel: SignUpViewModel = hiltViewModel()
 ) {
     val signUpScreenState by signUpViewModel.signUpScreenState.collectAsState()
+    val shouldNavigateToUserDataScreen by signUpViewModel.shouldNavigateToUserDataScreen.collectAsState()
 
-    LaunchedEffect(key1 = signUpScreenState) {
-
+    LaunchedEffect(key1 = signUpScreenState, key2 = shouldNavigateToUserDataScreen) {
+        if (signUpScreenState is SignUpScreenState.Success && shouldNavigateToUserDataScreen) {
+            navigator.navigate(UserDataScreenDestination)
+            signUpViewModel.onEvent(SignUpScreenEvent.NavigateToUserDataScreen)
+        }
     }
 
     val emailValidationState by signUpViewModel.validationEmailState.collectAsState()
@@ -86,7 +97,8 @@ fun SignUpScreen(
                 SignUpScreenPart(
                     onEvent = signUpViewModel::onEvent,
                     emailValidationState = emailValidationState,
-                    passwordValidationState = passwordValidationState
+                    passwordValidationState = passwordValidationState,
+                    signUpScreenState = signUpScreenState
                 )
             }
         }
@@ -98,7 +110,8 @@ fun SignUpScreen(
 private fun SignUpScreenPart(
     onEvent: (SignUpScreenEvent) -> Unit,
     emailValidationState: ValidationEmailResult,
-    passwordValidationState: ValidationPasswordResult
+    passwordValidationState: ValidationPasswordResult,
+    signUpScreenState: SignUpScreenState
 ) {
     val email = rememberSaveable { mutableStateOf("") }
 
@@ -109,7 +122,11 @@ private fun SignUpScreenPart(
     val focusManager = LocalFocusManager.current
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures { focusManager.clearFocus() }
+            },
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -123,6 +140,29 @@ private fun SignUpScreenPart(
                 .padding(bottom = 64.dp),
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
         )
+
+        AnimatedVisibility(
+            visible = signUpScreenState is SignUpScreenState.NetworkUnavailableError ||
+                    signUpScreenState is SignUpScreenState.UserAlreadyExistsError
+        ) {
+            if (signUpScreenState is SignUpScreenState.NetworkUnavailableError) {
+                Text(
+                    text = UiText.StringResource(R.string.network_unavailable).asString(),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                )
+            } else {
+                Text(
+                    text = UiText.StringResource(R.string.user_already_exists).asString(),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                )
+            }
+        }
 
         OutlinedTextField(
             value = email.value,

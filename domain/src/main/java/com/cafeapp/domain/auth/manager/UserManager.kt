@@ -11,4 +11,6 @@ interface UserManager {
     suspend fun signUpUser(email: String, password: String): SignUpResult
 
     suspend fun signInUser(email: String, password: String): SignInResult
+
+    suspend fun signOut()
 }

@@ -1,7 +1,6 @@
 package com.cafeapp.ui.screens.profile
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.tween
 import androidx.navigation.NavBackStackEntry
 import com.cafeapp.ui.screens.appDestination

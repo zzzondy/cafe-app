@@ -2,10 +2,12 @@ package com.cafeapp.data.auth.repository
 
 import com.cafeapp.data.auth.local.AuthLocalDataSource
 import com.cafeapp.data.auth.remote.AuthRemoteDataSource
+import com.cafeapp.data.auth.remote.states.RemoteCheckUserResult
 import com.cafeapp.data.auth.remote.states.RemoteSignInResult
 import com.cafeapp.data.auth.remote.states.RemoteSignUpResult
 import com.cafeapp.data.auth.util.toDomainUser
 import com.cafeapp.domain.auth.repository.AuthRepository
+import com.cafeapp.domain.auth.states.CheckUserResult
 import com.cafeapp.domain.auth.states.SignInResult
 import com.cafeapp.domain.auth.states.SignUpResult
 import com.cafeapp.domain.models.User
@@ -45,6 +47,20 @@ class AuthRepositoryImpl(
             is RemoteSignInResult.NetworkUnavailableError -> SignInResult.NetworkUnavailableError
             is RemoteSignInResult.WrongCredentialsError -> SignInResult.WrongCredentialsError
             is RemoteSignInResult.OtherError -> SignInResult.OtherError
+        }
+    }
+
+    override suspend fun signOut() {
+        authLocalDataSource.currentUser = null
+        authRemoteDataSource.signOut()
+    }
+
+    override suspend fun checkUserAlreadyExists(email: String): CheckUserResult {
+        return when (authRemoteDataSource.checkUserAlreadyExists(email)) {
+            is RemoteCheckUserResult.AlreadyExists -> CheckUserResult.AlreadyExists
+            is RemoteCheckUserResult.NotExists -> CheckUserResult.NotExists
+            is RemoteCheckUserResult.NetworkUnavailableError -> CheckUserResult.NetworkUnavailableError
+            is RemoteCheckUserResult.OtherError -> CheckUserResult.OtherError
         }
     }
 

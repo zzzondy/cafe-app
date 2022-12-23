@@ -12,8 +12,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.cafeapp.ui.util.UiText
 import com.cafeapp.R
+import com.cafeapp.ui.util.UiText
 
 @Composable
 fun ErrorWhenRefresh() {

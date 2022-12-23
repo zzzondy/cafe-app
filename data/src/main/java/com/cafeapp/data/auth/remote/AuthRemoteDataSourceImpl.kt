@@ -1,6 +1,7 @@
 package com.cafeapp.data.auth.remote
 
 import com.cafeapp.data.auth.remote.models.RemoteUser
+import com.cafeapp.data.auth.remote.states.RemoteCheckUserResult
 import com.cafeapp.data.auth.remote.states.RemoteSignInResult
 import com.cafeapp.data.auth.remote.states.RemoteSignUpResult
 import com.google.firebase.FirebaseNetworkException
@@ -11,12 +12,12 @@ import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
 
 class AuthRemoteDataSourceImpl(private val firebaseAuth: FirebaseAuth) : AuthRemoteDataSource {
-    override val user: RemoteUser?
-        get() = firebaseAuth.currentUser?.toRemoteUser()
+    override var user: RemoteUser? = firebaseAuth.currentUser?.toRemoteUser()
 
     override suspend fun signUpUser(email: String, password: String): RemoteSignUpResult {
         return try {
-            val createdUser = firebaseAuth.createUserWithEmailAndPassword(email, password).await().user
+            val createdUser =
+                firebaseAuth.createUserWithEmailAndPassword(email, password).await().user
             if (createdUser != null) RemoteSignUpResult.Success(createdUser.toRemoteUser()) else RemoteSignUpResult.UserAlreadyExistsError
         } catch (e: FirebaseAuthUserCollisionException) {
             RemoteSignUpResult.UserAlreadyExistsError
@@ -37,6 +38,28 @@ class AuthRemoteDataSourceImpl(private val firebaseAuth: FirebaseAuth) : AuthRem
             RemoteSignInResult.NetworkUnavailableError
         } catch (e: Exception) {
             RemoteSignInResult.OtherError
+        }
+    }
+
+    override suspend fun signOut() {
+        firebaseAuth.signOut()
+        user = null
+    }
+
+    override suspend fun checkUserAlreadyExists(email: String): RemoteCheckUserResult {
+        return try {
+            val result = firebaseAuth.fetchSignInMethodsForEmail(email)
+                .await()
+
+            if (result.signInMethods == null || result.signInMethods!!.isEmpty()) {
+                RemoteCheckUserResult.NotExists
+            } else {
+                RemoteCheckUserResult.AlreadyExists
+            }
+        } catch (e: FirebaseNetworkException) {
+            RemoteCheckUserResult.NetworkUnavailableError
+        } catch (e: Exception) {
+            RemoteCheckUserResult.OtherError
         }
     }
 

@@ -1,17 +1,16 @@
-package com.cafeapp.ui.screens.profile.signUp
+package com.cafeapp.ui.screens.profile.signUp_flow.signUp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cafeapp.core.providers.dispatchers.DispatchersProvider
-import com.cafeapp.domain.auth.states.SignUpResult
+import com.cafeapp.domain.auth.states.CheckUserResult
 import com.cafeapp.domain.auth.states.validation.ValidationEmailResult
 import com.cafeapp.domain.auth.states.validation.ValidationPasswordResult
-import com.cafeapp.domain.auth.usecase.SignUpUserUseCase
+import com.cafeapp.domain.auth.usecase.CheckUserExistsUseCase
 import com.cafeapp.domain.auth.usecase.validation.ValidateEmailUseCase
 import com.cafeapp.domain.auth.usecase.validation.ValidatePasswordUseCase
-import com.cafeapp.domain.cart.usecase.CreateCartForUserUseCase
-import com.cafeapp.ui.screens.profile.signUp.states.SignUpScreenEvent
-import com.cafeapp.ui.screens.profile.signUp.states.SignUpScreenState
+import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEvent
+import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenState
 import com.cafeapp.ui.screens.profile.states.LoadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,16 +20,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val signUpUserUseCase: SignUpUserUseCase,
+    private val checkUserExistsUseCase: CheckUserExistsUseCase,
     private val validateEmailUseCase: ValidateEmailUseCase,
     private val validatePasswordUseCase: ValidatePasswordUseCase,
-    private val createCartForUserUseCase: CreateCartForUserUseCase,
     private val dispatchersProvider: DispatchersProvider
 ) : ViewModel() {
 
     private val _signUpScreenState =
         MutableStateFlow<SignUpScreenState>(SignUpScreenState.Initially)
     val signUpScreenState: StateFlow<SignUpScreenState> = _signUpScreenState
+
+    private val _shouldNavigateToUserDataScreen = MutableStateFlow(false)
+    val shouldNavigateToUserDataScreen: StateFlow<Boolean> = _shouldNavigateToUserDataScreen
 
     private val _loadingState = MutableStateFlow(LoadingState.NotLoading)
     val loadingState: StateFlow<LoadingState> = _loadingState
@@ -62,17 +63,21 @@ class SignUpViewModel @Inject constructor(
                 viewModelScope.launch(dispatchersProvider.io) {
                     _loadingState.value = LoadingState.Loading
                     _signUpScreenState.value =
-                        when (val result = signUpUserUseCase(event.email, event.password)) {
-                            is SignUpResult.Success -> {
-                                createCartForUserUseCase(result.user.id)
+                        when (checkUserExistsUseCase(event.email)) {
+                            is CheckUserResult.NotExists -> {
+                                _shouldNavigateToUserDataScreen.value = true
                                 SignUpScreenState.Success
                             }
-                            is SignUpResult.NetworkUnavailableError -> SignUpScreenState.NetworkUnavailableError
-                            is SignUpResult.UserAlreadyExistsError -> SignUpScreenState.UserAlreadyExistsError
-                            is SignUpResult.OtherError -> SignUpScreenState.OtherError
+                            is CheckUserResult.NetworkUnavailableError -> SignUpScreenState.NetworkUnavailableError
+                            is CheckUserResult.AlreadyExists -> SignUpScreenState.UserAlreadyExistsError
+                            is CheckUserResult.OtherError -> SignUpScreenState.OtherError
                         }
                     _loadingState.value = LoadingState.NotLoading
                 }
+            }
+
+            is SignUpScreenEvent.NavigateToUserDataScreen -> {
+                _shouldNavigateToUserDataScreen.value = false
             }
         }
     }

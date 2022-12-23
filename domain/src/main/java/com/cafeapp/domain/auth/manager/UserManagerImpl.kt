@@ -17,4 +17,8 @@ class UserManagerImpl(private val authRepository: AuthRepository) : UserManager 
 
     override suspend fun signInUser(email: String, password: String): SignInResult =
         authRepository.signInUser(email, password)
+
+    override suspend fun signOut() {
+        authRepository.signOut()
+    }
 }

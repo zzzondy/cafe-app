@@ -30,4 +30,14 @@
     <string name="password_is_short">Length is at least 8</string>
     <string name="not_contains_letters_digits">Must contains letters and digits</string>
     <string name="not_contains_lower_upper_letters">Must contains lower and upper case letters</string>
+    <string name="user_already_exists">User already exists</string>
+    <string name="sign_out">Sign out</string>
+    <string name="user_data_title">Fill in your bio</string>
+    <string name="user_data_hint">This data will be displayed in your account profile for security</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="phone_number">Phone</string>
+    <string name="person_image">Person image</string>
+    <string name="phone_image">Phone image</string>
+    <string name="next">Next</string>
 </resources>

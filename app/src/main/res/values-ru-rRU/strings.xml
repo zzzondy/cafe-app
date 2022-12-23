@@ -31,4 +31,14 @@
     <string name="password_is_short">Длина не меньше 8</string>
     <string name="not_contains_letters_digits">Должен содержать буквы и цифры</string>
     <string name="not_contains_lower_upper_letters">Должен содержать буквы в двух регистрах</string>
+    <string name="user_already_exists">Пользователь уже зарегистрирован</string>
+    <string name="sign_out">Выход</string>
+    <string name="user_data_title">Заполните личные данные</string>
+    <string name="user_data_hint">Они отобразятся в вашем профиле и будут надежно защищены</string>
+    <string name="first_name">Имя</string>
+    <string name="last_name">Фамилия</string>
+    <string name="phone_number">Телефон</string>
+    <string name="person_image">Картинка человека</string>
+    <string name="phone_image">Картинка телефона</string>
+    <string name="next">Далее</string>
 </resources>
