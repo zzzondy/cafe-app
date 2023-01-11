@@ -8,7 +8,14 @@ import com.cafeapp.data.auth.remote.states.RemoteSignUpResult
 interface AuthRemoteDataSource {
     var user: RemoteUser?
 
-    suspend fun signUpUser(email: String, password: String): RemoteSignUpResult
+    suspend fun signUpUser(
+        email: String,
+        password: String,
+        firstName: String,
+        lastName: String,
+        phoneNumber: String,
+        photo: ByteArray?
+    ): RemoteSignUpResult
 
     suspend fun signInUser(email: String, password: String): RemoteSignInResult
 

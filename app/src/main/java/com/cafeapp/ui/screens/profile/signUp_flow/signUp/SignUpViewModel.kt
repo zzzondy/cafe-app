@@ -66,7 +66,7 @@ class SignUpViewModel @Inject constructor(
                         when (checkUserExistsUseCase(event.email)) {
                             is CheckUserResult.NotExists -> {
                                 _shouldNavigateToUserDataScreen.value = true
-                                SignUpScreenState.Success
+                                SignUpScreenState.Success(event.email, event.password)
                             }
                             is CheckUserResult.NetworkUnavailableError -> SignUpScreenState.NetworkUnavailableError
                             is CheckUserResult.AlreadyExists -> SignUpScreenState.UserAlreadyExistsError

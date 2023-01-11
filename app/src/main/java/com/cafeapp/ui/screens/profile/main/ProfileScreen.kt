@@ -1,19 +1,19 @@
 package com.cafeapp.ui.screens.profile.main
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,25 +25,25 @@ import coil.request.ImageRequest
 import com.cafeapp.R
 import com.cafeapp.domain.models.User
 import com.cafeapp.ui.screens.destinations.LoginScreenDestination
+import com.cafeapp.ui.screens.destinations.SettingsScreenDestination
 import com.cafeapp.ui.screens.destinations.SignUpScreenDestination
-import com.cafeapp.ui.screens.profile.ProfileScreenTransitions
-import com.cafeapp.ui.screens.profile.main.states.ProfileEvent
 import com.cafeapp.ui.screens.profile.main.states.UserAuthState
-import com.cafeapp.ui.screens.profile.states.LoadingState
 import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.ui.util.UiText
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination(style = ProfileScreenTransitions::class)
+@Destination
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel = hiltViewModel(),
     navigator: DestinationsNavigator
 ) {
     val currentAuthState = profileViewModel.userAuthState.collectAsState().value
-    val loadingState by profileViewModel.loadingState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -53,29 +53,46 @@ fun ProfileScreen(
                         text = UiText.StringResource(R.string.profile).asString()
                     )
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
+                        2.dp
+                    )
+                ),
+                actions = {
+                    IconButton(onClick = { navigator.navigate(SettingsScreenDestination) }) {
+                        Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = stringResource(
+                                R.string.settings_image
+                            )
+                        )
+                    }
+                }
             )
-        }
+        },
+        modifier = Modifier.padding(bottom = 80.dp)
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
         ) {
-            when (currentAuthState) {
-                is UserAuthState.Authenticated -> AuthenticatedStateScreen(
-                    user = currentAuthState.user,
-                    onEvent = profileViewModel::onEvent,
-                    loadingState = loadingState
-                )
-                is UserAuthState.NotAuthenticated -> NotAuthenticatedStateScreen(onSignInClick = {
-                    navigator.navigate(
-                        LoginScreenDestination
+            item {
+                when (currentAuthState) {
+                    is UserAuthState.Authenticated -> AuthenticatedStateScreen(
+                        user = currentAuthState.user,
                     )
-                }, onSignUpClick = { navigator.navigate(SignUpScreenDestination) })
+                    is UserAuthState.NotAuthenticated -> NotAuthenticatedStateScreen(onSignInClick = {
+                        navigator.navigate(
+                            LoginScreenDestination
+                        )
+                    }, onSignUpClick = { navigator.navigate(SignUpScreenDestination) })
+                }
             }
-            SettingsPartOfScreen()
+
+            item {
+                SettingsPartOfScreen()
+            }
         }
     }
 }
@@ -124,17 +141,15 @@ private fun NotAuthenticatedStateScreen(onSignInClick: () -> Unit, onSignUpClick
 
 @Composable
 private fun AuthenticatedStateScreen(
-    user: User,
-    onEvent: (ProfileEvent) -> Unit,
-    loadingState: LoadingState
+    user: User
 ) {
+    var skeletonLoadingState by rememberSaveable { mutableStateOf(false) }
+
     ConstraintLayout(
         constraintSet = ConstraintSet {
             val userPicture = createRefFor(AuthenticatedStateScreenTags.userPicture)
             val userName = createRefFor(AuthenticatedStateScreenTags.userName)
             val userEmail = createRefFor(AuthenticatedStateScreenTags.userEmail)
-            val signOutButton = createRefFor(AuthenticatedStateScreenTags.signOutButton)
-            val loading = createRefFor(AuthenticatedStateScreenTags.loading)
 
             constrain(userPicture) {
                 start.linkTo(parent.start, 16.dp)
@@ -153,36 +168,34 @@ private fun AuthenticatedStateScreen(
                 end.linkTo(userName.end)
                 top.linkTo(userName.bottom, 8.dp)
             }
-
-            constrain(signOutButton) {
-                start.linkTo(userEmail.start)
-                end.linkTo(userEmail.end)
-                top.linkTo(userEmail.bottom, 16.dp)
-            }
-
-            constrain(loading) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            }
         },
         modifier = Modifier.fillMaxWidth()
     ) {
+
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(user.photoUrl)
-                .error(R.drawable.user_svgrepo_com)
+                .error(R.drawable.ic_round_person_24)
                 .crossfade(true)
                 .build(),
             contentDescription = stringResource(id = R.string.user_photo),
             modifier = Modifier
                 .layoutId(AuthenticatedStateScreenTags.userPicture)
+                .height(150.dp)
                 .width(150.dp)
-                .height(100.dp)
-                .clip(CircleShape),
-            placeholder = painterResource(id = R.drawable.user_svgrepo_com)
+                .clip(CircleShape)
+                .placeholder(
+                    visible = skeletonLoadingState,
+                    shape = CircleShape,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colorScheme.secondaryContainer
+                ),
+            contentScale = ContentScale.Crop,
+            onLoading = { skeletonLoadingState = true },
+            onError = { skeletonLoadingState = false },
+            onSuccess = { skeletonLoadingState = false },
         )
+
         Text(
             text = if (user.displayName == null || user.displayName?.isEmpty() == true) {
                 UiText.StringResource(R.string.user_name).asString()
@@ -190,26 +203,28 @@ private fun AuthenticatedStateScreen(
                 UiText.DynamicText(user.displayName!!).asString()
             },
             style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.layoutId(AuthenticatedStateScreenTags.userName)
+            modifier = Modifier
+                .placeholder(
+                    visible = skeletonLoadingState,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
+                    shape = ShapeDefaults.Small
+                )
+                .layoutId(AuthenticatedStateScreenTags.userName)
         )
 
         Text(
             text = UiText.DynamicText(user.email).asString(),
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.layoutId(AuthenticatedStateScreenTags.userEmail)
+            modifier = Modifier
+                .placeholder(
+                    visible = skeletonLoadingState,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
+                    shape = ShapeDefaults.Small
+                )
+                .layoutId(AuthenticatedStateScreenTags.userEmail)
         )
-
-        OutlinedButton(
-            onClick = { onEvent(ProfileEvent.SignOutClicked) },
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            modifier = Modifier.layoutId(AuthenticatedStateScreenTags.signOutButton)
-        ) {
-            Text(text = UiText.StringResource(R.string.sign_out).asString())
-        }
-
-        if (loadingState == LoadingState.Loading) {
-            CircularProgressIndicator(modifier = Modifier.layoutId(AuthenticatedStateScreenTags.loading))
-        }
     }
 }
 
@@ -217,8 +232,6 @@ private object AuthenticatedStateScreenTags {
     const val userPicture = "userPicture"
     const val userName = "userName"
     const val userEmail = "userEmail"
-    const val signOutButton = "signOutButton"
-    const val loading = "loading"
 }
 
 @Preview
@@ -237,9 +250,9 @@ fun AuthenticatedStateScreenPreview() {
             user = User(
                 "1",
                 "artemr19032006@yandex.ru",
-                null,
+                "https://firebasestorage.googleapis.com/v0/b/cafe-app-project.appspot.com/o/qwetPLQG6wRrGK8vGJ2Jf47Ploz2.jpg?alt=media&token=02423417-746c-4c55-baa6-ffde6b8ecc59",
                 "Artyom Rodionov"
-            ), onEvent = {}, LoadingState.NotLoading
+            )
         )
     }
 }

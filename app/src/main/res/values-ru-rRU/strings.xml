@@ -41,4 +41,14 @@
     <string name="person_image">Картинка человека</string>
     <string name="phone_image">Картинка телефона</string>
     <string name="next">Далее</string>
+    <string name="upload_profile_photo">Загрузите вашу фотографию</string>
+    <string name="profile_photo">Фото профиля</string>
+    <string name="pick_photo_from_gallery">Выбрать из галереи</string>
+    <string name="take_photo">Сделать фото</string>
+    <string name="settings_image">Картинка настроек</string>
+    <string name="settings">Настройки</string>
+    <string name="account">Учетная запись</string>
+    <string name="are_you_sure_you_want_to_exit">Вы действительно хотите выйти?</string>
+    <string name="cancel">Отмена</string>
+    <string name="about_app">О приложении</string>
 </resources>

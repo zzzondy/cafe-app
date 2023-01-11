@@ -60,4 +60,8 @@ class UseCaseModule {
     @ViewModelScoped
     @Provides
     fun provideValidatePhoneNumberUseCase(): ValidatePhoneNumberUseCase = ValidatePhoneNumberUseCase()
+
+    @ViewModelScoped
+    @Provides
+    fun provideCheckUserAuthenticatedUseCase(userManager: UserManager): CheckUserAuthenticatedUseCase = CheckUserAuthenticatedUseCase(userManager)
 }

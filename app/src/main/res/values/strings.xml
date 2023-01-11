@@ -40,4 +40,14 @@
     <string name="person_image">Person image</string>
     <string name="phone_image">Phone image</string>
     <string name="next">Next</string>
+    <string name="upload_profile_photo">Upload your profile photo</string>
+    <string name="profile_photo">Profile photo</string>
+    <string name="pick_photo_from_gallery">Pick from gallery</string>
+    <string name="take_photo">Take photo</string>
+    <string name="settings_image">Settings image</string>
+    <string name="settings">Settings</string>
+    <string name="account">Account</string>
+    <string name="are_you_sure_you_want_to_exit">Are you sure you want to sign out?</string>
+    <string name="cancel">Cancel</string>
+    <string name="about_app">About app</string>
 </resources>

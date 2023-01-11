@@ -1,6 +1,7 @@
 package com.cafeapp.ui.screens.food_list
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -9,15 +10,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.cafeapp.R
 import com.cafeapp.domain.models.Food
 import com.cafeapp.ui.theme.CafeAppTheme
@@ -25,22 +23,27 @@ import com.cafeapp.ui.util.UiText
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
+import com.skydoves.landscapist.coil.CoilImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FoodItem(food: Food?) {
+fun FoodItem(
+    food: Food?,
+    modifier: Modifier = Modifier,
+    onAddToCart: () -> Unit = {},
+    onCardClicked: () -> Unit = {}
+) {
     Card(
-        onClick = { /*TODO*/ },
-        modifier = Modifier
+        onClick = onCardClicked,
+        modifier = modifier
             .padding(16.dp)
             .size(150.dp, 250.dp)
             .placeholder(
                 visible = food == null,
+                color = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
                 shape = CardDefaults.shape,
-                color = MaterialTheme.colorScheme.secondaryContainer,
                 highlight = PlaceholderHighlight.shimmer()
             ),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
     ) {
         ConstraintLayout(
             constraintSet = ConstraintSet {
@@ -72,14 +75,11 @@ fun FoodItem(food: Food?) {
             },
             modifier = Modifier.fillMaxSize()
         ) {
-
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(food?.imageUrl ?: "")
-                    .crossfade(true)
-                    .build(),
-                contentDescription = stringResource(R.string.food_image),
-                modifier = Modifier.layoutId(FoodItemConstraintsTags.foodImage)
+            CoilImage(
+                imageModel = { food?.imageUrl },
+                modifier = Modifier
+                    .layoutId(FoodItemConstraintsTags.foodImage)
+                    .height(150.dp),
             )
 
             Text(
@@ -97,7 +97,7 @@ fun FoodItem(food: Food?) {
             )
 
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = onAddToCart,
                 modifier = Modifier.layoutId(FoodItemConstraintsTags.addToCartButton)
             ) {
                 Icon(
@@ -120,15 +120,15 @@ private object FoodItemConstraintsTags {
 @Composable
 fun FoodItemPreview() {
     CafeAppTheme {
-//        FoodItem(
-//            food = Food(
-//                1,
-//                "Teriyaki Chicken Casserole",
-//                220,
-//                "коричневый рис, куриная грудка, соевый соус, вода, чеснок",
-//                "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg"
-//            )
-//        )
-        FoodItem(food = null)
+        FoodItem(
+            food = Food(
+                1,
+                "Teriyaki Chicken Casserole",
+                220,
+                "коричневый рис, куриная грудка, соевый соус, вода, чеснок",
+                "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg"
+            )
+        )
+//        FoodItem(food = null)
     }
 }

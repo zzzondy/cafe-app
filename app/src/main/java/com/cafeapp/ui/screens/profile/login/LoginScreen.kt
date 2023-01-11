@@ -4,8 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Clear
@@ -32,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
+import com.cafeapp.ui.components.LoadingDialog
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenEvent
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenState
 import com.cafeapp.ui.screens.profile.states.LoadingState
@@ -56,8 +59,13 @@ fun LoginScreen(
         }
     }
 
+    if (loadingState == LoadingState.Loading) {
+        LoadingDialog()
+    }
+
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = { Text(text = UiText.StringResource(R.string.sign_in).asString()) },
@@ -73,10 +81,13 @@ fun LoginScreen(
         }
     ) { paddingValues ->
         LoginScreenPart(
-            loadingState = loadingState,
             loginScreenState = loginScreenState,
             onEvent = loginViewModel::onEvent,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .imePadding()
+                .padding(paddingValues)
         )
     }
 }
@@ -85,7 +96,6 @@ fun LoginScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LoginScreenPart(
-    loadingState: LoadingState,
     loginScreenState: LoginScreenState,
     onEvent: (event: LoginScreenEvent) -> Unit,
     modifier: Modifier = Modifier
@@ -100,155 +110,148 @@ private fun LoginScreenPart(
 
     val focusManager = LocalFocusManager.current
 
-    Box(modifier = modifier
-        .fillMaxSize()
-        .pointerInput(Unit) {
+    Column(
+        modifier = modifier.pointerInput(Unit) {
             detectTapGestures { focusManager.clearFocus() }
-        }, contentAlignment = Alignment.Center
+        },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (loadingState == LoadingState.Loading)
-            CircularProgressIndicator()
+        Image(
+            painter = painterResource(R.drawable.ic_app_logo),
+            contentDescription = stringResource(
+                R.string.app_logo_image
+            ),
+            modifier = Modifier
+                .size(192.dp)
+                .padding(bottom = 64.dp),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+        )
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_app_logo),
-                contentDescription = stringResource(
-                    R.string.app_logo_image
-                ),
-                modifier = Modifier
-                    .size(192.dp)
-                    .padding(bottom = 64.dp),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+        AnimatedVisibility(visible = loginScreenState is LoginScreenState.NetworkUnavailable) {
+            Text(
+                text = UiText.StringResource(R.string.network_unavailable).asString(),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
             )
+        }
 
-            AnimatedVisibility(visible = loginScreenState is LoginScreenState.NetworkUnavailable) {
-                Text(
-                    text = UiText.StringResource(R.string.network_unavailable).asString(),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+        OutlinedTextField(
+            value = email.value,
+            onValueChange = {
+                email.value = it
+            },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                autoCorrect = false,
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
+            label = { Text(text = UiText.StringResource(R.string.email).asString()) },
+            keyboardActions = KeyboardActions(onNext = { passwordTextFieldFocusRequester.requestFocus() }),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Rounded.Email, contentDescription = stringResource(
+                        id = R.string.email_image
+                    )
                 )
-            }
-
-            OutlinedTextField(
-                value = email.value,
-                onValueChange = {
-                    email.value = it
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    autoCorrect = false,
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                ),
-                label = { Text(text = UiText.StringResource(R.string.email).asString()) },
-                keyboardActions = KeyboardActions(onNext = { passwordTextFieldFocusRequester.requestFocus() }),
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Email, contentDescription = stringResource(
-                            id = R.string.email_image
-                        )
-                    )
-                },
-                trailingIcon = {
-                    if (email.value.isNotEmpty()) {
-                        IconButton(onClick = { email.value = "" }) {
-                            Icon(
-                                imageVector = Icons.Rounded.Clear,
-                                contentDescription = stringResource(
-                                    id = R.string.clear_image
-                                )
-                            )
-                        }
-                    }
-                },
-                supportingText = {
-                    if (isError) {
-                        Text(
-                            text = UiText.StringResource(R.string.sign_in_error).asString(),
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                },
-                isError = isError,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-            )
-
-            OutlinedTextField(
-                value = password.value,
-                onValueChange = {
-                    password.value = it
-                },
-                singleLine = true,
-                visualTransformation = if (passwordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
-                keyboardOptions = KeyboardOptions(
-                    autoCorrect = false,
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                label = { Text(text = UiText.StringResource(R.string.password).asString()) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Lock, contentDescription = stringResource(
-                            id = R.string.lock_image
-                        )
-                    )
-                },
-                trailingIcon = {
-                    IconButton(onClick = { passwordHidden.value = !passwordHidden.value }) {
-                        val visibilityIcon =
-                            if (passwordHidden.value) R.drawable.ic_round_visibility_24 else R.drawable.ic_round_visibility_off_24
+            },
+            trailingIcon = {
+                if (email.value.isNotEmpty()) {
+                    IconButton(onClick = { email.value = "" }) {
                         Icon(
-                            painter = painterResource(id = visibilityIcon),
+                            imageVector = Icons.Rounded.Clear,
                             contentDescription = stringResource(
-                                id = R.string.visibility_password_image
+                                id = R.string.clear_image
                             )
                         )
                     }
-                },
-                supportingText = {
-                    if (isError) {
-                        Text(
-                            text = UiText.StringResource(R.string.sign_in_error).asString(),
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                },
-                isError = isError,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp)
-                    .focusRequester(passwordTextFieldFocusRequester),
-            )
+                }
+            },
+            supportingText = {
+                if (isError) {
+                    Text(
+                        text = UiText.StringResource(R.string.sign_in_error).asString(),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            isError = isError,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+        )
 
-            Button(
-                onClick = {
-                    onEvent(
-                        LoginScreenEvent.SignIn(
-                            email = email.value,
-                            password = password.value
+        OutlinedTextField(
+            value = password.value,
+            onValueChange = {
+                password.value = it
+            },
+            singleLine = true,
+            visualTransformation = if (passwordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
+            keyboardOptions = KeyboardOptions(
+                autoCorrect = false,
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+            label = { Text(text = UiText.StringResource(R.string.password).asString()) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Rounded.Lock, contentDescription = stringResource(
+                        id = R.string.lock_image
+                    )
+                )
+            },
+            trailingIcon = {
+                IconButton(onClick = { passwordHidden.value = !passwordHidden.value }) {
+                    val visibilityIcon =
+                        if (passwordHidden.value) R.drawable.ic_round_visibility_24 else R.drawable.ic_round_visibility_off_24
+                    Icon(
+                        painter = painterResource(id = visibilityIcon),
+                        contentDescription = stringResource(
+                            id = R.string.visibility_password_image
                         )
                     )
-                    focusManager.clearFocus()
-                },
-                enabled = email.value.isNotEmpty() && password.value.isNotEmpty(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-            ) {
-                Text(text = UiText.StringResource(R.string.sign_in).asString())
-            }
+                }
+            },
+            supportingText = {
+                if (isError) {
+                    Text(
+                        text = UiText.StringResource(R.string.sign_in_error).asString(),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            isError = isError,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp)
+                .focusRequester(passwordTextFieldFocusRequester),
+        )
+
+        Button(
+            onClick = {
+                onEvent(
+                    LoginScreenEvent.SignIn(
+                        email = email.value,
+                        password = password.value
+                    )
+                )
+                focusManager.clearFocus()
+            },
+            enabled = email.value.isNotEmpty() && password.value.isNotEmpty(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+        ) {
+            Text(text = UiText.StringResource(R.string.sign_in).asString())
         }
     }
 }
+
 
 @Preview
 @Composable

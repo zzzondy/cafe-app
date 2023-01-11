@@ -47,6 +47,7 @@ dependencies {
     implementation(platform(Dependencies.Firebase.bom))
     implementation(Dependencies.Firebase.firestore)
     implementation(Dependencies.Firebase.authentication)
+    implementation(Dependencies.Firebase.storage)
 
     // Paging
     implementation(Dependencies.Paging.common)

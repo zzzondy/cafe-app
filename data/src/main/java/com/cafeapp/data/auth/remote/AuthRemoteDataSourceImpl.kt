@@ -7,20 +7,38 @@ import com.cafeapp.data.auth.remote.states.RemoteSignUpResult
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 
-class AuthRemoteDataSourceImpl(private val firebaseAuth: FirebaseAuth) : AuthRemoteDataSource {
-    override var user: RemoteUser? = firebaseAuth.currentUser?.toRemoteUser()
+class AuthRemoteDataSourceImpl(
+    private val firebaseAuth: FirebaseAuth,
+    private val firebaseStorage: FirebaseStorage
+) : AuthRemoteDataSource {
+    override var user: RemoteUser? = null
+        get() = firebaseAuth.currentUser?.toRemoteUser()
 
-    override suspend fun signUpUser(email: String, password: String): RemoteSignUpResult {
+    override suspend fun signUpUser(
+        email: String,
+        password: String,
+        firstName: String,
+        lastName: String,
+        phoneNumber: String,
+        photo: ByteArray?
+    ): RemoteSignUpResult {
         return try {
             val createdUser =
                 firebaseAuth.createUserWithEmailAndPassword(email, password).await().user
-            if (createdUser != null) RemoteSignUpResult.Success(createdUser.toRemoteUser()) else RemoteSignUpResult.UserAlreadyExistsError
-        } catch (e: FirebaseAuthUserCollisionException) {
-            RemoteSignUpResult.UserAlreadyExistsError
+
+            val userProfileUpdate = userProfileChangeRequest {
+                displayName = "$firstName $lastName"
+            }
+            firebaseAuth.currentUser!!.updateProfile(userProfileUpdate)
+            if (photo != null) {
+                changeUserPhoto(photo)
+            }
+            RemoteSignUpResult.Success(createdUser!!.toRemoteUser())
         } catch (e: FirebaseNetworkException) {
             RemoteSignUpResult.NetworkUnavailableError
         } catch (e: Exception) {
@@ -61,6 +79,15 @@ class AuthRemoteDataSourceImpl(private val firebaseAuth: FirebaseAuth) : AuthRem
         } catch (e: Exception) {
             RemoteCheckUserResult.OtherError
         }
+    }
+
+    private suspend fun changeUserPhoto(photo: ByteArray) {
+        val userPhotoRef = firebaseStorage.reference.child("${firebaseAuth.currentUser!!.uid}.jpg")
+        userPhotoRef.putBytes(photo).await()
+        val profileUpdates = userProfileChangeRequest {
+            photoUri = userPhotoRef.downloadUrl.await()
+        }
+        firebaseAuth.currentUser!!.updateProfile(profileUpdates).await()
     }
 
     private fun FirebaseUser.toRemoteUser(): RemoteUser =

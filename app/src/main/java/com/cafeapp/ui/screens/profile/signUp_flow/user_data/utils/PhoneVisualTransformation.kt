@@ -7,7 +7,7 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 
 const val PHONE_MASK = "+7 (000) 000-00-00"
-const val MASK_NUMBER = '0'
+private const val MASK_NUMBER = '0'
 
 class PhoneVisualTransformation(private val mask: String = PHONE_MASK, private val maskNumber: Char = MASK_NUMBER) : VisualTransformation {
     private val maxLength = mask.count { it == maskNumber }

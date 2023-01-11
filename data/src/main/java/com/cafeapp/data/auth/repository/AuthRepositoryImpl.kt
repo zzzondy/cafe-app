@@ -1,6 +1,5 @@
 package com.cafeapp.data.auth.repository
 
-import com.cafeapp.data.auth.local.AuthLocalDataSource
 import com.cafeapp.data.auth.remote.AuthRemoteDataSource
 import com.cafeapp.data.auth.remote.states.RemoteCheckUserResult
 import com.cafeapp.data.auth.remote.states.RemoteSignInResult
@@ -12,27 +11,47 @@ import com.cafeapp.domain.auth.states.SignInResult
 import com.cafeapp.domain.auth.states.SignUpResult
 import com.cafeapp.domain.models.User
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class AuthRepositoryImpl(
-    private val authRemoteDataSource: AuthRemoteDataSource,
-    private val authLocalDataSource: AuthLocalDataSource
+    private val authRemoteDataSource: AuthRemoteDataSource
 ) : AuthRepository {
 
+    private val userFlow = MutableStateFlow<User?>(null)
+
+    override var currentUser: User?
+        get() = authRemoteDataSource.user?.toDomainUser()
+        set(value) {
+            userFlow.value = value
+            userFlow.value
+        }
+
     init {
-        authLocalDataSource.currentUser = authRemoteDataSource.user?.toDomainUser()
+        currentUser = authRemoteDataSource.user?.toDomainUser()
     }
 
-    override val currentUser: User?
-        get() = authLocalDataSource.currentUser
+    override suspend fun signUpUser(
+        email: String,
+        password: String,
+        firstName: String,
+        lastName: String,
+        phoneNumber: String,
+        photo: ByteArray?
+    ): SignUpResult {
 
-    override suspend fun signUpUser(email: String, password: String): SignUpResult {
-
-        return when (val signUpResult = authRemoteDataSource.signUpUser(email, password)) {
+        return when (val signUpResult = authRemoteDataSource.signUpUser(
+            email,
+            password,
+            firstName,
+            lastName,
+            phoneNumber,
+            photo
+        )) {
             is RemoteSignUpResult.Success -> {
-                authLocalDataSource.currentUser = signUpResult.user.toDomainUser()
+                currentUser = signUpResult.user.toDomainUser()
                 SignUpResult.Success(signUpResult.user.toDomainUser())
             }
-            is RemoteSignUpResult.UserAlreadyExistsError -> SignUpResult.UserAlreadyExistsError
             is RemoteSignUpResult.NetworkUnavailableError -> SignUpResult.NetworkUnavailableError
             is RemoteSignUpResult.OtherError -> SignUpResult.OtherError
         }
@@ -41,7 +60,7 @@ class AuthRepositoryImpl(
     override suspend fun signInUser(email: String, password: String): SignInResult {
         return when (val signInResult = authRemoteDataSource.signInUser(email, password)) {
             is RemoteSignInResult.Success -> {
-                authLocalDataSource.currentUser = signInResult.user.toDomainUser()
+                currentUser = signInResult.user.toDomainUser()
                 SignInResult.Success(signInResult.user.toDomainUser())
             }
             is RemoteSignInResult.NetworkUnavailableError -> SignInResult.NetworkUnavailableError
@@ -51,7 +70,7 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun signOut() {
-        authLocalDataSource.currentUser = null
+        currentUser = null
         authRemoteDataSource.signOut()
     }
 
@@ -65,5 +84,9 @@ class AuthRepositoryImpl(
     }
 
     override fun observeCurrentUser(): Flow<User?> =
-        authLocalDataSource.observeCurrentUser()
+        userFlow.asStateFlow()
+
+    override fun updateCurrentUser() {
+        currentUser = authRemoteDataSource.user?.toDomainUser()
+    }
 }

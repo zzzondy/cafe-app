@@ -2,49 +2,47 @@ package com.cafeapp.ui.screens.profile.signUp_flow.user_data
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavOptionsBuilder
 import com.cafeapp.R
+import com.cafeapp.ui.screens.destinations.UserPhotoScreenDestination
 import com.cafeapp.ui.screens.profile.signUp_flow.SignUpSharedViewModel
 import com.cafeapp.ui.screens.profile.signUp_flow.user_data.states.UserDataScreenEvent
 import com.cafeapp.ui.screens.profile.signUp_flow.user_data.utils.PHONE_MASK
 import com.cafeapp.ui.screens.profile.signUp_flow.user_data.utils.PhoneVisualTransformation
-import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.ui.util.UiText
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.spec.Direction
-import com.ramcosta.composedestinations.spec.Route
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination(style = UserDataScreenTransitions::class)
 @Composable
 fun UserDataScreen(
     navigator: DestinationsNavigator,
     signUpSharedViewModel: SignUpSharedViewModel,
     userDataScreenViewModel: UserDataScreenViewModel = hiltViewModel()
 ) {
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
+    var firstName by rememberSaveable { mutableStateOf("") }
+    var lastName by rememberSaveable { mutableStateOf("") }
+    var phoneNumber by rememberSaveable { mutableStateOf("") }
 
     val canNavigateToPhotoScreen by userDataScreenViewModel.canNavigateTpPhotoScreen.collectAsState()
 
@@ -73,6 +71,8 @@ fun UserDataScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .imePadding()
                 .padding(paddingValues)
                 .fillMaxSize()
                 .pointerInput(Unit) {
@@ -138,7 +138,7 @@ fun UserDataScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp)
             )
 
             OutlinedTextField(
@@ -167,71 +167,25 @@ fun UserDataScreen(
                 visualTransformation = PhoneVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp)
             )
-
-            Box(
+            Button(
+                onClick = {
+                    userDataScreenViewModel.onEvent(UserDataScreenEvent.OnNextButtonClicked)
+                    signUpSharedViewModel.updateFirstLastNameAndPhone(
+                        firstName,
+                        lastName,
+                        phoneNumber
+                    )
+                    navigator.navigate(UserPhotoScreenDestination)
+                },
+                enabled = canNavigateToPhotoScreen,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 80.dp),
-                contentAlignment = Alignment.BottomCenter
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                    .fillMaxWidth()
             ) {
-                Button(
-                    onClick = { userDataScreenViewModel.onEvent(UserDataScreenEvent.OnNextButtonClicked) },
-                    enabled = canNavigateToPhotoScreen,
-                ) {
-                    Text(text = UiText.StringResource(R.string.next).asString())
-                }
+                Text(text = UiText.StringResource(R.string.next).asString())
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun UserDataScreenPreview() {
-    val navigator = object : DestinationsNavigator {
-        override fun clearBackStack(route: Route): Boolean {
-            return super.clearBackStack(route)
-        }
-
-        override fun clearBackStack(route: String): Boolean {
-            TODO("Not yet implemented")
-        }
-
-        override fun navigate(
-            direction: Direction,
-            onlyIfResumed: Boolean,
-            builder: NavOptionsBuilder.() -> Unit
-        ) {
-            super.navigate(direction, onlyIfResumed, builder)
-        }
-
-        override fun navigate(
-            route: String,
-            onlyIfResumed: Boolean,
-            builder: NavOptionsBuilder.() -> Unit
-        ) {
-            TODO("Not yet implemented")
-        }
-
-        override fun navigateUp(): Boolean {
-            TODO("Not yet implemented")
-        }
-
-        override fun popBackStack(): Boolean {
-            TODO("Not yet implemented")
-        }
-
-        override fun popBackStack(route: Route, inclusive: Boolean, saveState: Boolean): Boolean {
-            return super.popBackStack(route, inclusive, saveState)
-        }
-
-        override fun popBackStack(route: String, inclusive: Boolean, saveState: Boolean): Boolean {
-            TODO("Not yet implemented")
-        }
-    }
-    CafeAppTheme(darkTheme = true) {
-        UserDataScreen(navigator = navigator, signUpSharedViewModel = SignUpSharedViewModel())
     }
 }

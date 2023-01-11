@@ -1,6 +1,5 @@
 package com.cafeapp.di.auth
 
-import com.cafeapp.data.auth.local.AuthLocalDataSource
 import com.cafeapp.data.auth.remote.AuthRemoteDataSource
 import com.cafeapp.data.auth.repository.AuthRepositoryImpl
 import com.cafeapp.domain.auth.manager.UserManager
@@ -19,12 +18,13 @@ class RepositoryModule {
     @Singleton
     @Provides
     fun provideAuthRepository(
-        authRemoteDataSource: AuthRemoteDataSource,
-        authLocalDataSource: AuthLocalDataSource
-    ): AuthRepository = AuthRepositoryImpl(authRemoteDataSource, authLocalDataSource)
+        authRemoteDataSource: AuthRemoteDataSource
+    ): AuthRepository = AuthRepositoryImpl(authRemoteDataSource)
 
     @Singleton
     @Provides
-    fun provideUserManager(authRepository: AuthRepository): UserManager =
+    fun provideUserManager(
+        authRepository: AuthRepository
+    ): UserManager =
         UserManagerImpl(authRepository)
 }

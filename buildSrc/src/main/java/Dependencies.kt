@@ -1,18 +1,23 @@
 object Dependencies {
     object Compose {
-        const val composeVersion = "1.3.0"
+        const val composeVersion = "1.3.2"
+        private const val composeBOMVersion = "2022.12.00"
 
         // UI
-        const val ui = "androidx.compose.ui:ui:$composeVersion"
-        const val material = "androidx.compose.material3:material3:1.1.0-alpha02"
+        const val bom = "androidx.compose:compose-bom:$composeBOMVersion"
+        const val ui = "androidx.compose.ui:ui"
+        const val material = "androidx.compose.material3:material3"
 
         // Tooling
-        const val composeToolingPreview = "androidx.compose.ui:ui-tooling-preview:$composeVersion"
-        const val composeTooling = "androidx.compose.ui:ui-tooling:$composeVersion"
-        const val testManifest = "androidx.compose.ui:ui-test-manifest:$composeVersion"
+        const val composeToolingPreview = "androidx.compose.ui:ui-tooling-preview"
+        const val composeTooling = "androidx.compose.ui:ui-tooling"
+        const val testManifest = "androidx.compose.ui:ui-test-manifest"
 
         // Constraint layout
         const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+
+        // Splash screen
+        const val splashScreen = "androidx.core:core-splashscreen:1.0.0"
     }
 
     object Lifecycle {
@@ -53,10 +58,11 @@ object Dependencies {
     }
 
     object Firebase {
-        const val bom = "com.google.firebase:firebase-bom:31.0.2"
+        const val bom = "com.google.firebase:firebase-bom:31.1.1"
 
         const val firestore = "com.google.firebase:firebase-firestore-ktx"
         const val authentication = "com.google.firebase:firebase-auth-ktx"
+        const val storage = "com.google.firebase:firebase-storage-ktx"
     }
 
     object Hilt {
@@ -66,6 +72,16 @@ object Dependencies {
         const val hiltAndroidCompiler = "com.google.dagger:hilt-android-compiler:$hiltVersion"
         const val hiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0"
         const val hiltCompiler = "androidx.hilt:hilt-compiler:1.0.0"
+    }
+
+    object Landscapist {
+        private const val landscapistVersion = "2.1.0"
+
+        const val bom = "com.github.skydoves:landscapist-bom:$landscapistVersion"
+        const val coil = "com.github.skydoves:landscapist-coil"
+        const val glide = "com.github.skydoves:landscapist-glide"
+        const val placeholders = "com.github.skydoves:landscapist-placeholder"
+        const val animation = "com.github.skydoves:landscapist-animation"
     }
 
     object Coil {
@@ -79,6 +95,7 @@ object Dependencies {
             "com.google.accompanist:accompanist-placeholder-material:$accompanistVersion"
 
         const val flowLayouts = "com.google.accompanist:accompanist-flowlayout:$accompanistVersion"
+        const val systemUiController = "com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion"
     }
 
     object Coroutines {

@@ -4,8 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Clear
@@ -34,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
 import com.cafeapp.domain.auth.states.validation.ValidationEmailResult
 import com.cafeapp.domain.auth.states.validation.ValidationPasswordResult
+import com.cafeapp.ui.components.LoadingDialog
 import com.cafeapp.ui.screens.destinations.UserDataScreenDestination
 import com.cafeapp.ui.screens.profile.signUp_flow.SignUpSharedViewModel
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEvent
@@ -45,7 +48,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination(style = SignUpScreenTransitions::class)
 @Composable
 fun SignUpScreen(
     navigator: DestinationsNavigator,
@@ -59,6 +62,10 @@ fun SignUpScreen(
         if (signUpScreenState is SignUpScreenState.Success && shouldNavigateToUserDataScreen) {
             navigator.navigate(UserDataScreenDestination)
             signUpViewModel.onEvent(SignUpScreenEvent.NavigateToUserDataScreen)
+            signUpSharedViewModel.updateEmailAndPassword(
+                (signUpScreenState as SignUpScreenState.Success).email,
+                (signUpScreenState as SignUpScreenState.Success).password
+            )
         }
     }
 
@@ -66,6 +73,10 @@ fun SignUpScreen(
     val passwordValidationState by signUpViewModel.validationPasswordState.collectAsState()
 
     val loadingState by signUpViewModel.loadingState.collectAsState()
+
+    if (loadingState == LoadingState.Loading) {
+        LoadingDialog()
+    }
 
     Scaffold(
         topBar = {
@@ -84,24 +95,14 @@ fun SignUpScreen(
             )
         }
     ) { paddingValues ->
-        Box(
+        SignUpScreenPart(
+            onEvent = signUpViewModel::onEvent,
+            emailValidationState = emailValidationState,
+            passwordValidationState = passwordValidationState,
+            signUpScreenState = signUpScreenState,
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize()
-        ) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                if (loadingState == LoadingState.Loading) {
-                    CircularProgressIndicator()
-                }
-
-                SignUpScreenPart(
-                    onEvent = signUpViewModel::onEvent,
-                    emailValidationState = emailValidationState,
-                    passwordValidationState = passwordValidationState,
-                    signUpScreenState = signUpScreenState
-                )
-            }
-        }
+        )
     }
 }
 
@@ -111,7 +112,8 @@ private fun SignUpScreenPart(
     onEvent: (SignUpScreenEvent) -> Unit,
     emailValidationState: ValidationEmailResult,
     passwordValidationState: ValidationPasswordResult,
-    signUpScreenState: SignUpScreenState
+    signUpScreenState: SignUpScreenState,
+    modifier: Modifier = Modifier
 ) {
     val email = rememberSaveable { mutableStateOf("") }
 
@@ -122,11 +124,13 @@ private fun SignUpScreenPart(
     val focusManager = LocalFocusManager.current
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .pointerInput(Unit) {
                 detectTapGestures { focusManager.clearFocus() }
-            },
+            }
+            .verticalScroll(rememberScrollState())
+            .imePadding(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

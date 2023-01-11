@@ -1,6 +1,6 @@
 object Plugins {
     const val ksp = "com.google.devtools.ksp"
-    const val kspVersion = "1.7.10-1.0.6"
+    const val kspVersion = "1.7.20-1.0.8"
     const val androidApplication = "com.android.application"
     const val androidLibrary = "com.android.library"
     const val kotlinAndroid = "org.jetbrains.kotlin.android"

@@ -4,5 +4,5 @@ import com.cafeapp.domain.auth.manager.UserManager
 
 class ObserveCurrentUserUseCase(private val userManager: UserManager) {
 
-    operator fun invoke() = userManager.currentUser
+    suspend operator fun invoke() = userManager.observeCurrentUser()
 }

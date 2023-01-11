@@ -51,6 +51,11 @@ android {
                 "proguard-rules.pro"
             )
         }
+        create("benchmark") {
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -67,7 +72,7 @@ android {
     }
     packagingOptions {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/**"
         }
     }
 }
@@ -79,6 +84,10 @@ dependencies {
     implementation(Dependencies.Lifecycle.lifecycleRuntime)
     implementation(Dependencies.Lifecycle.activity)
 
+    // BOM
+    implementation(platform(Dependencies.Compose.bom))
+    androidTestImplementation(platform(Dependencies.Compose.bom))
+
     // Ui
     implementation(Dependencies.Compose.ui)
     implementation(Dependencies.Compose.material)
@@ -87,6 +96,7 @@ dependencies {
     // Accompanist
     implementation(Dependencies.Accompanist.placeholder)
     implementation(Dependencies.Accompanist.flowLayouts)
+    implementation(Dependencies.Accompanist.systemUiController)
 
     // Compose tooling
     implementation(Dependencies.Compose.composeTooling)
@@ -119,14 +129,25 @@ dependencies {
     implementation(platform(Dependencies.Firebase.bom))
     implementation(Dependencies.Firebase.firestore)
     implementation(Dependencies.Firebase.authentication)
+    implementation(Dependencies.Firebase.storage)
 
     // Paging
     implementation(Dependencies.Paging.compose)
+
+    // Landscapist
+    implementation(Dependencies.Landscapist.bom)
+    implementation(Dependencies.Landscapist.coil)
+    implementation(Dependencies.Landscapist.glide)
+    implementation(Dependencies.Landscapist.animation)
+    implementation(Dependencies.Landscapist.placeholders)
 
     // Coil
     implementation(Dependencies.Coil.compose)
 
     // Coroutines
     implementation(Dependencies.Coroutines.firebaseCoroutines)
+
+    // Splash screen
+    implementation(Dependencies.Compose.splashScreen)
 
 }

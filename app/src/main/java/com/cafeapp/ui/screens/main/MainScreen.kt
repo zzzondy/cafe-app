@@ -13,9 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.cafeapp.ui.screens.NavGraphs
@@ -61,7 +59,7 @@ fun MainScreen() {
                     LocalLayoutDirection.current
                 ), end = paddingValues.calculateEndPadding(
                     LocalLayoutDirection.current
-                ), top = paddingValues.calculateTopPadding(), bottom = 80.dp
+                )
             ),
             dependenciesContainerBuilder = {
                 dependency(NavGraphs.root) {
@@ -110,11 +108,6 @@ fun BottomNavigationBar(navController: NavController) {
             }
         }
     }
-}
-
-private fun ArrayDeque<NavBackStackEntry>.print(prefix: String = "stack") {
-    val stack = map { it.destination.route }.toTypedArray().contentToString()
-    println("$prefix = $stack")
 }
 
 @Preview

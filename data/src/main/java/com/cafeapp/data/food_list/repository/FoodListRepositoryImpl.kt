@@ -19,6 +19,6 @@ class FoodListRepositoryImpl(private val remoteFoodListRepository: RemoteFoodLis
     }
 
     companion object {
-        private const val PAGE_SIZE = 1
+        private const val PAGE_SIZE = 10
     }
 }

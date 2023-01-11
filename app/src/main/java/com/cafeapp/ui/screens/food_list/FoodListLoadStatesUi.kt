@@ -49,7 +49,7 @@ fun ErrorWhenRefresh() {
 fun ErrorWhenAppend() {
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(bottom = 16.dp),
         contentAlignment = Alignment.BottomCenter
     ) {
