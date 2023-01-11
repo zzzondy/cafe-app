@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cafeapp.core.providers.dispatchers.DispatchersProvider
 import com.cafeapp.domain.auth.usecase.ObserveCurrentUserUseCase
-import com.cafeapp.domain.auth.usecase.SignOutUserUseCase
 import com.cafeapp.ui.screens.profile.main.states.UserAuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
