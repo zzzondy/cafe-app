@@ -1,7 +1,6 @@
 package com.cafeapp.ui.screens.food_list
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -9,20 +8,20 @@ import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
 import com.cafeapp.R
 import com.cafeapp.domain.models.Food
 import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.ui.util.UiText
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import com.skydoves.landscapist.coil.CoilImage
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,19 +30,13 @@ fun FoodItem(
     food: Food?,
     modifier: Modifier = Modifier,
     onAddToCart: () -> Unit = {},
-    onCardClicked: () -> Unit = {}
+    onCardClicked: () -> Unit = {},
 ) {
     Card(
         onClick = onCardClicked,
-        modifier = modifier
+        modifier = Modifier
             .padding(16.dp)
-            .size(150.dp, 250.dp)
-            .placeholder(
-                visible = food == null,
-                color = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                shape = CardDefaults.shape,
-                highlight = PlaceholderHighlight.shimmer()
-            ),
+            .size(150.dp, 250.dp),
     ) {
         ConstraintLayout(
             constraintSet = ConstraintSet {
@@ -56,11 +49,15 @@ fun FoodItem(
                     start.linkTo(parent.start, 0.dp)
                     end.linkTo(parent.end, 0.dp)
                     top.linkTo(parent.top, 0.dp)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.value(150.dp)
                 }
 
                 constrain(name) {
                     start.linkTo(parent.start, 8.dp)
+                    end.linkTo(parent.end, 8.dp)
                     top.linkTo(foodImage.bottom, 8.dp)
+                    width = Dimension.fillToConstraints
                 }
 
                 constrain(priceText) {
@@ -77,28 +74,32 @@ fun FoodItem(
         ) {
             CoilImage(
                 imageModel = { food?.imageUrl },
-                modifier = Modifier
+                modifier = modifier
                     .layoutId(FoodItemConstraintsTags.foodImage)
-                    .height(150.dp),
+                    .clip(MaterialTheme.shapes.medium),
             )
 
             Text(
                 text = UiText.DynamicText(food?.name ?: "").asString(),
                 style = MaterialTheme.typography.labelLarge,
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 2,
-                modifier = Modifier.layoutId(FoodItemConstraintsTags.name)
+                maxLines = 1,
+                textAlign = TextAlign.Start,
+                modifier = modifier
+                    .layoutId(FoodItemConstraintsTags.name)
             )
 
             Text(
                 text = UiText.StringResource(R.string.rubles, food?.price ?: 0).asString(),
                 style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.layoutId(FoodItemConstraintsTags.priceText)
+                textAlign = TextAlign.Start,
+                modifier = modifier
+                    .layoutId(FoodItemConstraintsTags.priceText)
             )
 
             IconButton(
                 onClick = onAddToCart,
-                modifier = Modifier.layoutId(FoodItemConstraintsTags.addToCartButton)
+                modifier = modifier.layoutId(FoodItemConstraintsTags.addToCartButton)
             ) {
                 Icon(
                     Icons.Rounded.ShoppingCart,

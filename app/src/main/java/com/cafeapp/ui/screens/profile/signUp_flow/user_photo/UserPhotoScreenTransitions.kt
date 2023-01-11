@@ -18,7 +18,7 @@ object UserPhotoScreenTransitions : DestinationStyle.Animated {
         return when (initialState.appDestination()) {
             UserDataScreenDestination -> slideIntoContainer(
                 towards = AnimatedContentScope.SlideDirection.Left,
-                animationSpec = tween(AnimationsConst.transitionsDuration)
+                animationSpec = tween(AnimationsConst.enterTransitionsDuration)
             )
             else -> null
         }
@@ -36,11 +36,11 @@ object UserPhotoScreenTransitions : DestinationStyle.Animated {
         return when (targetState.appDestination()) {
             UserDataScreenDestination -> slideOutOfContainer(
                 towards = AnimatedContentScope.SlideDirection.Right,
-                animationSpec = tween(AnimationsConst.transitionsDuration)
+                animationSpec = tween(AnimationsConst.exitTransitionsDuration)
             )
             ProfileScreenDestination -> slideOutOfContainer(
                 towards = AnimatedContentScope.SlideDirection.Right,
-                animationSpec = tween(AnimationsConst.transitionsDuration)
+                animationSpec = tween(AnimationsConst.exitTransitionsDuration)
             )
             else -> null
         }

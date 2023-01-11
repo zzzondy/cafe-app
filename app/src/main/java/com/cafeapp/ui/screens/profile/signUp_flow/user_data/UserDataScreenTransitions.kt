@@ -1,13 +1,11 @@
 package com.cafeapp.ui.screens.profile.signUp_flow.user_data
 
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.navigation.NavBackStackEntry
 import com.cafeapp.ui.screens.appDestination
 import com.cafeapp.ui.screens.destinations.SignUpScreenDestination
+import com.cafeapp.ui.screens.destinations.UserPhotoScreenDestination
 import com.cafeapp.ui.util.AnimationsConst
 import com.ramcosta.composedestinations.spec.DestinationStyle
 
@@ -17,25 +15,35 @@ object UserDataScreenTransitions : DestinationStyle.Animated {
         return when (initialState.appDestination()) {
             SignUpScreenDestination -> slideIntoContainer(
                 towards = AnimatedContentScope.SlideDirection.Left,
-                animationSpec = tween(AnimationsConst.transitionsDuration)
+                animationSpec = tween(AnimationsConst.enterTransitionsDuration)
             )
             else -> null
         }
     }
 
     override fun AnimatedContentScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
-        return null
+        return when (targetState.appDestination()) {
+            UserPhotoScreenDestination -> fadeOut(
+                animationSpec = tween(AnimationsConst.exitTransitionsDuration)
+            )
+            else -> null
+        }
     }
 
     override fun AnimatedContentScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
-        return null
+        return when (initialState.appDestination()) {
+            UserPhotoScreenDestination -> fadeIn(
+                animationSpec = tween(AnimationsConst.enterTransitionsDuration)
+            )
+            else -> null
+        }
     }
 
     override fun AnimatedContentScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
         return when (targetState.appDestination()) {
             SignUpScreenDestination -> slideOutOfContainer(
                 towards = AnimatedContentScope.SlideDirection.Right,
-                animationSpec = tween(AnimationsConst.transitionsDuration)
+                animationSpec = tween(AnimationsConst.exitTransitionsDuration)
             )
             else -> null
         }

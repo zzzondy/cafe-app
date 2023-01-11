@@ -154,9 +154,6 @@ fun UserPhotoScreen(
                 )
             }
         }
-        if (loadingState == LoadingState.Loading) {
-            CircularProgressIndicator()
-        }
     }
 }
 

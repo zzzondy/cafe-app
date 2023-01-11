@@ -1,8 +1,6 @@
 package com.cafeapp.ui.screens.food_list
 
 
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,8 +20,10 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.cafeapp.R
 import com.cafeapp.domain.models.Food
-import com.cafeapp.ui.util.AnimationsConst
 import com.cafeapp.ui.util.UiText
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.fade
+import com.google.accompanist.placeholder.material.placeholder
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -60,14 +60,26 @@ fun FoodListScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FoodList(foodList: LazyPagingItems<Food>, modifier: Modifier = Modifier) {
     foodList.apply {
         when (loadState.refresh) {
             is LoadState.Loading -> {
-                Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(FoodListConfig.GRID_CELLS_COUNT),
+                    modifier = modifier.fillMaxSize(),
+                    userScrollEnabled = false
+                ) {
+                    items(FoodListConfig.PLACEHOLDER_ELEMENTS_COUNT, key = { it }) {
+                        FoodItem(food = null, modifier = Modifier
+                            .placeholder(
+                                visible = true,
+                                color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
+                                shape = MaterialTheme.shapes.medium,
+                                highlight = PlaceholderHighlight.fade()
+                            )
+                        )
+                    }
                 }
             }
             is LoadState.Error -> {
@@ -80,10 +92,9 @@ fun FoodList(foodList: LazyPagingItems<Food>, modifier: Modifier = Modifier) {
                     columns = GridCells.Fixed(FoodListConfig.GRID_CELLS_COUNT),
                     modifier = modifier.fillMaxSize()
                 ) {
-                    items(foodList.itemCount, key = { foodList[it]?.id ?: "1" }) { index ->
+                    items(foodList.itemCount, key = { foodList[it]?.id ?: Unit }) { index ->
                         FoodItem(
-                            food = foodList[index],
-                            modifier = Modifier.animateItemPlacement(tween(AnimationsConst.transitionsDuration))
+                            food = foodList[index]
                         )
                     }
 
@@ -120,4 +131,5 @@ fun FoodList(foodList: LazyPagingItems<Food>, modifier: Modifier = Modifier) {
 
 private object FoodListConfig {
     const val GRID_CELLS_COUNT = 2
+    const val PLACEHOLDER_ELEMENTS_COUNT = 4
 }

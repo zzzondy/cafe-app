@@ -31,13 +31,13 @@ import com.cafeapp.ui.screens.profile.main.states.UserAuthState
 import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.ui.util.UiText
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination(style = ProfileScreenTransitions::class)
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel = hiltViewModel(),
@@ -187,7 +187,7 @@ private fun AuthenticatedStateScreen(
                 .placeholder(
                     visible = skeletonLoadingState,
                     shape = CircleShape,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                     color = MaterialTheme.colorScheme.secondaryContainer
                 ),
             contentScale = ContentScale.Crop,
@@ -206,7 +206,7 @@ private fun AuthenticatedStateScreen(
             modifier = Modifier
                 .placeholder(
                     visible = skeletonLoadingState,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                     color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
                     shape = ShapeDefaults.Small
                 )
@@ -219,7 +219,7 @@ private fun AuthenticatedStateScreen(
             modifier = Modifier
                 .placeholder(
                     visible = skeletonLoadingState,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                     color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
                     shape = ShapeDefaults.Small
                 )

@@ -21,6 +21,7 @@ import com.cafeapp.ui.screens.appCurrentDestinationAsState
 import com.cafeapp.ui.screens.profile.signUp_flow.SignUpSharedViewModel
 import com.cafeapp.ui.screens.route.BottomBarDestinations
 import com.cafeapp.ui.screens.startAppDestination
+import com.cafeapp.ui.util.AnimationsConst
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
@@ -39,10 +40,10 @@ fun MainScreen() {
     val animatedNavHostEngine = rememberAnimatedNavHostEngine(
         navHostContentAlignment = Alignment.TopCenter,
         rootDefaultAnimations = RootNavGraphDefaultAnimations(
-            enterTransition = { fadeIn(tween(300)) },
-            exitTransition = { fadeOut(tween(300)) },
-            popEnterTransition = { fadeIn(tween(300)) },
-            popExitTransition = { fadeOut(tween(300)) }
+            enterTransition = { fadeIn(tween(AnimationsConst.enterTransitionsDuration)) },
+            exitTransition = { fadeOut(tween(AnimationsConst.exitTransitionsDuration)) },
+            popEnterTransition = { fadeIn(tween(AnimationsConst.enterTransitionsDuration)) },
+            popExitTransition = { fadeOut(tween(AnimationsConst.exitTransitionsDuration)) }
         )
     )
     Scaffold(
@@ -82,8 +83,14 @@ fun BottomNavigationBar(navController: NavController) {
     val bottomBarItems = BottomBarDestinations.values()
     AnimatedVisibility(
         visible = bottomBarItems.any { it.direction == currentDestination },
-        enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(300)),
-        exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(300))
+        enter = slideInVertically(
+            initialOffsetY = { it },
+            animationSpec = tween(AnimationsConst.enterTransitionsDuration)
+        ),
+        exit = slideOutVertically(
+            targetOffsetY = { it },
+            animationSpec = tween(AnimationsConst.exitTransitionsDuration)
+        )
     ) {
         NavigationBar {
             bottomBarItems.forEach { destination ->
@@ -99,7 +106,10 @@ fun BottomNavigationBar(navController: NavController) {
                         }
                     },
                     icon = {
-                        Icon(imageVector = destination.icon, contentDescription = null)
+                        Icon(
+                            imageVector = destination.icon,
+                            contentDescription = stringResource(destination.label)
+                        )
                     },
                     label = {
                         Text(text = stringResource(id = destination.label))

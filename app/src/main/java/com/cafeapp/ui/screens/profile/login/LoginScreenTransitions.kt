@@ -17,7 +17,7 @@ object LoginScreenTransitions : DestinationStyle.Animated {
         return when (initialState.appDestination()) {
             ProfileScreenDestination -> slideIntoContainer(
                 towards = AnimatedContentScope.SlideDirection.Left,
-                animationSpec = tween(AnimationsConst.transitionsDuration)
+                animationSpec = tween(AnimationsConst.enterTransitionsDuration)
             )
             else -> null
         }
@@ -35,9 +35,8 @@ object LoginScreenTransitions : DestinationStyle.Animated {
         return when (targetState.appDestination()) {
             ProfileScreenDestination -> slideOutOfContainer(
                 towards = AnimatedContentScope.SlideDirection.Right,
-                animationSpec = tween(AnimationsConst.transitionsDuration)
+                animationSpec = tween(AnimationsConst.exitTransitionsDuration)
             )
-
             else -> null
         }
     }
