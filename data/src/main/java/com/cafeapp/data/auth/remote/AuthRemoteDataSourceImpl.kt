@@ -34,7 +34,7 @@ class AuthRemoteDataSourceImpl(
             val userProfileUpdate = userProfileChangeRequest {
                 displayName = "$firstName $lastName"
             }
-            firebaseAuth.currentUser!!.updateProfile(userProfileUpdate)
+            firebaseAuth.currentUser!!.updateProfile(userProfileUpdate).await()
             if (photo != null) {
                 changeUserPhoto(photo)
             }

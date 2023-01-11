@@ -1,5 +1,6 @@
 package com.cafeapp.ui.screens.profile.main
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -11,17 +12,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.cafeapp.R
 import com.cafeapp.domain.models.User
 import com.cafeapp.ui.screens.destinations.LoginScreenDestination
@@ -35,6 +35,11 @@ import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.animation.crossfade.CrossfadePlugin
+import com.skydoves.landscapist.coil.CoilImage
+import com.skydoves.landscapist.coil.CoilImageState
+import com.skydoves.landscapist.components.rememberImageComponent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination(style = ProfileScreenTransitions::class)
@@ -155,6 +160,8 @@ private fun AuthenticatedStateScreen(
                 start.linkTo(parent.start, 16.dp)
                 end.linkTo(parent.end, 16.dp)
                 top.linkTo(parent.top, 16.dp)
+                width = Dimension.value(150.dp)
+                height = Dimension.value(150.dp)
             }
 
             constrain(userName) {
@@ -172,28 +179,47 @@ private fun AuthenticatedStateScreen(
         modifier = Modifier.fillMaxWidth()
     ) {
 
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(user.photoUrl)
-                .error(R.drawable.ic_round_person_24)
-                .crossfade(true)
-                .build(),
-            contentDescription = stringResource(id = R.string.user_photo),
+        CoilImage(
+            imageModel = { user.photoUrl },
+            imageOptions = ImageOptions(contentDescription = stringResource(R.string.user_photo)),
+            component = rememberImageComponent {
+                +CrossfadePlugin()
+            },
+            failure = {
+                Image(
+                    painter = painterResource(R.drawable.ic_round_person_24),
+                    contentDescription = stringResource(R.string.user_photo),
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clip(CircleShape),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                )
+            },
             modifier = Modifier
                 .layoutId(AuthenticatedStateScreenTags.userPicture)
-                .height(150.dp)
-                .width(150.dp)
                 .clip(CircleShape)
                 .placeholder(
                     visible = skeletonLoadingState,
                     shape = CircleShape,
                     highlight = PlaceholderHighlight.fade(),
-                    color = MaterialTheme.colorScheme.secondaryContainer
+                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
                 ),
-            contentScale = ContentScale.Crop,
-            onLoading = { skeletonLoadingState = true },
-            onError = { skeletonLoadingState = false },
-            onSuccess = { skeletonLoadingState = false },
+            onImageStateChanged = { state ->
+                skeletonLoadingState = when (state) {
+                    is CoilImageState.Loading -> {
+                        true
+                    }
+                    is CoilImageState.Success -> {
+                        false
+                    }
+                    is CoilImageState.Failure -> {
+                        false
+                    }
+                    is CoilImageState.None -> {
+                        true
+                    }
+                }
+            }
         )
 
         Text(
@@ -207,7 +233,7 @@ private fun AuthenticatedStateScreen(
                 .placeholder(
                     visible = skeletonLoadingState,
                     highlight = PlaceholderHighlight.fade(),
-                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
+                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
                     shape = ShapeDefaults.Small
                 )
                 .layoutId(AuthenticatedStateScreenTags.userName)
@@ -220,7 +246,7 @@ private fun AuthenticatedStateScreen(
                 .placeholder(
                     visible = skeletonLoadingState,
                     highlight = PlaceholderHighlight.fade(),
-                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
+                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
                     shape = ShapeDefaults.Small
                 )
                 .layoutId(AuthenticatedStateScreenTags.userEmail)

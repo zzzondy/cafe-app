@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
@@ -124,7 +125,8 @@ private fun LoginScreenPart(
             ),
             modifier = Modifier
                 .size(192.dp)
-                .padding(bottom = 64.dp),
+                .padding(bottom = 64.dp)
+                .scale(1f),
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
         )
 

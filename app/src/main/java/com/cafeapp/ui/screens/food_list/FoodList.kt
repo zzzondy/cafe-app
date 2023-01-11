@@ -26,14 +26,12 @@ import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RootNavGraph(start = true)
 @Destination
 @Composable
 fun FoodListScreen(
-    navigator: DestinationsNavigator,
     foodListViewModel: FoodListViewModel = hiltViewModel()
 ) {
     val scrollBehavior =

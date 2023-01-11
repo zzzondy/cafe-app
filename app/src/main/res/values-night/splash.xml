@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.CafeApp.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#FFFDFDF6</item>
+        <item name="windowSplashScreenBackground">#FF1A1C18</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_app_logo_splash</item>
         <item name="postSplashScreenTheme">@style/Theme.CafeApp</item>
     </style>

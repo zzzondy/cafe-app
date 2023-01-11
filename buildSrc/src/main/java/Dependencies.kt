@@ -79,13 +79,7 @@ object Dependencies {
 
         const val bom = "com.github.skydoves:landscapist-bom:$landscapistVersion"
         const val coil = "com.github.skydoves:landscapist-coil"
-        const val glide = "com.github.skydoves:landscapist-glide"
-        const val placeholders = "com.github.skydoves:landscapist-placeholder"
         const val animation = "com.github.skydoves:landscapist-animation"
-    }
-
-    object Coil {
-        const val compose = "io.coil-kt:coil-compose:2.2.2"
     }
 
     object Accompanist {

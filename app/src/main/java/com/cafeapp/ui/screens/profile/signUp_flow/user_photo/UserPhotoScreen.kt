@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -17,7 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -27,8 +28,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.cafeapp.R
 import com.cafeapp.ui.components.LoadingDialog
 import com.cafeapp.ui.screens.destinations.ProfileScreenDestination
@@ -39,6 +38,8 @@ import com.cafeapp.ui.screens.profile.states.LoadingState
 import com.cafeapp.ui.util.UiText
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil.CoilImage
 import java.io.ByteArrayOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -161,15 +162,21 @@ fun UserPhotoScreen(
 fun ImageSection(selectedImageUri: Uri?, onClearImage: () -> Unit, modifier: Modifier = Modifier) {
     Box(contentAlignment = Alignment.TopEnd, modifier = modifier) {
 
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(selectedImageUri)
-                .error(R.drawable.ic_round_image_24)
-                .crossfade(true)
-                .build(),
-            contentDescription = stringResource(R.string.profile_photo),
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(R.drawable.ic_round_image_24),
+        CoilImage(
+            imageModel = { selectedImageUri },
+            imageOptions = ImageOptions(contentDescription = stringResource(R.string.profile_photo)),
+            failure = {
+                Image(
+                    painter = painterResource(R.drawable.ic_round_image_24),
+                    contentDescription = stringResource(
+                        R.string.profile_photo
+                    ),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primaryContainer),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)

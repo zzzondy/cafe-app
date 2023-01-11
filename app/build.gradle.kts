@@ -20,7 +20,7 @@ kotlin {
 
 android {
     namespace = "com.cafeapp"
-    compileSdk = 33
+    compileSdk = Config.compileSdk
 
     defaultConfig {
         applicationId = Config.applicationId
@@ -137,12 +137,7 @@ dependencies {
     // Landscapist
     implementation(Dependencies.Landscapist.bom)
     implementation(Dependencies.Landscapist.coil)
-    implementation(Dependencies.Landscapist.glide)
     implementation(Dependencies.Landscapist.animation)
-    implementation(Dependencies.Landscapist.placeholders)
-
-    // Coil
-    implementation(Dependencies.Coil.compose)
 
     // Coroutines
     implementation(Dependencies.Coroutines.firebaseCoroutines)
