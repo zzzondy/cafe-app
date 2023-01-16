@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
@@ -22,6 +23,8 @@ import com.cafeapp.R
 import com.cafeapp.domain.models.Food
 import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.ui.util.UiText
+import com.cafeapp.ui.util.dpToPx
+import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,8 +52,6 @@ fun FoodItem(
                     start.linkTo(parent.start, 0.dp)
                     end.linkTo(parent.end, 0.dp)
                     top.linkTo(parent.top, 0.dp)
-                    width = Dimension.fillToConstraints
-                    height = Dimension.value(150.dp)
                 }
 
                 constrain(name) {
@@ -76,7 +77,14 @@ fun FoodItem(
                 imageModel = { food?.imageUrl },
                 modifier = modifier
                     .layoutId(FoodItemConstraintsTags.foodImage)
-                    .clip(MaterialTheme.shapes.medium),
+                    .clip(MaterialTheme.shapes.medium)
+                    .size(height = 150.dp, width = 250.dp),
+                imageOptions = ImageOptions(
+                    requestSize = IntSize(
+                        width = 150.dp.dpToPx(),
+                        height = 250.dp.dpToPx()
+                    )
+                )
             )
 
             Text(
