@@ -135,6 +135,9 @@ dependencies {
     // Splash screen
     implementation(Dependencies.Compose.splashScreen)
 
+    // Room
+    implementation(Dependencies.Room.runtime)
+
     // Domain
     implementation(project(Modules.domain))
 

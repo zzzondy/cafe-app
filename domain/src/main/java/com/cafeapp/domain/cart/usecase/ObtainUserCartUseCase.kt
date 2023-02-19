@@ -12,7 +12,7 @@ class ObtainUserCartUseCase(
         return if (userManager.currentUser != null) {
             cartRepository.getUserCart(userManager.currentUser!!.id)
         } else {
-            ObtainingCartResult.Success(emptyList())
+            cartRepository.getLocalUserCart()
         }
     }
 }

@@ -13,7 +13,7 @@ class DeleteFoodFromCartUseCase(
         return if (userManager.currentUser != null) {
             cartRepository.deleteFoodFromCart(userManager.currentUser!!.id, food.id)
         } else {
-            TODO()
+            cartRepository.deleteFoodFromLocalCart(food.id)
         }
     }
 }

@@ -1,6 +1,7 @@
 plugins {
     id(Plugins.androidLibrary)
     id(Plugins.kotlinAndroid)
+    id(Plugins.ksp) version Plugins.kspVersion
 }
 
 android {
@@ -50,9 +51,16 @@ dependencies {
     // Paging
     implementation(Dependencies.Paging.common)
 
+    // Room
+    implementation(Dependencies.Room.runtime)
+    ksp(Dependencies.Room.compiler)
+    implementation(Dependencies.Room.ktx)
+
+    // Testing
     testImplementation(Dependencies.Testing.junit)
     androidTestImplementation(Dependencies.Testing.androidJUnit)
     androidTestImplementation(Dependencies.Testing.espresso)
+
 
     // Domain
     implementation(project(":domain"))

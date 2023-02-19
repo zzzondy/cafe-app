@@ -6,6 +6,7 @@ import androidx.paging.cachedIn
 import com.cafeapp.core.providers.dispatchers.DispatchersProvider
 import com.cafeapp.domain.cart.usecase.AddFoodToCartUseCase
 import com.cafeapp.domain.food_list.usecase.GetPagedFoodListUseCase
+import com.cafeapp.domain.models.Food
 import com.cafeapp.ui.screens.food_list.main.states.FoodListEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.flowOn
@@ -22,13 +23,13 @@ class FoodListViewModel @Inject constructor(
 
     fun onEvent(event: FoodListEvent) {
         when (event) {
-            is FoodListEvent.AddFoodToCart -> addFoodToCart(event.foodId)
+            is FoodListEvent.AddFoodToCart -> addFoodToCart(event.food)
         }
     }
 
-    private fun addFoodToCart(foodId: Long) {
+    private fun addFoodToCart(food: Food) {
         viewModelScope.launch(dispatchersProvider.io) {
-            addFoodToCartUseCase(foodId)
+            addFoodToCartUseCase(food)
         }
     }
 }

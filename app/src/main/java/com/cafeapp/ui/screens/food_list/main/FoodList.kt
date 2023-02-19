@@ -100,7 +100,7 @@ fun FoodList(
                     items(foodList.itemCount, key = { foodList[it]?.id ?: Unit }) { index ->
                         FoodItem(
                             food = foodList[index],
-                            onAddToCart = { onEvent(FoodListEvent.AddFoodToCart(foodList[index]!!.id)) }
+                            onAddToCart = { onEvent(FoodListEvent.AddFoodToCart(foodList[index]!!)) }
                         )
                     }
 

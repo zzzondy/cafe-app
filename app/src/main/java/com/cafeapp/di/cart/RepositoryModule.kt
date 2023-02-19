@@ -1,5 +1,6 @@
 package com.cafeapp.di.cart
 
+import com.cafeapp.data.cart.local.repository.LocalCartRepository
 import com.cafeapp.data.cart.remote.RemoteCartRepository
 import com.cafeapp.data.cart.repository.CartRepositoryImpl
 import com.cafeapp.domain.cart.repository.CartRepository
@@ -15,6 +16,9 @@ class RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideCartRepository(remoteCartRepository: RemoteCartRepository): CartRepository =
-        CartRepositoryImpl(remoteCartRepository)
+    fun provideCartRepository(
+        remoteCartRepository: RemoteCartRepository,
+        localCartRepository: LocalCartRepository
+    ): CartRepository =
+        CartRepositoryImpl(remoteCartRepository, localCartRepository)
 }

@@ -1,5 +1,6 @@
 package com.cafeapp.data.cart.util
 
+import com.cafeapp.data.cart.local.models.LocalCartFood
 import com.cafeapp.data.cart.remote.models.CartRemoteFood
 import com.cafeapp.data.cart.remote.states.RemoteCartTransactionsResult
 import com.cafeapp.data.cart.remote.states.RemoteIncrementResult
@@ -32,5 +33,10 @@ fun RemoteIncrementResult.toDomain(): IncrementResult {
         is RemoteIncrementResult.OtherError -> IncrementResult.OtherError
     }
 }
+
+fun LocalCartFood.toDomainWithCount(): Pair<Food, Int> = this.toDomain() to count
+private fun LocalCartFood.toDomain(): Food = Food(id, name, price, description, imageUrl)
+
+fun Food.toLocalCartFood(): LocalCartFood = LocalCartFood(id, name, description, price, imageUrl)
 
 private fun CartRemoteFood.toDomain(): Food = Food(id, name, price, description, imageUrl)
