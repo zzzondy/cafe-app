@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.cafeapp.core.providers.dispatchers.DispatchersProvider
 import com.cafeapp.domain.auth.states.SignInResult
 import com.cafeapp.domain.auth.usecase.SignInUserUseCase
+import com.cafeapp.ui.common.states.LoadingState
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenEvent
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenState
-import com.cafeapp.ui.screens.profile.states.LoadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

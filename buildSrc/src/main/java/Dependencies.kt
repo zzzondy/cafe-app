@@ -1,12 +1,12 @@
 object Dependencies {
     object Compose {
-        const val composeVersion = "1.3.2"
-        private const val composeBOMVersion = "2022.12.00"
+        const val composeVersion = "1.4.2"
+        private const val composeBOMVersion = "2023.01.00"
 
         // UI
         const val bom = "androidx.compose:compose-bom:$composeBOMVersion"
         const val ui = "androidx.compose.ui:ui"
-        const val material = "androidx.compose.material3:material3"
+        const val material = "androidx.compose.material3:material3:1.1.0-alpha06"
 
         // Tooling
         const val composeToolingPreview = "androidx.compose.ui:ui-tooling-preview"
@@ -39,7 +39,7 @@ object Dependencies {
     }
 
     object ComposeDestinations {
-        private const val composeDestinationsVersion = "1.7.27-beta"
+        private const val composeDestinationsVersion = "1.8.33-beta"
 
         const val core = "io.github.raamcosta.compose-destinations:core:$composeDestinationsVersion"
         const val ksp = "io.github.raamcosta.compose-destinations:ksp:$composeDestinationsVersion"
@@ -88,12 +88,6 @@ object Dependencies {
         const val placeholder =
             "com.google.accompanist:accompanist-placeholder-material:$accompanistVersion"
 
-        const val flowLayouts = "com.google.accompanist:accompanist-flowlayout:$accompanistVersion"
         const val systemUiController = "com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion"
-    }
-
-    object Coroutines {
-        const val firebaseCoroutines =
-            "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1"
     }
 }

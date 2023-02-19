@@ -37,18 +37,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
 import com.cafeapp.domain.auth.states.validation.ValidationEmailResult
 import com.cafeapp.domain.auth.states.validation.ValidationPasswordResult
-import com.cafeapp.ui.components.LoadingDialog
+import com.cafeapp.ui.common.LoadingDialog
 import com.cafeapp.ui.screens.destinations.UserDataScreenDestination
 import com.cafeapp.ui.screens.profile.signUp_flow.SignUpSharedViewModel
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEvent
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenState
-import com.cafeapp.ui.screens.profile.states.LoadingState
+import com.cafeapp.ui.common.states.LoadingState
 import com.cafeapp.ui.theme.CafeAppTheme
-import com.cafeapp.ui.util.UiText
+import com.cafeapp.core.util.UiText
+import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SignUpFlowNavGraph(start = true)
 @Destination(style = SignUpScreenTransitions::class)
 @Composable
 fun SignUpScreen(

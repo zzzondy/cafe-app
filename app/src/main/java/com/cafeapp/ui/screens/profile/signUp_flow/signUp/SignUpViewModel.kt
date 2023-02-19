@@ -11,7 +11,7 @@ import com.cafeapp.domain.auth.usecase.validation.ValidateEmailUseCase
 import com.cafeapp.domain.auth.usecase.validation.ValidatePasswordUseCase
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEvent
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenState
-import com.cafeapp.ui.screens.profile.states.LoadingState
+import com.cafeapp.ui.common.states.LoadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

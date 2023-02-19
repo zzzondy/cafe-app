@@ -7,7 +7,7 @@ import com.cafeapp.domain.auth.states.SignUpResult
 import com.cafeapp.domain.auth.usecase.SignUpUserUseCase
 import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenEvent
 import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenState
-import com.cafeapp.ui.screens.profile.states.LoadingState
+import com.cafeapp.ui.common.states.LoadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

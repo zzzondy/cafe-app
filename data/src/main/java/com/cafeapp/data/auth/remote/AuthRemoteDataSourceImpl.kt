@@ -9,15 +9,17 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 
 class AuthRemoteDataSourceImpl(
     private val firebaseAuth: FirebaseAuth,
-    private val firebaseStorage: FirebaseStorage
+    private val firebaseStorage: FirebaseStorage,
+    private val firestore: FirebaseFirestore
 ) : AuthRemoteDataSource {
-    override var user: RemoteUser? = null
-        get() = firebaseAuth.currentUser?.toRemoteUser()
+    override var user: RemoteUser? = firebaseAuth.currentUser?.toRemoteUser()
 
     override suspend fun signUpUser(
         email: String,
@@ -38,7 +40,8 @@ class AuthRemoteDataSourceImpl(
             if (photo != null) {
                 changeUserPhoto(photo)
             }
-            RemoteSignUpResult.Success(createdUser!!.toRemoteUser())
+            createCartForUser(createdUser!!.uid)
+            RemoteSignUpResult.Success(createdUser.toRemoteUser())
         } catch (e: FirebaseNetworkException) {
             RemoteSignUpResult.NetworkUnavailableError
         } catch (e: Exception) {
@@ -90,6 +93,20 @@ class AuthRemoteDataSourceImpl(
         firebaseAuth.currentUser!!.updateProfile(profileUpdates).await()
     }
 
+    private suspend fun createCartForUser(userId: String) {
+        val docData = hashMapOf<String, Any>(
+            CART to listOf<Any>()
+        )
+        firestore.collection(USER_COLLECTION).document(userId)
+            .set(docData, SetOptions.merge())
+            .await()
+    }
+
     private fun FirebaseUser.toRemoteUser(): RemoteUser =
         RemoteUser(uid, email!!, photoUrl?.toString(), displayName)
+
+    companion object {
+        private const val CART = "cart"
+        private const val USER_COLLECTION = "user"
+    }
 }

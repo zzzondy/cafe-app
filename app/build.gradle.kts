@@ -84,18 +84,17 @@ dependencies {
     implementation(Dependencies.Lifecycle.lifecycleRuntime)
     implementation(Dependencies.Lifecycle.activity)
 
-    // BOM
+    // Compose BOM
     implementation(platform(Dependencies.Compose.bom))
     androidTestImplementation(platform(Dependencies.Compose.bom))
 
     // Ui
     implementation(Dependencies.Compose.ui)
-    implementation(Dependencies.Compose.material)
+    implementation("androidx.compose.material3:material3:1.1.0-alpha06")
     implementation(Dependencies.Compose.constraintLayout)
 
     // Accompanist
     implementation(Dependencies.Accompanist.placeholder)
-    implementation(Dependencies.Accompanist.flowLayouts)
     implementation(Dependencies.Accompanist.systemUiController)
 
     // Compose tooling
@@ -112,12 +111,6 @@ dependencies {
     // Compose Destinations
     implementation(Dependencies.ComposeDestinations.animationsCore)
     ksp(Dependencies.ComposeDestinations.ksp)
-
-    // Domain
-    implementation(project(":domain"))
-
-    // Data
-    implementation(project(":data"))
 
     // Hilt
     implementation(Dependencies.Hilt.hilt)
@@ -139,10 +132,14 @@ dependencies {
     implementation(Dependencies.Landscapist.coil)
     implementation(Dependencies.Landscapist.animation)
 
-    // Coroutines
-    implementation(Dependencies.Coroutines.firebaseCoroutines)
-
     // Splash screen
     implementation(Dependencies.Compose.splashScreen)
+
+    // Domain
+    implementation(project(Modules.domain))
+
+    // Data
+    implementation(project(Modules.data))
+
 
 }

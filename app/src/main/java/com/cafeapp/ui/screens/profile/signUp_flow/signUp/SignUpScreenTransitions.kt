@@ -5,7 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.navigation.NavBackStackEntry
 import com.cafeapp.ui.screens.appDestination
 import com.cafeapp.ui.screens.destinations.ProfileScreenDestination
-import com.cafeapp.ui.util.AnimationsConst
+import com.cafeapp.core.util.AnimationsConst
 import com.ramcosta.composedestinations.spec.DestinationStyle
 
 @OptIn(ExperimentalAnimationApi::class)

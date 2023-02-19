@@ -35,16 +35,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.ui.components.LoadingDialog
+import com.cafeapp.ui.common.LoadingDialog
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenEvent
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenState
-import com.cafeapp.ui.screens.profile.states.LoadingState
+import com.cafeapp.ui.common.states.LoadingState
 import com.cafeapp.ui.theme.CafeAppTheme
-import com.cafeapp.ui.util.UiText
+import com.cafeapp.core.util.UiText
+import com.cafeapp.ui.screens.profile.ProfileNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
+@ProfileNavGraph
 @Destination(style = LoginScreenTransitions::class)
 @Composable
 fun LoginScreen(

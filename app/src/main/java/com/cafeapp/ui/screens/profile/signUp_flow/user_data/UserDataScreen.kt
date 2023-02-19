@@ -28,11 +28,13 @@ import com.cafeapp.ui.screens.profile.signUp_flow.SignUpSharedViewModel
 import com.cafeapp.ui.screens.profile.signUp_flow.user_data.states.UserDataScreenEvent
 import com.cafeapp.ui.screens.profile.signUp_flow.user_data.utils.PHONE_MASK
 import com.cafeapp.ui.screens.profile.signUp_flow.user_data.utils.PhoneVisualTransformation
-import com.cafeapp.ui.util.UiText
+import com.cafeapp.core.util.UiText
+import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SignUpFlowNavGraph
 @Destination(style = UserDataScreenTransitions::class)
 @Composable
 fun UserDataScreen(

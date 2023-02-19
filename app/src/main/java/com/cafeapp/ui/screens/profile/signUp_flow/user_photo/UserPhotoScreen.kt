@@ -29,13 +29,14 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.ui.components.LoadingDialog
+import com.cafeapp.ui.common.LoadingDialog
 import com.cafeapp.ui.screens.destinations.ProfileScreenDestination
 import com.cafeapp.ui.screens.profile.signUp_flow.SignUpSharedViewModel
 import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenEvent
 import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenState
-import com.cafeapp.ui.screens.profile.states.LoadingState
-import com.cafeapp.ui.util.UiText
+import com.cafeapp.ui.common.states.LoadingState
+import com.cafeapp.core.util.UiText
+import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.skydoves.landscapist.ImageOptions
@@ -43,6 +44,7 @@ import com.skydoves.landscapist.coil.CoilImage
 import java.io.ByteArrayOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SignUpFlowNavGraph
 @Destination(style = UserPhotoScreenTransitions::class)
 @Composable
 fun UserPhotoScreen(
@@ -115,7 +117,10 @@ fun UserPhotoScreen(
             item {
                 ImageSection(
                     selectedImageUri = selectedImageUri,
-                    onClearImage = { selectedImageUri = null },
+                    onClearImage = {
+                        selectedImageUri = null
+                        signUpSharedViewModel.updatePhotoUri(null)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, top = 16.dp)
