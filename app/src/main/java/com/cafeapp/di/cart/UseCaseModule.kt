@@ -51,4 +51,11 @@ class UseCaseModule {
         cartRepository: CartRepository,
         userManager: UserManager
     ): DeleteFoodFromCartUseCase = DeleteFoodFromCartUseCase(userManager, cartRepository)
+
+    @ViewModelScoped
+    @Provides
+    fun provideDeleteSelectedFoodUseCase(
+        cartRepository: CartRepository,
+        userManager: UserManager
+    ): DeleteSelectedFoodUseCase = DeleteSelectedFoodUseCase(userManager, cartRepository)
 }

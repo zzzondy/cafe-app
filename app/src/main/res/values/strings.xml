@@ -50,7 +50,8 @@
     <string name="are_you_sure_you_want_to_exit">Are you sure you want to sign out?</string>
     <string name="cancel">Cancel</string>
     <string name="about_app">About app</string>
-    <string name="your_cart_is_empty">Your cart is empty. Add some food to make order.</string>
+    <string name="your_cart_is_empty">Your cart is empty</string>
+    <string name="add_something_to_cart">Add something to make order</string>
     <string name="make_order">Checkout</string>
     <string name="remove_food">Remove food button</string>
     <string name="add_food">Add food button</string>

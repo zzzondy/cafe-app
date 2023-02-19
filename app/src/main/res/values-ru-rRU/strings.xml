@@ -51,7 +51,7 @@
     <string name="are_you_sure_you_want_to_exit">Вы действительно хотите выйти?</string>
     <string name="cancel">Отмена</string>
     <string name="about_app">О приложении</string>
-    <string name="your_cart_is_empty">Ваша корзина пуста. Добавьте что-нибудь, чтобы сделать заказ.</string>
+    <string name="your_cart_is_empty">Ваша корзина пуста</string>
     <string name="make_order">Сделать заказ</string>
     <string name="remove_food">Кнопка убрать еду</string>
     <string name="add_food">Кнопка добавить еду</string>
@@ -60,4 +60,5 @@
     <string name="menu">Меню</string>
     <string name="select_all">Выбрать все</string>
     <string name="delete_selected">Удалить выбранное</string>
+    <string name="add_something_to_cart">Добавьте что-нибудь, чтобы сделать заказ</string>
 </resources>

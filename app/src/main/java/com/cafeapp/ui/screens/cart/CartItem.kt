@@ -33,6 +33,7 @@ import com.cafeapp.core.util.UiText
 import com.cafeapp.core.util.dpToPx
 import com.cafeapp.domain.models.Food
 import com.cafeapp.ui.theme.CafeAppTheme
+import com.cafeapp.ui.theme.LocalImageLoader
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.launch
@@ -159,7 +160,8 @@ fun CartItem(
                         modifier = modifier
                             .layoutId(CartItemConstraintTags.foodImage)
                             .clip(MaterialTheme.shapes.medium)
-                            .size(80.dp)
+                            .size(80.dp),
+                        imageLoader = { LocalImageLoader.current }
                     )
 
                     Text(

@@ -35,4 +35,10 @@ class CartRepositoryImpl(private val remoteCartRepository: RemoteCartRepository)
     override suspend fun deleteFoodFromCart(userId: String, foodId: Long): CartTransactionsResult {
         return remoteCartRepository.deleteFoodFromCart(userId, foodId).toDomain()
     }
+
+    override suspend fun deleteSelectedFoodFromCart(
+        userId: String,
+        foodIds: List<Long>
+    ): CartTransactionsResult =
+        remoteCartRepository.deleteSelectedFoodFromCart(userId, foodIds).toDomain()
 }

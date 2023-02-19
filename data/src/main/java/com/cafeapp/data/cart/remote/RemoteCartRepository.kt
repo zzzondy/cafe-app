@@ -10,4 +10,5 @@ interface RemoteCartRepository {
     suspend fun incrementItemsCount(userId: String, foodId: Long): RemoteIncrementResult
     suspend fun decrementItemsCount(userId: String, foodId: Long): RemoteIncrementResult
     suspend fun deleteFoodFromCart(userId: String, foodId: Long): RemoteCartTransactionsResult
+    suspend fun deleteSelectedFoodFromCart(userId: String, foodIds: List<Long>): RemoteCartTransactionsResult
 }

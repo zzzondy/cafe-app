@@ -24,6 +24,7 @@ class CartScreenViewModel @Inject constructor(
     private val incrementItemsCountUseCase: IncrementItemsCountUseCase,
     private val decrementItemsCountUseCase: DecrementItemsCountUseCase,
     private val deleteFoodFromCartUseCase: DeleteFoodFromCartUseCase,
+    private val deleteSelectedFoodUseCase: DeleteSelectedFoodUseCase,
     private val dispatchersProvider: DispatchersProvider
 ) :
     ViewModel() {
@@ -47,21 +48,27 @@ class CartScreenViewModel @Inject constructor(
             is CartScreenEvent.ScreenEntered -> {
                 getUserCart()
             }
+
             is CartScreenEvent.MakeOrderClicked -> {
                 makeOrder()
             }
+
             is CartScreenEvent.ItemSelected -> {
                 itemSelected(event.food)
             }
+
             is CartScreenEvent.DecrementItemsCount -> {
                 decrementItemsCount(event.foodId)
             }
+
             is CartScreenEvent.IncrementItemsCount -> {
                 incrementItemsCount(event.foodId)
             }
-            is CartScreenEvent.DeleteSelected -> {
 
+            is CartScreenEvent.DeleteSelected -> {
+                deleteSelectedFood()
             }
+
             is CartScreenEvent.DeleteFoodFromCart -> {
                 deleteFoodFromCart(event.food)
             }
@@ -106,9 +113,11 @@ class CartScreenViewModel @Inject constructor(
                     updateSelectedFoods(currentFoodList[index].first, result.count)
                     _cartScreenState.update { CartScreenState.FoodList(currentFoodList.toImmutableList()) }
                 }
+
                 is IncrementResult.NetworkError -> {
                     _cartScreenEffect.emit(CartScreenEffect.ShowNetworkErrorSnackBar)
                 }
+
                 is IncrementResult.OtherError -> {
                     _cartScreenEffect.emit(CartScreenEffect.ShowNetworkErrorSnackBar)
                 }
@@ -125,9 +134,11 @@ class CartScreenViewModel @Inject constructor(
                     updateSelectedFoods(currentFoodList[index].first, result.count)
                     _cartScreenState.update { CartScreenState.FoodList(currentFoodList.toImmutableList()) }
                 }
+
                 is IncrementResult.NetworkError -> {
                     _cartScreenEffect.emit(CartScreenEffect.ShowNetworkErrorSnackBar)
                 }
+
                 is IncrementResult.OtherError -> {
                     _cartScreenEffect.emit(CartScreenEffect.ShowNetworkErrorSnackBar)
                 }
@@ -148,9 +159,11 @@ class CartScreenViewModel @Inject constructor(
                             CartScreenState.EmptyFoodList
                         }
                     }
+
                     is ObtainingCartResult.NetworkError -> {
                         CartScreenState.EmptyFoodList
                     }
+
                     is ObtainingCartResult.OtherError -> {
                         CartScreenState.EmptyFoodList
                     }
@@ -173,11 +186,51 @@ class CartScreenViewModel @Inject constructor(
                     }
 
                     currentFoodList.removeAt(foodIndex)
-                    _cartScreenState.update { CartScreenState.FoodList(currentFoodList.toImmutableList()) }
+                    _cartScreenState.update {
+                        if (currentFoodList.isEmpty()) {
+                            CartScreenState.EmptyFoodList
+                        } else {
+                            CartScreenState.FoodList(currentFoodList.toImmutableList())
+                        }
+                    }
                 }
+
                 is CartTransactionsResult.NetworkError -> {
                     _cartScreenEffect.emit(CartScreenEffect.ShowNetworkErrorSnackBar)
                 }
+
+                is CartTransactionsResult.OtherError -> {
+                    _cartScreenEffect.emit(CartScreenEffect.ShowNetworkErrorSnackBar)
+                }
+            }
+        }
+    }
+
+    private fun deleteSelectedFood() {
+        viewModelScope.launch(dispatchersProvider.io) {
+            when (deleteSelectedFoodUseCase(selectedFoods)) {
+                is CartTransactionsResult.Success -> {
+                    selectedFoods.forEach { pair ->
+                        val foodIndex =
+                            currentFoodList.indexOfFirst { it.first.id == pair.first.id }
+                        currentFoodList.removeAt(foodIndex)
+                    }
+
+                    selectedFoods.clear()
+                    _currentTotal.update { calculateTotalUseCase(selectedFoods) }
+                    _cartScreenState.update {
+                        if (currentFoodList.isEmpty()) {
+                            CartScreenState.EmptyFoodList
+                        } else {
+                            CartScreenState.FoodList(currentFoodList.toImmutableList())
+                        }
+                    }
+                }
+
+                is CartTransactionsResult.NetworkError -> {
+                    _cartScreenEffect.emit(CartScreenEffect.ShowNetworkErrorSnackBar)
+                }
+
                 is CartTransactionsResult.OtherError -> {
                     _cartScreenEffect.emit(CartScreenEffect.ShowNetworkErrorSnackBar)
                 }

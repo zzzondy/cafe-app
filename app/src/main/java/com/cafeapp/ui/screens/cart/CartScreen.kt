@@ -63,7 +63,8 @@ fun CartScreen(cartScreenViewModel: CartScreenViewModel = hiltViewModel()) {
         topBar = {
             CartScreenTopAppBar(
                 title = UiText.StringResource(R.string.cart).asString(),
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                onDeleteSelected = { cartScreenViewModel.onEvent(CartScreenEvent.DeleteSelected) }
             )
         },
         modifier = Modifier.padding(bottom = 80.dp)
@@ -77,8 +78,13 @@ fun CartScreen(cartScreenViewModel: CartScreenViewModel = hiltViewModel()) {
         ) {
             when (screenState) {
                 is CartScreenState.EmptyFoodList -> {
-                    EmptyCartScreenState()
+                    EmptyCartScreenState(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                    )
                 }
+
                 is CartScreenState.FoodList -> {
                     NotEmptyCartScreenState(
                         listState = listState,
@@ -100,6 +106,7 @@ fun CartScreen(cartScreenViewModel: CartScreenViewModel = hiltViewModel()) {
                         }
                     )
                 }
+
                 is CartScreenState.IsLoading -> {
                     IsLoadingScreenState(
                         modifier = Modifier

@@ -4,9 +4,14 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import coil.ImageLoader
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val LightColors = lightColorScheme(
@@ -70,20 +75,24 @@ private val DarkColors = darkColorScheme(
     surfaceTint = md_theme_dark_surfaceTint,
 )
 
+val LocalImageLoader = staticCompositionLocalOf<ImageLoader> { error("No provided image loader") }
+
 @Composable
 fun CafeAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         darkTheme -> DarkColors
         else -> LightColors
     }
+
     val systemUiController = rememberSystemUiController()
     SideEffect {
         systemUiController.setSystemBarsColor(
@@ -93,9 +102,25 @@ fun CafeAppTheme(
         )
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = AppTypography,
-        content = content
-    )
+    val imageLoader = ImageLoader.Builder(context)
+        .memoryCache {
+            MemoryCache.Builder(context)
+                .maxSizePercent(0.25)
+                .build()
+        }
+        .diskCache {
+            DiskCache.Builder()
+                .directory(context.cacheDir.resolve("image_cache"))
+                .maxSizePercent(0.02)
+                .build()
+        }
+        .build()
+
+    CompositionLocalProvider(LocalImageLoader provides imageLoader) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            content = content
+        )
+    }
 }

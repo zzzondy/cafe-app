@@ -90,7 +90,7 @@ dependencies {
 
     // Ui
     implementation(Dependencies.Compose.ui)
-    implementation("androidx.compose.material3:material3:1.1.0-alpha06")
+    implementation(Dependencies.Compose.material)
     implementation(Dependencies.Compose.constraintLayout)
 
     // Accompanist

@@ -117,6 +117,32 @@ class RemoteCartRepositoryImpl(private val firestore: FirebaseFirestore) : Remot
         }
     }
 
+    override suspend fun deleteSelectedFoodFromCart(
+        userId: String,
+        foodIds: List<Long>
+    ): RemoteCartTransactionsResult {
+        return try {
+            val cart = (firestore.collection(USER_COLLECTION).document(userId)
+                .get()
+                .await()
+                .data?.get(CART) as List<HashMap<String, Int>>)
+                .toMutableList()
+
+            foodIds.forEach { foodId ->
+                val index = cart.indexOfFirst { it.keys.contains(foodId.toString()) }
+                cart.removeAt(index)
+            }
+            firestore.collection(USER_COLLECTION).document(userId)
+                .update(CART, cart)
+                .await()
+            RemoteCartTransactionsResult.Success
+        } catch (e: FirebaseNetworkException) {
+            RemoteCartTransactionsResult.NetworkError
+        } catch (e: Exception) {
+            RemoteCartTransactionsResult.OtherError
+        }
+    }
+
     private suspend fun getFoodById(foodId: Long): CartRemoteFood {
         return firestore.collection(FOOD_COLLECTION).whereEqualTo(FOOD_ID, foodId)
             .get()

@@ -24,6 +24,7 @@ import com.cafeapp.domain.models.Food
 import com.cafeapp.ui.theme.CafeAppTheme
 import com.cafeapp.core.util.UiText
 import com.cafeapp.core.util.dpToPx
+import com.cafeapp.ui.theme.LocalImageLoader
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
 
@@ -84,7 +85,8 @@ fun FoodItem(
                         width = 150.dp.dpToPx(),
                         height = 250.dp.dpToPx()
                     )
-                )
+                ),
+                imageLoader = { LocalImageLoader.current }
             )
 
             Text(
