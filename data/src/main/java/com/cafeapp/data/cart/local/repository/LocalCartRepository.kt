@@ -9,4 +9,8 @@ interface LocalCartRepository {
     suspend fun addFoodToLocalCart(food: LocalCartFood): Long
 
     suspend fun deleteFoodFromCart(foodId: Long)
+
+    suspend fun incrementItemsCount(foodId: Long): Int
+
+    suspend fun decrementItemsCount(foodId: Long): Int
 }

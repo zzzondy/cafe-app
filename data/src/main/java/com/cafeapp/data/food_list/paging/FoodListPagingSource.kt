@@ -13,14 +13,18 @@ class FoodListPagingSource(private val remoteFoodListRepository: RemoteFoodListR
     PagingSource<Int, Food>() {
 
     override fun getRefreshKey(state: PagingState<Int, Food>): Int? {
-        return state.anchorPosition
+        return state.anchorPosition?.let { position ->
+            val page = state.closestPageToPosition(position)
+            page?.prevKey?.minus(1) ?: page?.nextKey?.plus(1)
+        }
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Food> {
         return try {
             withContext(Dispatchers.IO) {
                 val currentPage = (params.key ?: 1)
-                val data = remoteFoodListRepository.getPagedFoodList(currentPage, params.loadSize).map { it.toFoodDomain() }
+                val data = remoteFoodListRepository.getPagedFoodList(currentPage, params.loadSize)
+                    .map { it.toFoodDomain() }
 
                 if (data.isEmpty() && currentPage == 1) {
                     throw IOException()

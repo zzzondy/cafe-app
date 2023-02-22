@@ -17,7 +17,11 @@ interface CartRepository {
 
     suspend fun incrementItemsCount(userId: String, foodId: Long): IncrementResult
 
+    suspend fun incrementLocalCartItemsCount(foodId: Long): IncrementResult
+
     suspend fun decrementItemsCount(userId: String, foodId: Long): IncrementResult
+
+    suspend fun decrementLocalCartItemsCount(foodId: Long): IncrementResult
 
     suspend fun deleteFoodFromCart(userId: String, foodId: Long): CartTransactionsResult
 

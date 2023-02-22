@@ -12,6 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
 import com.cafeapp.core.util.UiText
+import com.cafeapp.ui.common.NetworkErrorState
+import com.cafeapp.ui.common.SomeErrorState
 import com.cafeapp.ui.screens.cart.components.CartScreenTopAppBar
 import com.cafeapp.ui.screens.cart.components.MakeOrderBar
 import com.cafeapp.ui.screens.cart.states.CartScreenEffect
@@ -105,6 +107,13 @@ fun CartScreen(cartScreenViewModel: CartScreenViewModel = hiltViewModel()) {
                             cartScreenViewModel.onEvent(CartScreenEvent.DeleteFoodFromCart(food))
                         }
                     )
+
+                    MakeOrderBar(
+                        currentTotal = currentTotal,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        onMakeOrder = {}
+                    )
                 }
 
                 is CartScreenState.IsLoading -> {
@@ -113,14 +122,21 @@ fun CartScreen(cartScreenViewModel: CartScreenViewModel = hiltViewModel()) {
                             .fillMaxSize()
                     )
                 }
-            }
 
-            MakeOrderBar(
-                currentTotal = currentTotal,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                onMakeOrder = {}
-            )
+                is CartScreenState.NetworkError -> {
+                    NetworkErrorState(
+                        modifier = Modifier.fillMaxSize(),
+                        onRefresh = { cartScreenViewModel.onEvent(CartScreenEvent.OnRefresh) }
+                    )
+                }
+
+                is CartScreenState.OtherError -> {
+                    SomeErrorState(
+                        modifier = Modifier.fillMaxSize(),
+                        onRefresh = { cartScreenViewModel.onEvent(CartScreenEvent.OnRefresh) }
+                    )
+                }
+            }
         }
     }
 }

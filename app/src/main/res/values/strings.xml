@@ -60,4 +60,7 @@
     <string name="delete_selected">Delete selected</string>
     <string name="menu">Menu</string>
     <string name="select_all">Select all</string>
+    <string name="no_connection">No connection</string>
+    <string name="no_connection_details">Check your connection and try again</string>
+    <string name="refresh">Refresh</string>
 </resources>

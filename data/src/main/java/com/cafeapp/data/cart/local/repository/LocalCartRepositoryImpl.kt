@@ -13,4 +13,10 @@ class LocalCartRepositoryImpl(private val localCartDao: LocalCartDao) : LocalCar
     override suspend fun deleteFoodFromCart(foodId: Long) {
         localCartDao.deleteFoodFromCart(foodId)
     }
+
+    override suspend fun incrementItemsCount(foodId: Long): Int =
+        localCartDao.incrementItemsCountAndGetResult(foodId)
+
+    override suspend fun decrementItemsCount(foodId: Long): Int =
+        localCartDao.decrementItemsCountAndGetResult(foodId)
 }

@@ -72,6 +72,10 @@ class CartScreenViewModel @Inject constructor(
             is CartScreenEvent.DeleteFoodFromCart -> {
                 deleteFoodFromCart(event.food)
             }
+
+            is CartScreenEvent.OnRefresh -> {
+                getUserCart()
+            }
         }
     }
 
@@ -161,11 +165,11 @@ class CartScreenViewModel @Inject constructor(
                     }
 
                     is ObtainingCartResult.NetworkError -> {
-                        CartScreenState.EmptyFoodList
+                        CartScreenState.NetworkError
                     }
 
                     is ObtainingCartResult.OtherError -> {
-                        CartScreenState.EmptyFoodList
+                        CartScreenState.OtherError
                     }
                 }
             }

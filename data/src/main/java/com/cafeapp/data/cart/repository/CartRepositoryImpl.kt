@@ -51,8 +51,28 @@ class CartRepositoryImpl(
         return remoteCartRepository.incrementItemsCount(userId, foodId).toDomain()
     }
 
+    override suspend fun incrementLocalCartItemsCount(foodId: Long): IncrementResult {
+        return try {
+            IncrementResult.Success(
+                localCartRepository.incrementItemsCount(foodId)
+            )
+        } catch (e: Exception) {
+            IncrementResult.OtherError
+        }
+    }
+
     override suspend fun decrementItemsCount(userId: String, foodId: Long): IncrementResult {
         return remoteCartRepository.decrementItemsCount(userId, foodId).toDomain()
+    }
+
+    override suspend fun decrementLocalCartItemsCount(foodId: Long): IncrementResult {
+        return try {
+            IncrementResult.Success(
+                localCartRepository.decrementItemsCount(foodId)
+            )
+        } catch (e: Exception) {
+            IncrementResult.OtherError
+        }
     }
 
     override suspend fun deleteFoodFromCart(userId: String, foodId: Long): CartTransactionsResult {

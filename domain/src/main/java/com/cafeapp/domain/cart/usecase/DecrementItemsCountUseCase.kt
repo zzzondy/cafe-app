@@ -15,7 +15,7 @@ class DecrementItemsCountUseCase(
         return if (userManager.currentUser != null) {
             cartRepository.decrementItemsCount(userManager.currentUser!!.id, foodId)
         } else {
-            TODO()
+            cartRepository.decrementLocalCartItemsCount(foodId)
         }
     }
 }

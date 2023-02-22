@@ -13,7 +13,7 @@ class FoodListRepositoryImpl(private val remoteFoodListRepository: RemoteFoodLis
     FoodListRepository {
     override fun getPagedFoodList(): Flow<PagingData<Food>> {
         return Pager(
-            config = PagingConfig(PAGE_SIZE, enablePlaceholders = true),
+            config = PagingConfig(PAGE_SIZE, prefetchDistance = PAGE_SIZE),
             pagingSourceFactory = { FoodListPagingSource(remoteFoodListRepository) }
         ).flow
     }

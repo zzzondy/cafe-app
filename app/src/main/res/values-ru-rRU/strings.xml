@@ -61,4 +61,7 @@
     <string name="select_all">Выбрать все</string>
     <string name="delete_selected">Удалить выбранное</string>
     <string name="add_something_to_cart">Добавьте что-нибудь, чтобы сделать заказ</string>
+    <string name="no_connection">Нет соединения</string>
+    <string name="no_connection_details">Проверьте ваше соединение и повторите попытку</string>
+    <string name="refresh">Обновить</string>
 </resources>
