@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import com.cafeapp.ui.screens.main.MainScreen
+import com.cafeapp.ui.screens.app.AppScreen
 import com.cafeapp.ui.theme.CafeAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         setContent {
             CafeAppTheme {
-                MainScreen()
+                AppScreen()
             }
         }
     }

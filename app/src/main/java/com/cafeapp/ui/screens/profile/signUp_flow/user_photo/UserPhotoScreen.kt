@@ -166,7 +166,6 @@ fun UserPhotoScreen(
 @Composable
 fun ImageSection(selectedImageUri: Uri?, onClearImage: () -> Unit, modifier: Modifier = Modifier) {
     Box(contentAlignment = Alignment.TopEnd, modifier = modifier) {
-
         CoilImage(
             imageModel = { selectedImageUri },
             imageOptions = ImageOptions(contentDescription = stringResource(R.string.profile_photo)),

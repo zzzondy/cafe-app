@@ -32,8 +32,8 @@ import com.cafeapp.R
 import com.cafeapp.core.util.UiText
 import com.cafeapp.core.util.dpToPx
 import com.cafeapp.domain.models.Food
+import com.cafeapp.ui.screens.app.LocalImageLoader
 import com.cafeapp.ui.theme.CafeAppTheme
-import com.cafeapp.ui.theme.LocalImageLoader
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.launch

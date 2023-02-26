@@ -1,10 +1,13 @@
 package com.cafeapp.ui.screens.food_list.main
 
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -13,8 +16,10 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.cafeapp.R
+import com.cafeapp.core.network.rememberNetworkStatus
 import com.cafeapp.core.util.UiText
 import com.cafeapp.domain.models.Food
+import com.cafeapp.ui.common.NetworkWarningComponent
 import com.cafeapp.ui.common.SomeErrorState
 import com.cafeapp.ui.screens.food_list.FoodListNavGraph
 import com.cafeapp.ui.screens.food_list.main.states.FoodListEvent
@@ -34,6 +39,8 @@ fun FoodListScreen(
 
     val pagingItems = foodListViewModel.food.collectAsLazyPagingItems()
 
+    val networkStatus by rememberNetworkStatus()
+
     Scaffold(
         topBar = {
             MediumTopAppBar(
@@ -46,14 +53,21 @@ fun FoodListScreen(
         modifier = Modifier
             .padding(bottom = 80.dp)
     ) { paddingValues ->
-        FoodListScreenContent(
-            foodList = pagingItems,
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-            onEvent = foodListViewModel::onEvent
-        )
+        Box(modifier = Modifier.padding(paddingValues), contentAlignment = Alignment.BottomEnd) {
+            FoodListScreenContent(
+                foodList = pagingItems,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                onEvent = foodListViewModel::onEvent
+            )
+
+            NetworkWarningComponent(
+                networkStatus = networkStatus,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+
     }
 }
 

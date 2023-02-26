@@ -27,8 +27,8 @@ import androidx.constraintlayout.compose.Dimension
 import com.cafeapp.R
 import com.cafeapp.core.util.UiText
 import com.cafeapp.domain.models.User
+import com.cafeapp.ui.screens.app.LocalImageLoader
 import com.cafeapp.ui.theme.CafeAppTheme
-import com.cafeapp.ui.theme.LocalImageLoader
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
