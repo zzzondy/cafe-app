@@ -12,9 +12,9 @@ import com.cafeapp.domain.auth.usecase.validation.ValidatePasswordUseCase
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEvent
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenState
 import com.cafeapp.ui.common.states.LoadingState
+import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,21 +28,21 @@ class SignUpViewModel @Inject constructor(
 
     private val _signUpScreenState =
         MutableStateFlow<SignUpScreenState>(SignUpScreenState.Initially)
-    val signUpScreenState: StateFlow<SignUpScreenState> = _signUpScreenState
+    val signUpScreenState = _signUpScreenState.asStateFlow()
 
-    private val _shouldNavigateToUserDataScreen = MutableStateFlow(false)
-    val shouldNavigateToUserDataScreen: StateFlow<Boolean> = _shouldNavigateToUserDataScreen
+    private val _screenEffect = MutableSharedFlow<SignUpScreenEffect>()
+    val screenEffect = _screenEffect.asSharedFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.NotLoading)
     val loadingState: StateFlow<LoadingState> = _loadingState
 
     private val _validationEmailState =
         MutableStateFlow<ValidationEmailResult>(ValidationEmailResult.Success)
-    val validationEmailState: StateFlow<ValidationEmailResult> = _validationEmailState
+    val validationEmailState = _validationEmailState.asStateFlow()
 
     private val _validationPasswordState =
         MutableStateFlow<ValidationPasswordResult>(ValidationPasswordResult.Success)
-    val validationPasswordState: StateFlow<ValidationPasswordResult> = _validationPasswordState
+    val validationPasswordState = _validationPasswordState.asStateFlow()
 
 
     fun onEvent(event: SignUpScreenEvent) {
@@ -65,8 +65,8 @@ class SignUpViewModel @Inject constructor(
                     _signUpScreenState.value =
                         when (checkUserExistsUseCase(event.email)) {
                             is CheckUserResult.NotExists -> {
-                                _shouldNavigateToUserDataScreen.value = true
-                                SignUpScreenState.Success(event.email, event.password)
+                                _screenEffect.emit(SignUpScreenEffect.NavigateToDataScreen(event.email, event.password))
+                                SignUpScreenState.Initially
                             }
                             is CheckUserResult.NetworkUnavailableError -> SignUpScreenState.NetworkUnavailableError
                             is CheckUserResult.AlreadyExists -> SignUpScreenState.UserAlreadyExistsError
@@ -74,10 +74,6 @@ class SignUpViewModel @Inject constructor(
                         }
                     _loadingState.value = LoadingState.NotLoading
                 }
-            }
-
-            is SignUpScreenEvent.NavigateToUserDataScreen -> {
-                _shouldNavigateToUserDataScreen.value = false
             }
         }
     }

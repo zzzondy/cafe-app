@@ -4,10 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Clear
@@ -31,17 +29,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.ui.common.LoadingDialog
+import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.collectAsEffect
+import com.cafeapp.ui.common.states.LoadingState
+import com.cafeapp.ui.common.ui_components.LoadingDialog
+import com.cafeapp.ui.screens.profile.ProfileNavGraph
+import com.cafeapp.ui.screens.profile.login.states.LoginScreenEffect
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenEvent
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenState
-import com.cafeapp.ui.common.states.LoadingState
-import com.cafeapp.ui.theme.CafeAppTheme
-import com.cafeapp.core.util.UiText
-import com.cafeapp.ui.screens.profile.ProfileNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -56,9 +54,11 @@ fun LoginScreen(
     val loginScreenState by loginViewModel.loginScreenState.collectAsState()
     val loadingState by loginViewModel.loadingState.collectAsState()
 
-    LaunchedEffect(key1 = loginScreenState) {
-        if (loginScreenState is LoginScreenState.SuccessfullySignIn) {
-            navigator.popBackStack()
+    loginViewModel.loginScreenEffect.collectAsEffect { effect ->
+        when (effect) {
+            LoginScreenEffect.NavigateBackOnSuccessfullySignIn -> {
+                navigator.popBackStack()
+            }
         }
     }
 
@@ -67,8 +67,6 @@ fun LoginScreen(
     }
 
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = { Text(text = UiText.StringResource(R.string.sign_in).asString()) },
@@ -87,38 +85,36 @@ fun LoginScreen(
             loginScreenState = loginScreenState,
             onEvent = loginViewModel::onEvent,
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .imePadding()
                 .padding(paddingValues)
         )
     }
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterial3Api::class
+)
 @Composable
 private fun LoginScreenPart(
     loginScreenState: LoginScreenState,
     onEvent: (event: LoginScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val email = rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
 
-    val password = rememberSaveable { mutableStateOf("") }
-    val passwordHidden = rememberSaveable { mutableStateOf(true) }
+    var password by rememberSaveable { mutableStateOf("") }
+    var passwordHidden by rememberSaveable { mutableStateOf(true) }
     val passwordTextFieldFocusRequester = FocusRequester()
 
-    val isError = loginScreenState is LoginScreenState.WrongCredentialsError
-
     val focusManager = LocalFocusManager.current
-
     Column(
-        modifier = modifier.pointerInput(Unit) {
-            detectTapGestures { focusManager.clearFocus() }
-        },
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures { focusManager.clearFocus() }
+            }
     ) {
         Image(
             painter = painterResource(R.drawable.ic_app_logo),
@@ -132,21 +128,28 @@ private fun LoginScreenPart(
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
         )
 
-        AnimatedVisibility(visible = loginScreenState is LoginScreenState.NetworkUnavailable) {
+        AnimatedVisibility(
+            visible = loginScreenState == LoginScreenState.NetworkUnavailable ||
+                    loginScreenState == LoginScreenState.WrongCredentialsError
+        ) {
             Text(
-                text = UiText.StringResource(R.string.network_unavailable).asString(),
+                text = if (loginScreenState == LoginScreenState.NetworkUnavailable) {
+                    UiText.StringResource(R.string.network_unavailable).asString()
+                } else {
+                    UiText.StringResource(R.string.sign_in_error).asString()
+                },
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         OutlinedTextField(
-            value = email.value,
-            onValueChange = {
-                email.value = it
-            },
+            value = email,
+            onValueChange = { email = it },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 autoCorrect = false,
@@ -163,8 +166,8 @@ private fun LoginScreenPart(
                 )
             },
             trailingIcon = {
-                if (email.value.isNotEmpty()) {
-                    IconButton(onClick = { email.value = "" }) {
+                if (email.isNotEmpty()) {
+                    IconButton(onClick = { email = "" }) {
                         Icon(
                             imageVector = Icons.Rounded.Clear,
                             contentDescription = stringResource(
@@ -174,27 +177,18 @@ private fun LoginScreenPart(
                     }
                 }
             },
-            supportingText = {
-                if (isError) {
-                    Text(
-                        text = UiText.StringResource(R.string.sign_in_error).asString(),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            },
-            isError = isError,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                .padding(start = 16.dp, end = 16.dp)
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         OutlinedTextField(
-            value = password.value,
-            onValueChange = {
-                password.value = it
-            },
+            value = password,
+            onValueChange = { password = it },
             singleLine = true,
-            visualTransformation = if (passwordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
+            visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
             keyboardOptions = KeyboardOptions(
                 autoCorrect = false,
                 keyboardType = KeyboardType.Password,
@@ -210,9 +204,9 @@ private fun LoginScreenPart(
                 )
             },
             trailingIcon = {
-                IconButton(onClick = { passwordHidden.value = !passwordHidden.value }) {
+                IconButton(onClick = { passwordHidden = !passwordHidden }) {
                     val visibilityIcon =
-                        if (passwordHidden.value) R.drawable.ic_round_visibility_24 else R.drawable.ic_round_visibility_off_24
+                        if (passwordHidden) R.drawable.ic_round_visibility_24 else R.drawable.ic_round_visibility_off_24
                     Icon(
                         painter = painterResource(id = visibilityIcon),
                         contentDescription = stringResource(
@@ -221,46 +215,30 @@ private fun LoginScreenPart(
                     )
                 }
             },
-            supportingText = {
-                if (isError) {
-                    Text(
-                        text = UiText.StringResource(R.string.sign_in_error).asString(),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            },
-            isError = isError,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp)
-                .focusRequester(passwordTextFieldFocusRequester),
+                .focusRequester(passwordTextFieldFocusRequester)
         )
+
+        Spacer(modifier = Modifier.weight(1f))
 
         Button(
             onClick = {
                 onEvent(
                     LoginScreenEvent.SignIn(
-                        email = email.value,
-                        password = password.value
+                        email = email,
+                        password = password
                     )
                 )
                 focusManager.clearFocus()
             },
-            enabled = email.value.isNotEmpty() && password.value.isNotEmpty(),
+            enabled = email.isNotEmpty() && password.isNotEmpty(),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
             Text(text = UiText.StringResource(R.string.sign_in).asString())
         }
-    }
-}
-
-
-@Preview
-@Composable
-fun LoginScreenPreview() {
-    CafeAppTheme {
-//        LoginScreen()
     }
 }

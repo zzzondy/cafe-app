@@ -19,10 +19,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.ui.screens.profile.settings.states.SettingsScreenEvent
-import com.cafeapp.ui.screens.profile.settings.states.SettingsScreenState
 import com.cafeapp.core.util.UiText
 import com.cafeapp.ui.screens.profile.ProfileNavGraph
+import com.cafeapp.ui.screens.profile.settings.states.SettingsScreenEvent
+import com.cafeapp.ui.screens.profile.settings.states.SettingsScreenState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -39,11 +39,14 @@ fun SettingsScreen(
     val uiState by settingsScreenViewModel.settingsScreenState.collectAsState()
 
     if (openSignOutDialog) {
-        SignOutDialog(onDismissClicked = { openSignOutDialog = false }, onConfirmClicked = {
-            settingsScreenViewModel.onEvent(SettingsScreenEvent.SignOutClicked)
-            openSignOutDialog = false
-            navigator.popBackStack()
-        })
+        SignOutDialog(
+            onDismissClicked = { openSignOutDialog = false },
+            onConfirmClicked = {
+                settingsScreenViewModel.onEvent(SettingsScreenEvent.SignOutClicked)
+                openSignOutDialog = false
+                navigator.popBackStack()
+            }
+        )
     }
 
     Scaffold(
@@ -147,7 +150,6 @@ private fun LazyListScope.settingsSection(onAboutAppClicked: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SettingsListItem(
     text: String,

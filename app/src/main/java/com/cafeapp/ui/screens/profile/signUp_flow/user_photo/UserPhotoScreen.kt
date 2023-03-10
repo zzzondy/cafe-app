@@ -29,14 +29,16 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.ui.common.LoadingDialog
+import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.collectAsEffect
+import com.cafeapp.ui.common.states.LoadingState
+import com.cafeapp.ui.common.ui_components.LoadingDialog
 import com.cafeapp.ui.screens.destinations.ProfileScreenDestination
+import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
 import com.cafeapp.ui.screens.profile.signUp_flow.SignUpSharedViewModel
+import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenEffect
 import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenEvent
 import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenState
-import com.cafeapp.ui.common.states.LoadingState
-import com.cafeapp.core.util.UiText
-import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.skydoves.landscapist.ImageOptions
@@ -54,10 +56,9 @@ fun UserPhotoScreen(
 ) {
     val userPhotoScreenState by userPhotoScreenViewModel.userPhotoScreenState.collectAsState()
     val loadingState by userPhotoScreenViewModel.loadingState.collectAsState()
-
-    LaunchedEffect(key1 = userPhotoScreenState) {
-        if (userPhotoScreenState is UserPhotoScreenState.Success) {
-            navigator.popBackStack(ProfileScreenDestination, inclusive = false)
+    userPhotoScreenViewModel.userPhotoScreenEffect.collectAsEffect {effect ->
+        when (effect) {
+            UserPhotoScreenEffect.NavigateUp -> navigator.popBackStack(ProfileScreenDestination, inclusive = false)
         }
     }
 

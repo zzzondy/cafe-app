@@ -8,8 +8,11 @@ import com.cafeapp.domain.auth.usecase.SignUpUserUseCase
 import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenEvent
 import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenState
 import com.cafeapp.ui.common.states.LoadingState
+import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,6 +30,9 @@ class UserPhotoScreenViewModel @Inject constructor(
         MutableStateFlow<UserPhotoScreenState>(UserPhotoScreenState.Initially)
     val userPhotoScreenState = _userPhotoScreenState.asStateFlow()
 
+    private val _userPhotoScreenEffect = MutableSharedFlow<UserPhotoScreenEffect>()
+    val userPhotoScreenEffect = _userPhotoScreenEffect.asSharedFlow()
+
     fun onEvent(event: UserPhotoScreenEvent) {
         when (event) {
             is UserPhotoScreenEvent.SignUp -> {
@@ -41,10 +47,14 @@ class UserPhotoScreenViewModel @Inject constructor(
                         phoneNumber = params.phoneNumber!!,
                         photo = params.photoUri
                     )
-                    _userPhotoScreenState.value = when (signUpResult) {
-                        is SignUpResult.Success -> UserPhotoScreenState.Success(signUpResult.user)
-                        is SignUpResult.NetworkUnavailableError -> UserPhotoScreenState.NetworkUnavailableError
-                        is SignUpResult.OtherError -> UserPhotoScreenState.OtherError
+                    when (signUpResult) {
+                        is SignUpResult.Success -> _userPhotoScreenEffect.emit(UserPhotoScreenEffect.NavigateUp)
+
+                        is SignUpResult.NetworkUnavailableError -> _userPhotoScreenState.value =
+                            UserPhotoScreenState.NetworkUnavailableError
+
+                        is SignUpResult.OtherError -> _userPhotoScreenState.value =
+                            UserPhotoScreenState.OtherError
                     }
                     _loadingState.value = LoadingState.NotLoading
                 }

@@ -2,10 +2,8 @@ package com.cafeapp.ui.screens.profile.signUp_flow.user_data
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Person
@@ -23,13 +21,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
+import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.collectAsEffect
 import com.cafeapp.ui.screens.destinations.UserPhotoScreenDestination
+import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
 import com.cafeapp.ui.screens.profile.signUp_flow.SignUpSharedViewModel
+import com.cafeapp.ui.screens.profile.signUp_flow.user_data.states.UserDataScreenEffect
 import com.cafeapp.ui.screens.profile.signUp_flow.user_data.states.UserDataScreenEvent
+import com.cafeapp.ui.screens.profile.signUp_flow.user_data.states.UserDataScreenState
 import com.cafeapp.ui.screens.profile.signUp_flow.user_data.utils.PHONE_MASK
 import com.cafeapp.ui.screens.profile.signUp_flow.user_data.utils.PhoneVisualTransformation
-import com.cafeapp.core.util.UiText
-import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -46,7 +47,17 @@ fun UserDataScreen(
     var lastName by rememberSaveable { mutableStateOf("") }
     var phoneNumber by rememberSaveable { mutableStateOf("") }
 
-    val canNavigateToPhotoScreen by userDataScreenViewModel.canNavigateTpPhotoScreen.collectAsState()
+    val screenState by userDataScreenViewModel.userDataScreenState.collectAsState()
+    userDataScreenViewModel.userDataScreenEffect.collectAsEffect { effect ->
+        when (effect) {
+            UserDataScreenEffect.NavigateOnUserPhotoScreen -> {
+                signUpSharedViewModel.updateFirstLastNameAndPhone(
+                    firstName, lastName, phoneNumber
+                )
+                navigator.navigate(UserPhotoScreenDestination)
+            }
+        }
+    }
 
     val focusManager = LocalFocusManager.current
 
@@ -73,8 +84,6 @@ fun UserDataScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .imePadding()
                 .padding(paddingValues)
                 .fillMaxSize()
                 .pointerInput(Unit) {
@@ -174,14 +183,8 @@ fun UserDataScreen(
             Button(
                 onClick = {
                     userDataScreenViewModel.onEvent(UserDataScreenEvent.OnNextButtonClicked)
-                    signUpSharedViewModel.updateFirstLastNameAndPhone(
-                        firstName,
-                        lastName,
-                        phoneNumber
-                    )
-                    navigator.navigate(UserPhotoScreenDestination)
                 },
-                enabled = canNavigateToPhotoScreen,
+                enabled = screenState is UserDataScreenState.EnabledNavigationButton,
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp)
                     .fillMaxWidth()

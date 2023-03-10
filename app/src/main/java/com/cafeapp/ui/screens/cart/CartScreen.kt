@@ -12,9 +12,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
 import com.cafeapp.core.network.rememberNetworkStatus
 import com.cafeapp.core.util.UiText
-import com.cafeapp.ui.common.NetworkErrorState
-import com.cafeapp.ui.common.NetworkWarningComponent
-import com.cafeapp.ui.common.SomeErrorState
+import com.cafeapp.ui.common.ui_components.NetworkErrorComponent
+import com.cafeapp.ui.common.ui_components.NetworkWarningComponent
+import com.cafeapp.ui.common.ui_components.SomeErrorComponent
 import com.cafeapp.ui.screens.cart.components.CartScreenTopAppBar
 import com.cafeapp.ui.screens.cart.components.MakeOrderBar
 import com.cafeapp.ui.screens.cart.states.CartScreenEvent
@@ -67,6 +67,7 @@ fun CartScreen(cartScreenViewModel: CartScreenViewModel = hiltViewModel()) {
                     is CartScreenState.EmptyFoodList -> {
                         EmptyCartScreenState(
                             modifier = Modifier
+                                .weight(1f)
                                 .fillMaxSize()
                                 .padding(horizontal = 16.dp)
                         )
@@ -103,7 +104,7 @@ fun CartScreen(cartScreenViewModel: CartScreenViewModel = hiltViewModel()) {
                     }
 
                     is CartScreenState.NetworkError -> {
-                        NetworkErrorState(
+                        NetworkErrorComponent(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxSize(),
@@ -112,7 +113,7 @@ fun CartScreen(cartScreenViewModel: CartScreenViewModel = hiltViewModel()) {
                     }
 
                     is CartScreenState.OtherError -> {
-                        SomeErrorState(
+                        SomeErrorComponent(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxSize(),

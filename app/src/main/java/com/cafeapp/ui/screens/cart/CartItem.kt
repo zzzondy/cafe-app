@@ -51,7 +51,6 @@ fun CartItem(
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
-    var itemSelected by rememberSaveable { mutableStateOf(false) }
     val dismissState = rememberDismissState(
         positionalThreshold = { (screenWidth / 2).toPx() }
     )
@@ -100,138 +99,159 @@ fun CartItem(
         },
         directions = if (food != null) setOf(DismissDirection.EndToStart) else setOf(),
         dismissContent = {
-            Card(
-                shape = RectangleShape,
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
-            ) {
-                ConstraintLayout(
-                    constraintSet = ConstraintSet {
-                        val foodImage = createRefFor(CartItemConstraintTags.foodImage)
-                        val foodTitle = createRefFor(CartItemConstraintTags.foodTitle)
-                        val foodPrice = createRefFor(CartItemConstraintTags.foodPrice)
-                        val checkbox = createRefFor(CartItemConstraintTags.checkbox)
-                        val increaseItemLayout =
-                            createRefFor(CartItemConstraintTags.increaseItemLayout)
-
-                        constrain(foodImage) {
-                            start.linkTo(checkbox.end, 8.dp)
-                            top.linkTo(parent.top, 8.dp)
-                        }
-
-                        constrain(checkbox) {
-                            start.linkTo(parent.start, 8.dp)
-                            top.linkTo(parent.top, 8.dp)
-                        }
-
-                        constrain(foodTitle) {
-                            start.linkTo(foodImage.end, 8.dp)
-                            end.linkTo(parent.end, 8.dp)
-                            top.linkTo(parent.top, 8.dp)
-                            width = Dimension.fillToConstraints
-                        }
-
-                        constrain(foodPrice) {
-                            start.linkTo(foodTitle.start)
-                            top.linkTo(foodTitle.bottom, 8.dp)
-                        }
-
-                        constrain(increaseItemLayout) {
-                            end.linkTo(parent.end, 8.dp)
-                            top.linkTo(foodPrice.bottom, 8.dp)
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.medium)
-                        .padding(horizontal = 16.dp)
-                        .selectable(selected = itemSelected, enabled = food != null) {
-                            itemSelected = !itemSelected
-                            onSelectItem(food!!)
-                        }
-                ) {
-                    CoilImage(
-                        imageModel = { food?.imageUrl },
-                        imageOptions = ImageOptions(
-                            requestSize = IntSize(
-                                width = 80.dp.dpToPx(),
-                                height = 80.dp.dpToPx()
-                            )
-                        ),
-                        modifier = modifier
-                            .layoutId(CartItemConstraintTags.foodImage)
-                            .clip(MaterialTheme.shapes.medium)
-                            .size(80.dp),
-                        imageLoader = { LocalImageLoader.current }
-                    )
-
-                    Text(
-                        text = food?.name ?: "",
-                        modifier = modifier.layoutId(CartItemConstraintTags.foodTitle),
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-
-                    Text(
-                        text = UiText.StringResource(R.string.rubles, food?.price ?: 0)
-                            .asString(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = modifier
-                            .layoutId(CartItemConstraintTags.foodPrice)
-                            .fillMaxWidth(0.5f)
-                    )
-
-                    Checkbox(
-                        checked = itemSelected,
-                        onCheckedChange = {
-                            itemSelected = !itemSelected
-                            onSelectItem(food!!)
-                        },
-                        modifier = modifier
-                            .layoutId(CartItemConstraintTags.checkbox)
-                    )
-
-                    Row(
-                        modifier = modifier
-                            .layoutId(CartItemConstraintTags.increaseItemLayout)
-                            .clip(MaterialTheme.shapes.medium)
-                    ) {
-                        IconButton(
-                            onClick = {
-                                onDecrementItemsCount()
-                            },
-                            enabled = itemsCount > 1
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.round_remove_24),
-                                contentDescription = stringResource(R.string.remove_food)
-                            )
-                        }
-
-                        Text(
-                            text = itemsCount.toString(),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.fillMaxHeight()
-                        )
-
-                        IconButton(onClick = {
-                            onIncrementItemsCount()
-                        }) {
-                            Icon(
-                                imageVector = Icons.Rounded.Add,
-                                contentDescription = stringResource(R.string.add_food)
-                            )
-                        }
-                    }
-                }
-                Divider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                )
-            }
+            CartItemContent(
+                food = food,
+                itemsCount = itemsCount,
+                modifier = modifier,
+                onSelectItem = onSelectItem,
+                onDecrementItemsCount = onDecrementItemsCount,
+                onIncrementItemsCount = onIncrementItemsCount
+            )
         }
     )
+}
+
+@Composable
+private fun CartItemContent(
+    food: Food?,
+    onSelectItem: (Food) -> Unit,
+    modifier: Modifier,
+    onDecrementItemsCount: () -> Unit,
+    itemsCount: Int,
+    onIncrementItemsCount: () -> Unit
+) {
+    var itemSelected by rememberSaveable { mutableStateOf(false) }
+
+    Card(
+        shape = RectangleShape,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+    ) {
+        ConstraintLayout(
+            constraintSet = ConstraintSet {
+                val foodImage = createRefFor(CartItemConstraintTags.foodImage)
+                val foodTitle = createRefFor(CartItemConstraintTags.foodTitle)
+                val foodPrice = createRefFor(CartItemConstraintTags.foodPrice)
+                val checkbox = createRefFor(CartItemConstraintTags.checkbox)
+                val increaseItemLayout =
+                    createRefFor(CartItemConstraintTags.increaseItemLayout)
+
+                constrain(foodImage) {
+                    start.linkTo(checkbox.end, 8.dp)
+                    top.linkTo(parent.top, 8.dp)
+                }
+
+                constrain(checkbox) {
+                    start.linkTo(parent.start, 8.dp)
+                    top.linkTo(parent.top, 8.dp)
+                }
+
+                constrain(foodTitle) {
+                    start.linkTo(foodImage.end, 8.dp)
+                    end.linkTo(parent.end, 8.dp)
+                    top.linkTo(parent.top, 8.dp)
+                    width = Dimension.fillToConstraints
+                }
+
+                constrain(foodPrice) {
+                    start.linkTo(foodTitle.start)
+                    top.linkTo(foodTitle.bottom, 8.dp)
+                }
+
+                constrain(increaseItemLayout) {
+                    end.linkTo(parent.end, 8.dp)
+                    top.linkTo(foodPrice.bottom, 8.dp)
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.medium)
+                .padding(horizontal = 16.dp)
+                .selectable(selected = itemSelected, enabled = food != null) {
+                    itemSelected = !itemSelected
+                    onSelectItem(food!!)
+                }
+        ) {
+            CoilImage(
+                imageModel = { food?.imageUrl },
+                imageOptions = ImageOptions(
+                    requestSize = IntSize(
+                        width = 40.dp.dpToPx(),
+                        height = 40.dp.dpToPx()
+                    )
+                ),
+                modifier = modifier
+                    .layoutId(CartItemConstraintTags.foodImage)
+                    .clip(MaterialTheme.shapes.medium)
+                    .size(80.dp),
+                imageLoader = { LocalImageLoader.current },
+            )
+
+            Text(
+                text = food?.name ?: "",
+                modifier = modifier.layoutId(CartItemConstraintTags.foodTitle),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Text(
+                text = UiText.StringResource(R.string.rubles, food?.price ?: 0)
+                    .asString(),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = modifier
+                    .layoutId(CartItemConstraintTags.foodPrice)
+                    .fillMaxWidth(0.5f)
+            )
+
+            Checkbox(
+                checked = itemSelected,
+                onCheckedChange = {
+                    itemSelected = !itemSelected
+                    onSelectItem(food!!)
+                },
+                modifier = modifier
+                    .layoutId(CartItemConstraintTags.checkbox)
+            )
+
+            Row(
+                modifier = modifier
+                    .layoutId(CartItemConstraintTags.increaseItemLayout)
+                    .clip(MaterialTheme.shapes.medium)
+            ) {
+                IconButton(
+                    onClick = {
+                        onDecrementItemsCount()
+                    },
+                    enabled = itemsCount > 1
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.round_remove_24),
+                        contentDescription = stringResource(R.string.remove_food)
+                    )
+                }
+
+                Text(
+                    text = itemsCount.toString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.fillMaxHeight()
+                )
+
+                IconButton(onClick = {
+                    onIncrementItemsCount()
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = stringResource(R.string.add_food)
+                    )
+                }
+            }
+        }
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
+    }
 }
 
 @Preview

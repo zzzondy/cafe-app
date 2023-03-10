@@ -4,10 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Clear
@@ -31,21 +29,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
+import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.collectAsEffect
 import com.cafeapp.domain.auth.states.validation.ValidationEmailResult
 import com.cafeapp.domain.auth.states.validation.ValidationPasswordResult
-import com.cafeapp.ui.common.LoadingDialog
+import com.cafeapp.ui.common.states.LoadingState
+import com.cafeapp.ui.common.ui_components.LoadingDialog
 import com.cafeapp.ui.screens.destinations.UserDataScreenDestination
+import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
 import com.cafeapp.ui.screens.profile.signUp_flow.SignUpSharedViewModel
+import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEffect
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEvent
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenState
-import com.cafeapp.ui.common.states.LoadingState
-import com.cafeapp.ui.theme.CafeAppTheme
-import com.cafeapp.core.util.UiText
-import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -59,16 +57,13 @@ fun SignUpScreen(
     signUpViewModel: SignUpViewModel = hiltViewModel()
 ) {
     val signUpScreenState by signUpViewModel.signUpScreenState.collectAsState()
-    val shouldNavigateToUserDataScreen by signUpViewModel.shouldNavigateToUserDataScreen.collectAsState()
 
-    LaunchedEffect(key1 = signUpScreenState, key2 = shouldNavigateToUserDataScreen) {
-        if (signUpScreenState is SignUpScreenState.Success && shouldNavigateToUserDataScreen) {
-            navigator.navigate(UserDataScreenDestination)
-            signUpViewModel.onEvent(SignUpScreenEvent.NavigateToUserDataScreen)
-            signUpSharedViewModel.updateEmailAndPassword(
-                (signUpScreenState as SignUpScreenState.Success).email,
-                (signUpScreenState as SignUpScreenState.Success).password
-            )
+    signUpViewModel.screenEffect.collectAsEffect { effect ->
+        when (effect) {
+            is SignUpScreenEffect.NavigateToDataScreen -> {
+                signUpSharedViewModel.updateEmailAndPassword(effect.email, effect.password)
+                navigator.navigate(UserDataScreenDestination)
+            }
         }
     }
 
@@ -109,6 +104,7 @@ fun SignUpScreen(
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SignUpScreenPart(
@@ -131,9 +127,7 @@ private fun SignUpScreenPart(
             .fillMaxSize()
             .pointerInput(Unit) {
                 detectTapGestures { focusManager.clearFocus() }
-            }
-            .verticalScroll(rememberScrollState())
-            .imePadding(),
+            },
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -153,24 +147,22 @@ private fun SignUpScreenPart(
             visible = signUpScreenState is SignUpScreenState.NetworkUnavailableError ||
                     signUpScreenState is SignUpScreenState.UserAlreadyExistsError
         ) {
-            if (signUpScreenState is SignUpScreenState.NetworkUnavailableError) {
-                Text(
-                    text = UiText.StringResource(R.string.network_unavailable).asString(),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+            Text(
+                text = UiText.StringResource(
+                    if (signUpScreenState is SignUpScreenState.NetworkUnavailableError)
+                        R.string.network_unavailable
+                    else
+                        R.string.user_already_exists
                 )
-            } else {
-                Text(
-                    text = UiText.StringResource(R.string.user_already_exists).asString(),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
-                )
-            }
+                    .asString(),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+            )
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = email.value,
@@ -220,8 +212,10 @@ private fun SignUpScreenPart(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                .padding(start = 16.dp, end = 16.dp),
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = password.value,
@@ -278,6 +272,10 @@ private fun SignUpScreenPart(
                 .focusRequester(passwordTextFieldFocusRequester),
         )
 
+        Spacer(
+            modifier = Modifier.weight(1f)
+        )
+
         Button(
             onClick = {
                 onEvent(SignUpScreenEvent.SignUp(email.value, password.value))
@@ -289,17 +287,9 @@ private fun SignUpScreenPart(
                     password.value.isNotEmpty(),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 48.dp)
+                .padding(16.dp)
         ) {
             Text(text = UiText.StringResource(R.string.sign_up).asString())
         }
-    }
-}
-
-@Preview
-@Composable
-fun SignUpPartScreenPreview() {
-    CafeAppTheme {
-//        SignUpScreenPart({})
     }
 }

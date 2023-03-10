@@ -13,9 +13,9 @@ class ValidatePasswordUseCase {
             return ValidationPasswordResult.NotContainsLettersOrDigits
         }
 
-        if (password.replace("[^A-Za-z]".toRegex(), "")
+        if (password.filter { it.isLetter() }
                 .all { it.isLowerCase() } ||
-            password.replace("[^A-Za-z]".toRegex(), "")
+            password.filter { it.isLetter() }
                 .all { it.isUpperCase() }
         ) {
             return ValidationPasswordResult.NotContainsLowerOrUpperCase

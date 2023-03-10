@@ -19,8 +19,8 @@ import com.cafeapp.R
 import com.cafeapp.core.network.rememberNetworkStatus
 import com.cafeapp.core.util.UiText
 import com.cafeapp.domain.models.Food
-import com.cafeapp.ui.common.NetworkWarningComponent
-import com.cafeapp.ui.common.SomeErrorState
+import com.cafeapp.ui.common.ui_components.NetworkWarningComponent
+import com.cafeapp.ui.common.ui_components.SomeErrorComponent
 import com.cafeapp.ui.screens.food_list.FoodListNavGraph
 import com.cafeapp.ui.screens.food_list.main.states.FoodListEvent
 import com.cafeapp.ui.screens.food_list.main.states.ui.FoodListContentState
@@ -83,7 +83,7 @@ fun FoodListScreenContent(
                 LoadingRefreshFoodScreenState(modifier = modifier)
             }
             is LoadState.Error -> {
-                SomeErrorState(modifier = modifier, onRefresh = { foodList.refresh() })
+                SomeErrorComponent(modifier = modifier, onRefresh = { foodList.refresh() })
             }
             else -> {
                 FoodListContentState(
