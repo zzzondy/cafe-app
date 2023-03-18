@@ -25,7 +25,7 @@ fun FoodListContentState(
         columns = GridCells.Fixed(FoodListConfig.GRID_CELLS_COUNT),
         modifier = modifier
     ) {
-        items(foodListItems.itemCount) { index ->
+        items(foodListItems.itemCount, key = { index -> foodListItems[index]!!.id }) { index ->
             FoodItem(
                 food = foodListItems[index],
                 onAddToCart = { onEvent(FoodListEvent.AddFoodToCart(foodListItems[index]!!)) }

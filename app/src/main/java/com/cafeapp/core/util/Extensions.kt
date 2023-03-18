@@ -1,5 +1,6 @@
 package com.cafeapp.core.util
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalDensity
@@ -13,8 +14,9 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.roundToInt
 
 @Composable
-fun Dp.dpToPx(): Int = with(LocalDensity.current) { this@dpToPx.toPx() }.roundToInt()
+fun Dp.toPxWithDensity(): Int = with(LocalDensity.current) { this@toPxWithDensity.toPx() }.roundToInt()
 
+@SuppressLint("ComposableNaming")
 @Composable
 fun <T> Flow<T>.collectAsEffect(
     context: CoroutineContext = EmptyCoroutineContext,

@@ -1,4 +1,4 @@
-package com.cafeapp.ui.screens.cart.components
+package com.cafeapp.ui.screens.cart.main.components
 
 import androidx.compose.foundation.background
 import androidx.compose.material3.Button

@@ -1,4 +1,4 @@
-package com.cafeapp.ui.screens.cart.states.ui
+package com.cafeapp.ui.screens.cart.main.states.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons

@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.test")
-    id("org.jetbrains.kotlin.android")
+    id(Plugins.androidTest)
+    id(Plugins.kotlinAndroid)
 }
 
 android {

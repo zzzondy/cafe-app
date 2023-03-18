@@ -1,4 +1,4 @@
-package com.cafeapp.ui.screens.cart
+package com.cafeapp.ui.screens.cart.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,9 +8,9 @@ import com.cafeapp.domain.cart.states.IncrementResult
 import com.cafeapp.domain.cart.states.ObtainingCartResult
 import com.cafeapp.domain.cart.usecase.*
 import com.cafeapp.domain.models.Food
-import com.cafeapp.ui.screens.cart.states.CartScreenEffect
-import com.cafeapp.ui.screens.cart.states.CartScreenEvent
-import com.cafeapp.ui.screens.cart.states.CartScreenState
+import com.cafeapp.ui.screens.cart.main.states.CartScreenEffect
+import com.cafeapp.ui.screens.cart.main.states.CartScreenEvent
+import com.cafeapp.ui.screens.cart.main.states.CartScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -80,7 +80,14 @@ class CartScreenViewModel @Inject constructor(
     }
 
     private fun makeOrder() {
-
+        viewModelScope.launch {
+            _cartScreenEffect.emit(
+                CartScreenEffect.NavigateToMakeOrderScreen(
+                    selectedFoods.map { it.first.id },
+                    currentTotal.value
+                )
+            )
+        }
     }
 
     private fun itemSelected(food: Food) {

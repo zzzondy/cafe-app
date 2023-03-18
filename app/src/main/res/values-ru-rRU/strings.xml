@@ -64,4 +64,8 @@
     <string name="no_connection">Нет соединения</string>
     <string name="no_connection_details">Проверьте ваше соединение и повторите попытку</string>
     <string name="refresh">Обновить</string>
+    <string name="choose_payment_method">Способы оплаты</string>
+    <string name="delivery_methods">Способы доставки</string>
+    <string name="delivery_address">Адрес доставки</string>
+    <string name="address">Адрес</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.cafeapp.ui.screens.cart
+package com.cafeapp.ui.screens.cart.main
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition

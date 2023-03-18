@@ -1,4 +1,4 @@
-package com.cafeapp.ui.screens.cart
+package com.cafeapp.ui.screens.cart.main
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -17,8 +17,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -30,7 +32,7 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import com.cafeapp.R
 import com.cafeapp.core.util.UiText
-import com.cafeapp.core.util.dpToPx
+import com.cafeapp.core.util.toPxWithDensity
 import com.cafeapp.domain.models.Food
 import com.cafeapp.ui.screens.app.LocalImageLoader
 import com.cafeapp.ui.theme.CafeAppTheme
@@ -50,6 +52,7 @@ fun CartItem(
     onDeleteFoodFromCart: () -> Unit = {}
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val haptic = LocalHapticFeedback.current
 
     val dismissState = rememberDismissState(
         positionalThreshold = { (screenWidth / 2).toPx() }
@@ -62,6 +65,12 @@ fun CartItem(
                 dismissState.reset()
             }
             onDeleteFoodFromCart()
+        }
+    }
+
+    LaunchedEffect(key1 = dismissState.targetValue) {
+        if (dismissState.targetValue == DismissValue.DismissedToStart) {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         }
     }
 
@@ -175,8 +184,8 @@ private fun CartItemContent(
                 imageModel = { food?.imageUrl },
                 imageOptions = ImageOptions(
                     requestSize = IntSize(
-                        width = 40.dp.dpToPx(),
-                        height = 40.dp.dpToPx()
+                        width = 40.dp.toPxWithDensity(),
+                        height = 40.dp.toPxWithDensity()
                     )
                 ),
                 modifier = modifier

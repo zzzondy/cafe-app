@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalContext
 import coil.ImageLoader
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
+import coil.request.CachePolicy
 import com.cafeapp.core.network.ConnectivityObserver
 import com.cafeapp.core.network.NetworkConnectivityObserver
 import com.cafeapp.ui.screens.main.MainScreen
@@ -24,15 +25,17 @@ fun AppScreen() {
     val imageLoader = ImageLoader.Builder(context)
         .memoryCache {
             MemoryCache.Builder(context)
-                .maxSizePercent(0.25)
+                .maxSizePercent(1.0)
                 .build()
         }
         .diskCache {
             DiskCache.Builder()
                 .directory(context.cacheDir.resolve("image_cache"))
-                .maxSizePercent(0.02)
+                .maxSizePercent(0.5)
                 .build()
         }
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .diskCachePolicy(CachePolicy.ENABLED)
         .build()
 
     val connectivityObserver = NetworkConnectivityObserver(context)

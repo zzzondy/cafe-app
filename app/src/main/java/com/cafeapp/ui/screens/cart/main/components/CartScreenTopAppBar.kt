@@ -1,4 +1,4 @@
-package com.cafeapp.ui.screens.cart.components
+package com.cafeapp.ui.screens.cart.main.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete

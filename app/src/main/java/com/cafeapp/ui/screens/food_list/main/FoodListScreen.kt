@@ -34,8 +34,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 fun FoodListScreen(
     foodListViewModel: FoodListViewModel = hiltViewModel()
 ) {
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     val pagingItems = foodListViewModel.food.collectAsLazyPagingItems()
 
@@ -51,14 +50,15 @@ fun FoodListScreen(
             )
         },
         modifier = Modifier
+            .fillMaxSize()
             .padding(bottom = 80.dp)
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues), contentAlignment = Alignment.BottomEnd) {
             FoodListScreenContent(
                 foodList = pagingItems,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    .fillMaxSize(),
                 onEvent = foodListViewModel::onEvent
             )
 

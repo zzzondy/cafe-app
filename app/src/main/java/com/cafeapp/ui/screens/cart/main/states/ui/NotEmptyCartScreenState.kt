@@ -1,4 +1,4 @@
-package com.cafeapp.ui.screens.cart.states.ui
+package com.cafeapp.ui.screens.cart.main.states.ui
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.cafeapp.domain.models.Food
-import com.cafeapp.ui.screens.cart.CartItem
+import com.cafeapp.ui.screens.cart.main.CartItem
 
 
 @Composable

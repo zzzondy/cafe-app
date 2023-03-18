@@ -1,4 +1,4 @@
-package com.cafeapp.ui.screens.cart.states
+package com.cafeapp.ui.screens.cart.main.states
 
 import com.cafeapp.domain.models.Food
 

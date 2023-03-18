@@ -20,12 +20,14 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import com.cafeapp.R
 import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.toPxWithDensity
 import com.cafeapp.domain.models.User
 import com.cafeapp.ui.screens.app.LocalImageLoader
 import com.cafeapp.ui.theme.CafeAppTheme
@@ -75,7 +77,13 @@ fun AuthenticatedStateScreen(
 
         CoilImage(
             imageModel = { user.photoUrl },
-            imageOptions = ImageOptions(contentDescription = stringResource(R.string.user_photo)),
+            imageOptions = ImageOptions(
+                contentDescription = stringResource(R.string.user_photo),
+                requestSize = IntSize(
+                    width = 75.dp.toPxWithDensity(),
+                    height = 75.dp.toPxWithDensity()
+                )
+            ),
             component = rememberImageComponent {
                 +CrossfadePlugin()
             },
@@ -91,6 +99,7 @@ fun AuthenticatedStateScreen(
             },
             modifier = Modifier
                 .layoutId(AuthenticatedStateScreenTags.userPicture)
+                .size(150.dp)
                 .clip(CircleShape)
                 .placeholder(
                     visible = skeletonLoadingState,

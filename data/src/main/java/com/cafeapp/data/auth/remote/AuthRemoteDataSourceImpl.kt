@@ -1,5 +1,6 @@
 package com.cafeapp.data.auth.remote
 
+import android.util.Log
 import com.cafeapp.data.auth.remote.models.RemoteUser
 import com.cafeapp.data.auth.remote.states.RemoteCheckUserResult
 import com.cafeapp.data.auth.remote.states.RemoteSignInResult
@@ -41,6 +42,7 @@ class AuthRemoteDataSourceImpl(
                 changeUserPhoto(photo)
             }
             createCartForUser(createdUser!!.uid)
+            user = firebaseAuth.currentUser?.toRemoteUser()
             RemoteSignUpResult.Success(createdUser.toRemoteUser())
         } catch (e: FirebaseNetworkException) {
             RemoteSignUpResult.NetworkUnavailableError
@@ -52,12 +54,19 @@ class AuthRemoteDataSourceImpl(
     override suspend fun signInUser(email: String, password: String): RemoteSignInResult {
         return try {
             val currentUser = firebaseAuth.signInWithEmailAndPassword(email, password).await().user
+            user = currentUser?.toRemoteUser()
             if (currentUser != null) RemoteSignInResult.Success(currentUser.toRemoteUser()) else RemoteSignInResult.WrongCredentialsError
         } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Log.d("Auth", e.toString())
             RemoteSignInResult.WrongCredentialsError
         } catch (e: FirebaseNetworkException) {
+            Log.d("Auth", e.toString())
             RemoteSignInResult.NetworkUnavailableError
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Log.d("Auth", e.toString())
+            RemoteSignInResult.WrongCredentialsError
         } catch (e: Exception) {
+            Log.d("Auth", e.toString())
             RemoteSignInResult.OtherError
         }
     }

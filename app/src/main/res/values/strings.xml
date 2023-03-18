@@ -63,4 +63,8 @@
     <string name="no_connection">No connection</string>
     <string name="no_connection_details">Check your connection and try again</string>
     <string name="refresh">Refresh</string>
+    <string name="choose_payment_method">Payment methods</string>
+    <string name="delivery_methods">Delivery methods</string>
+    <string name="delivery_address">Delivery address</string>
+    <string name="address">Address</string>
 </resources>

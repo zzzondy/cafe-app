@@ -1,7 +1,5 @@
 package com.cafeapp.ui.screens.profile.signUp_flow.user_photo
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -43,7 +41,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
-import java.io.ByteArrayOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SignUpFlowNavGraph
@@ -54,11 +51,14 @@ fun UserPhotoScreen(
     signUpSharedViewModel: SignUpSharedViewModel,
     userPhotoScreenViewModel: UserPhotoScreenViewModel = hiltViewModel()
 ) {
-    val userPhotoScreenState by userPhotoScreenViewModel.userPhotoScreenState.collectAsState()
+    val screenState by userPhotoScreenViewModel.userPhotoScreenState.collectAsState()
     val loadingState by userPhotoScreenViewModel.loadingState.collectAsState()
-    userPhotoScreenViewModel.userPhotoScreenEffect.collectAsEffect {effect ->
+    userPhotoScreenViewModel.userPhotoScreenEffect.collectAsEffect { effect ->
         when (effect) {
-            UserPhotoScreenEffect.NavigateUp -> navigator.popBackStack(ProfileScreenDestination, inclusive = false)
+            UserPhotoScreenEffect.NavigateUp -> navigator.popBackStack(
+                ProfileScreenDestination,
+                inclusive = false
+            )
         }
     }
 
@@ -75,17 +75,8 @@ fun UserPhotoScreen(
             if (uri != null) {
                 selectedImageUri = uri
             }
-            val data = if (uri == null) {
-                null
-            } else {
-                val inputStream = context.contentResolver.openInputStream(uri)
-                val baos = ByteArrayOutputStream()
-                val bitmap = BitmapFactory.decodeStream(inputStream)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-                baos.toByteArray()
-            }
-            signUpSharedViewModel.updatePhotoUri(data)
 
+            signUpSharedViewModel.updatePhotoUri(selectedImageUri, context)
         }
     )
 
@@ -120,7 +111,7 @@ fun UserPhotoScreen(
                     selectedImageUri = selectedImageUri,
                     onClearImage = {
                         selectedImageUri = null
-                        signUpSharedViewModel.updatePhotoUri(null)
+                        signUpSharedViewModel.updatePhotoUri(null, context)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -129,19 +120,17 @@ fun UserPhotoScreen(
             }
 
             item {
-                AnimatedVisibility(visible = userPhotoScreenState is UserPhotoScreenState.NetworkUnavailableError) {
+                AnimatedVisibility(visible = screenState != UserPhotoScreenState.Initially) {
                     Text(
-                        text = UiText.StringResource(R.string.network_unavailable).asString(),
+                        text = UiText.StringResource(
+                            if (screenState == UserPhotoScreenState.NetworkUnavailableError) {
+                                R.string.network_unavailable
+                            } else {
+                                R.string.some_error
+                            }
+                        ).asString(),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.titleMedium,
-                    )
-                }
-
-                AnimatedVisibility(visible = userPhotoScreenState is UserPhotoScreenState.OtherError) {
-                    Text(
-                        text = UiText.StringResource(R.string.some_error).asString(),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.titleMedium
                     )
                 }
             }
