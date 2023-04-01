@@ -68,4 +68,8 @@
     <string name="delivery_methods">Способы доставки</string>
     <string name="delivery_address">Адрес доставки</string>
     <string name="address">Адрес</string>
+    <string name="user_not_authenticated">Только авторизованные пользователи могут сделать заказ</string>
+    <string name="confirm">Хорошо</string>
+    <string name="make_order_successful">Заказ успешно сделан</string>
+    <string name="make_order_successful_details">Наши работники свяжутся с вами с помощью номера телефона, указанного в профиле</string>
 </resources>

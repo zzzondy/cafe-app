@@ -1,9 +1,7 @@
 package com.cafeapp.data.auth.remote
 
 import com.cafeapp.data.auth.remote.models.RemoteUser
-import com.cafeapp.data.auth.remote.states.RemoteCheckUserResult
-import com.cafeapp.data.auth.remote.states.RemoteSignInResult
-import com.cafeapp.data.auth.remote.states.RemoteSignUpResult
+import com.cafeapp.data.auth.remote.states.*
 
 interface AuthRemoteDataSource {
     var user: RemoteUser?
@@ -22,4 +20,6 @@ interface AuthRemoteDataSource {
     suspend fun checkUserAlreadyExists(email: String): RemoteCheckUserResult
 
     suspend fun signOut()
+
+    suspend fun getUserPhoneNumber(userId: String): RemoteObtainingUserPhoneNumberResult
 }

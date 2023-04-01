@@ -4,11 +4,10 @@ import com.cafeapp.data.auth.remote.AuthRemoteDataSource
 import com.cafeapp.data.auth.remote.states.RemoteCheckUserResult
 import com.cafeapp.data.auth.remote.states.RemoteSignInResult
 import com.cafeapp.data.auth.remote.states.RemoteSignUpResult
+import com.cafeapp.data.auth.util.toDomain
 import com.cafeapp.data.auth.util.toDomainUser
 import com.cafeapp.domain.auth.repository.AuthRepository
-import com.cafeapp.domain.auth.states.CheckUserResult
-import com.cafeapp.domain.auth.states.SignInResult
-import com.cafeapp.domain.auth.states.SignUpResult
+import com.cafeapp.domain.auth.states.*
 import com.cafeapp.domain.models.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -83,10 +82,14 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun getUserPhoneNumber(userId: String): ObtainingUserPhoneNumberResult =
+        authRemoteDataSource.getUserPhoneNumber(userId).toDomain()
+
+
     override fun observeCurrentUser(): Flow<User?> =
         userFlow.asStateFlow()
-
-    override fun updateCurrentUser() {
+    private fun updateCurrentUser() {
         currentUser = authRemoteDataSource.user?.toDomainUser()
     }
+
 }

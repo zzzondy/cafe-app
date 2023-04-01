@@ -9,10 +9,10 @@ import com.cafeapp.domain.auth.states.validation.ValidationPasswordResult
 import com.cafeapp.domain.auth.usecase.CheckUserExistsUseCase
 import com.cafeapp.domain.auth.usecase.validation.ValidateEmailUseCase
 import com.cafeapp.domain.auth.usecase.validation.ValidatePasswordUseCase
-import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEvent
-import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenState
 import com.cafeapp.ui.common.states.LoadingState
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEffect
+import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEvent
+import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

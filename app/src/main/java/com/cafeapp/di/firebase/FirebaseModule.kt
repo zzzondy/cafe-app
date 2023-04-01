@@ -26,7 +26,7 @@ class FirebaseModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth
+    fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth.apply { useAppLanguage() }
 
     @Singleton
     @Provides

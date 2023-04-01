@@ -25,6 +25,7 @@ import com.cafeapp.ui.screens.cart.main.states.CartScreenState
 import com.cafeapp.ui.screens.cart.main.states.ui.EmptyCartScreenState
 import com.cafeapp.ui.screens.cart.main.states.ui.IsLoadingScreenState
 import com.cafeapp.ui.screens.cart.main.states.ui.NotEmptyCartScreenState
+import com.cafeapp.ui.screens.cart.make_order.MakeOrderScreenNavArgs
 import com.cafeapp.ui.screens.destinations.MakeOrderScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -44,8 +45,11 @@ fun CartScreen(
             is CartScreenEffect.NavigateToMakeOrderScreen -> {
                 navigator.navigate(
                     MakeOrderScreenDestination(
-                        selectedFoodIds = effect.selectedItemsIds.toLongArray(),
-                        total = effect.total
+                        MakeOrderScreenNavArgs(
+                            selectedFoodIds = effect.selectedItemsIds.toLongArray(),
+                            foodsCount = effect.foodsCount.toIntArray(),
+                            total = effect.total
+                        )
                     )
                 )
             }
@@ -117,7 +121,7 @@ fun CartScreen(
                         )
                     }
 
-                    is CartScreenState.IsLoading -> {
+                    is CartScreenState.Loading -> {
                         IsLoadingScreenState(
                             modifier = Modifier
                                 .weight(1f)

@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -30,10 +29,9 @@ import com.cafeapp.core.util.UiText
 import com.cafeapp.core.util.toPxWithDensity
 import com.cafeapp.domain.models.User
 import com.cafeapp.ui.screens.app.LocalImageLoader
-import com.cafeapp.ui.theme.CafeAppTheme
 import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.animation.crossfade.CrossfadePlugin
 import com.skydoves.landscapist.coil.CoilImage
@@ -104,7 +102,7 @@ fun AuthenticatedStateScreen(
                 .placeholder(
                     visible = skeletonLoadingState,
                     shape = CircleShape,
-                    highlight = PlaceholderHighlight.fade(),
+                    highlight = PlaceholderHighlight.shimmer(),
                     color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
                 ),
             onImageStateChanged = { state ->
@@ -136,7 +134,7 @@ fun AuthenticatedStateScreen(
             modifier = Modifier
                 .placeholder(
                     visible = skeletonLoadingState,
-                    highlight = PlaceholderHighlight.fade(),
+                    highlight = PlaceholderHighlight.shimmer(),
                     color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
                     shape = ShapeDefaults.Small
                 )
@@ -149,7 +147,7 @@ fun AuthenticatedStateScreen(
             modifier = Modifier
                 .placeholder(
                     visible = skeletonLoadingState,
-                    highlight = PlaceholderHighlight.fade(),
+                    highlight = PlaceholderHighlight.shimmer(),
                     color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
                     shape = ShapeDefaults.Small
                 )
@@ -162,19 +160,4 @@ private object AuthenticatedStateScreenTags {
     const val userPicture = "userPicture"
     const val userName = "userName"
     const val userEmail = "userEmail"
-}
-
-@Preview
-@Composable
-fun AuthenticatedStateScreenPreview() {
-    CafeAppTheme {
-        AuthenticatedStateScreen(
-            user = User(
-                "1",
-                "artemr19032006@yandex.ru",
-                "https://firebasestorage.googleapis.com/v0/b/cafe-app-project.appspot.com/o/qwetPLQG6wRrGK8vGJ2Jf47Ploz2.jpg?alt=media&token=02423417-746c-4c55-baa6-ffde6b8ecc59",
-                "Artyom Rodionov"
-            )
-        )
-    }
 }

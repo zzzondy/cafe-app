@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.dp
 import com.cafeapp.ui.screens.food_list.main.FoodItem
 import com.cafeapp.ui.screens.food_list.main.FoodListConfig
 import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 
 
 @Composable
@@ -29,7 +29,7 @@ fun LoadingRefreshFoodScreenState(modifier: Modifier = Modifier) {
                         visible = true,
                         color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
                         shape = MaterialTheme.shapes.medium,
-                        highlight = PlaceholderHighlight.fade()
+                        highlight = PlaceholderHighlight.shimmer()
                     )
             )
         }

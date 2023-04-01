@@ -67,4 +67,8 @@
     <string name="delivery_methods">Delivery methods</string>
     <string name="delivery_address">Delivery address</string>
     <string name="address">Address</string>
+    <string name="user_not_authenticated">Only authenticated users can make order</string>
+    <string name="confirm">Confirm</string>
+    <string name="make_order_successful">Make order successful</string>
+    <string name="make_order_successful_details">Our employees call you with phone number in your profile</string>
 </resources>

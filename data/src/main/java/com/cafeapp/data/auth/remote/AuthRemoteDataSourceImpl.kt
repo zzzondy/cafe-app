@@ -1,16 +1,18 @@
 package com.cafeapp.data.auth.remote
 
-import android.util.Log
 import com.cafeapp.data.auth.remote.models.RemoteUser
 import com.cafeapp.data.auth.remote.states.RemoteCheckUserResult
+import com.cafeapp.data.auth.remote.states.RemoteObtainingUserPhoneNumberResult
 import com.cafeapp.data.auth.remote.states.RemoteSignInResult
 import com.cafeapp.data.auth.remote.states.RemoteSignUpResult
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
@@ -18,8 +20,9 @@ import kotlinx.coroutines.tasks.await
 class AuthRemoteDataSourceImpl(
     private val firebaseAuth: FirebaseAuth,
     private val firebaseStorage: FirebaseStorage,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
 ) : AuthRemoteDataSource {
+
     override var user: RemoteUser? = firebaseAuth.currentUser?.toRemoteUser()
 
     override suspend fun signUpUser(
@@ -41,7 +44,7 @@ class AuthRemoteDataSourceImpl(
             if (photo != null) {
                 changeUserPhoto(photo)
             }
-            createCartForUser(createdUser!!.uid)
+            createUserInfo(createdUser!!.uid, phoneNumber)
             user = firebaseAuth.currentUser?.toRemoteUser()
             RemoteSignUpResult.Success(createdUser.toRemoteUser())
         } catch (e: FirebaseNetworkException) {
@@ -57,16 +60,12 @@ class AuthRemoteDataSourceImpl(
             user = currentUser?.toRemoteUser()
             if (currentUser != null) RemoteSignInResult.Success(currentUser.toRemoteUser()) else RemoteSignInResult.WrongCredentialsError
         } catch (e: FirebaseAuthInvalidCredentialsException) {
-            Log.d("Auth", e.toString())
             RemoteSignInResult.WrongCredentialsError
         } catch (e: FirebaseNetworkException) {
-            Log.d("Auth", e.toString())
             RemoteSignInResult.NetworkUnavailableError
-        } catch (e: FirebaseAuthInvalidCredentialsException) {
-            Log.d("Auth", e.toString())
+        } catch (e: FirebaseAuthInvalidUserException) {
             RemoteSignInResult.WrongCredentialsError
         } catch (e: Exception) {
-            Log.d("Auth", e.toString())
             RemoteSignInResult.OtherError
         }
     }
@@ -102,20 +101,39 @@ class AuthRemoteDataSourceImpl(
         firebaseAuth.currentUser!!.updateProfile(profileUpdates).await()
     }
 
-    private suspend fun createCartForUser(userId: String) {
-        val docData = hashMapOf<String, Any>(
-            CART to listOf<Any>()
+    private suspend fun createUserInfo(userId: String, phoneNumber: String) {
+        val docData = hashMapOf(
+            CART to listOf<Any>(),
+            PHONE_NUMBER to phoneNumber,
+            ORDERS_LIST to listOf<Any>()
         )
         firestore.collection(USER_COLLECTION).document(userId)
             .set(docData, SetOptions.merge())
             .await()
     }
 
+    override suspend fun getUserPhoneNumber(userId: String): RemoteObtainingUserPhoneNumberResult =
+        try {
+            RemoteObtainingUserPhoneNumberResult.Success(
+                firestore.collection(USER_COLLECTION).document(userId)
+                    .get()
+                    .await()!![PHONE_NUMBER].toString()
+            )
+        } catch (e: FirebaseNetworkException) {
+            RemoteObtainingUserPhoneNumberResult.NetworkError
+        } catch (e: FirebaseFirestoreException) {
+            RemoteObtainingUserPhoneNumberResult.NetworkError
+        } catch (e: Exception) {
+            RemoteObtainingUserPhoneNumberResult.OtherError
+        }
+
     private fun FirebaseUser.toRemoteUser(): RemoteUser =
         RemoteUser(uid, email!!, photoUrl?.toString(), displayName)
 
     companion object {
         private const val CART = "cart"
+        private const val PHONE_NUMBER = "phone_number"
+        private const val ORDERS_LIST = "orders_list"
         private const val USER_COLLECTION = "user"
     }
 }

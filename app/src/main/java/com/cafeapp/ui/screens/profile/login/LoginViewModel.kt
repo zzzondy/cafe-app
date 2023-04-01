@@ -2,7 +2,9 @@ package com.cafeapp.ui.screens.profile.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cafeapp.R
 import com.cafeapp.core.providers.dispatchers.DispatchersProvider
+import com.cafeapp.core.util.UiText
 import com.cafeapp.domain.auth.states.SignInResult
 import com.cafeapp.domain.auth.usecase.SignInUserUseCase
 import com.cafeapp.ui.common.states.LoadingState
@@ -43,18 +45,21 @@ class LoginViewModel @Inject constructor(
 
             when (signInUserUseCase(email, password)) {
                 is SignInResult.Success -> {
+                    _loginScreenState.value = LoginScreenState.Initially
                     _loginScreenEffect.emit(LoginScreenEffect.NavigateBackOnSuccessfullySignIn)
                 }
 
                 is SignInResult.NetworkUnavailableError -> {
-                    _loginScreenState.value = LoginScreenState.NetworkUnavailable
+                    _loginScreenState.value = LoginScreenState.SomeError(UiText.StringResource(R.string.network_unavailable))
                 }
 
                 is SignInResult.WrongCredentialsError -> {
-                    _loginScreenState.value = LoginScreenState.WrongCredentialsError
+                    _loginScreenState.value =
+                        LoginScreenState.SomeError(UiText.StringResource(R.string.sign_in_error))
                 }
+
                 is SignInResult.OtherError -> {
-                    _loginScreenState.value = LoginScreenState.NetworkUnavailable
+                    _loginScreenState.value = LoginScreenState.SomeError(UiText.StringResource(R.string.some_error))
                 }
             }
             _loadingState.update { LoadingState.NotLoading }

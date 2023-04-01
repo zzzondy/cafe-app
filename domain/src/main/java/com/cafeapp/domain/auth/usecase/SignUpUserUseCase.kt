@@ -12,7 +12,15 @@ class SignUpUserUseCase(private val userManager: UserManager) {
         phoneNumber: String,
         photo: ByteArray?
     ): SignUpResult {
-        return when (val result = userManager.signUpUser(email, password, firstName, lastName, phoneNumber, photo)) {
+        return when (val result =
+            userManager.signUpUser(
+                email,
+                password,
+                firstName,
+                lastName,
+                "+7$phoneNumber",
+                photo
+            )) {
             is SignUpResult.NetworkUnavailableError -> SignUpResult.NetworkUnavailableError
             is SignUpResult.OtherError -> SignUpResult.OtherError
             is SignUpResult.Success -> SignUpResult.Success(result.user)

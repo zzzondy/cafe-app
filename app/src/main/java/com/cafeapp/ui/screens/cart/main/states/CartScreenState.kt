@@ -8,7 +8,7 @@ sealed class CartScreenState {
 
     object EmptyFoodList : CartScreenState()
 
-    object IsLoading : CartScreenState()
+    object Loading : CartScreenState()
 
     object NetworkError : CartScreenState()
 

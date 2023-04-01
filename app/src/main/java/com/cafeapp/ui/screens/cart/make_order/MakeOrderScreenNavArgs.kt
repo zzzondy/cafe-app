@@ -2,6 +2,7 @@ package com.cafeapp.ui.screens.cart.make_order
 
 data class MakeOrderScreenNavArgs(
     val selectedFoodIds: LongArray,
+    val foodsCount: IntArray,
     val total: Int
 ) {
     override fun equals(other: Any?): Boolean {

@@ -24,10 +24,6 @@ class UseCaseModule {
     fun provideSignInUserUseCase(userManager: UserManager): SignInUserUseCase =
         SignInUserUseCase(userManager)
 
-    @ViewModelScoped
-    @Provides
-    fun provideObserveCurrentUserUseCase(userManager: UserManager): ObserveCurrentUserUseCase =
-        ObserveCurrentUserUseCase(userManager)
 
     @ViewModelScoped
     @Provides
@@ -39,6 +35,10 @@ class UseCaseModule {
     fun provideCheckUserExistsUseCase(authRepository: AuthRepository): CheckUserExistsUseCase =
         CheckUserExistsUseCase(authRepository)
 
+    @ViewModelScoped
+    @Provides
+    fun provideObserveCurrentUserUseCase(userManager: UserManager): ObserveCurrentUserUseCase =
+        ObserveCurrentUserUseCase(userManager)
 
     @ViewModelScoped
     @Provides
@@ -64,4 +64,8 @@ class UseCaseModule {
     @ViewModelScoped
     @Provides
     fun provideCheckUserAuthenticatedUseCase(userManager: UserManager): CheckUserAuthenticatedUseCase = CheckUserAuthenticatedUseCase(userManager)
+
+    @ViewModelScoped
+    @Provides
+    fun provideObtainUserPhoneNumberUseCase(userManager: UserManager): ObtainUserPhoneNumberUseCase = ObtainUserPhoneNumberUseCase(userManager)
 }

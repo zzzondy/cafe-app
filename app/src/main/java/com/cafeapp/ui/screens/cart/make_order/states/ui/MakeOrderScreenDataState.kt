@@ -31,9 +31,12 @@ fun MakeOrderScreenDataState(
     paymentMethods: List<PaymentMethod>,
     deliveryMethods: List<DeliveryMethod>,
     total: Int,
+    isCheckoutButtonAvailable: Boolean,
     modifier: Modifier = Modifier,
     onPaymentMethodSelected: (PaymentMethod) -> Unit = {},
-    onDeliveryMethodSelected: (DeliveryMethod) -> Unit = {}
+    onDeliveryMethodSelected: (DeliveryMethod) -> Unit = {},
+    onDeliveryAddressUpdated: (String) -> Unit = {},
+    onCheckout: () -> Unit = {}
 ) {
     Column(modifier = modifier) {
         LazyColumn(
@@ -47,7 +50,8 @@ fun MakeOrderScreenDataState(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    onDeliveryMethodSelected = onDeliveryMethodSelected
+                    onDeliveryMethodSelected = onDeliveryMethodSelected,
+                    onDeliveryAddressUpdated = onDeliveryAddressUpdated
                 )
             }
 
@@ -80,12 +84,12 @@ fun MakeOrderScreenDataState(
         }
 
         MakeOrderButton(
+            enabled = isCheckoutButtonAvailable,
+            onClick = onCheckout,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 32.dp, start = 16.dp, end = 16.dp)
-        ) {
-
-        }
+        )
     }
 }
 
@@ -95,7 +99,8 @@ fun MakeOrderScreenDataState(
 private fun DeliveryMethodsSection(
     deliveryMethods: List<DeliveryMethod>,
     modifier: Modifier = Modifier,
-    onDeliveryMethodSelected: (DeliveryMethod) -> Unit = {}
+    onDeliveryMethodSelected: (DeliveryMethod) -> Unit = {},
+    onDeliveryAddressUpdated: (String) -> Unit = {}
 ) {
     var selectedDeliveryMethod by remember { mutableStateOf(deliveryMethods[0]) }
 
@@ -135,6 +140,11 @@ private fun DeliveryMethodsSection(
                                 interactionSource = MutableInteractionSource()
                             ) {
                                 onDeliveryMethodSelected(deliveryMethod)
+
+                                if (selectedDeliveryMethod.id != deliveryMethod.id) {
+                                    typedDeliveryAddress = ""
+                                }
+
                                 selectedDeliveryMethod = deliveryMethod
                             }
                     ) {
@@ -154,7 +164,10 @@ private fun DeliveryMethodsSection(
                     if (deliveryMethod.isDelivery && selectedDeliveryMethod.id == deliveryMethod.id) {
                         OutlinedTextField(
                             value = typedDeliveryAddress,
-                            onValueChange = { typedDeliveryAddress = it },
+                            onValueChange = {
+                                typedDeliveryAddress = it
+                                onDeliveryAddressUpdated(typedDeliveryAddress)
+                            },
                             singleLine = true,
                             label = {
                                 Text(
@@ -289,8 +302,16 @@ private fun TotalSection(total: Int, modifier: Modifier = Modifier) {
 
 
 @Composable
-private fun MakeOrderButton(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
-    Button(onClick = onClick, modifier = modifier) {
+private fun MakeOrderButton(
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
+    Button(
+        enabled = enabled,
+        onClick = onClick,
+        modifier = modifier
+    ) {
         Text(text = UiText.StringResource(R.string.make_order).asString())
     }
 }

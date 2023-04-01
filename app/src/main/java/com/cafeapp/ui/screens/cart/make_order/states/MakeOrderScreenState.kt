@@ -9,7 +9,8 @@ sealed class MakeOrderScreenState {
     data class ScreenData(
         val total: Int,
         val paymentMethods: List<PaymentMethod>,
-        val deliveryMethods: List<DeliveryMethod>
+        val deliveryMethods: List<DeliveryMethod>,
+        val isCheckoutButtonAvailable: Boolean
     ) :
         MakeOrderScreenState()
 

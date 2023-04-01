@@ -1,8 +1,7 @@
 package com.cafeapp.domain.auth.manager
 
 import com.cafeapp.domain.auth.repository.AuthRepository
-import com.cafeapp.domain.auth.states.SignInResult
-import com.cafeapp.domain.auth.states.SignUpResult
+import com.cafeapp.domain.auth.states.*
 import com.cafeapp.domain.models.User
 import kotlinx.coroutines.flow.Flow
 
@@ -30,5 +29,16 @@ class UserManagerImpl(
         authRepository.signOut()
     }
 
+
+    override suspend fun getUserPhoneNumber(): ObtainingUserPhoneNumberResult {
+        return if (currentUser != null) {
+            authRepository.getUserPhoneNumber(currentUser!!.id)
+        } else {
+            ObtainingUserPhoneNumberResult.UserNotAuthenticatedError
+        }
+    }
+
     override suspend fun observeCurrentUser(): Flow<User?> = authRepository.observeCurrentUser()
+
+
 }

@@ -1,9 +1,8 @@
 package com.cafeapp.ui.screens.profile.login.states
 
-sealed interface LoginScreenState {
-    object WrongCredentialsError : LoginScreenState
+import com.cafeapp.core.util.UiText
 
-    object NetworkUnavailable : LoginScreenState
-
-    object Initially : LoginScreenState
+sealed class LoginScreenState {
+    data class SomeError(val message: UiText) : LoginScreenState()
+    object Initially : LoginScreenState()
 }

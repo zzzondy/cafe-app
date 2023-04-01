@@ -1,7 +1,6 @@
 package com.cafeapp.domain.auth.manager
 
-import com.cafeapp.domain.auth.states.SignInResult
-import com.cafeapp.domain.auth.states.SignUpResult
+import com.cafeapp.domain.auth.states.*
 import com.cafeapp.domain.models.User
 import kotlinx.coroutines.flow.Flow
 
@@ -22,4 +21,6 @@ interface UserManager {
     suspend fun signOut()
 
     suspend fun observeCurrentUser(): Flow<User?>
+
+    suspend fun getUserPhoneNumber(): ObtainingUserPhoneNumberResult
 }

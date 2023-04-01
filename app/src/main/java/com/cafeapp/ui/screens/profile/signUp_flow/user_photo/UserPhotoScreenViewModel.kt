@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.cafeapp.core.providers.dispatchers.DispatchersProvider
 import com.cafeapp.domain.auth.states.SignUpResult
 import com.cafeapp.domain.auth.usecase.SignUpUserUseCase
-import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenEvent
-import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenState
 import com.cafeapp.ui.common.states.LoadingState
 import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenEffect
+import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenEvent
+import com.cafeapp.ui.screens.profile.signUp_flow.user_photo.states.UserPhotoScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

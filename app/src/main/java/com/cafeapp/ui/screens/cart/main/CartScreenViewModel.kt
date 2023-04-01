@@ -29,7 +29,7 @@ class CartScreenViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    private val _cartScreenState = MutableStateFlow<CartScreenState>(CartScreenState.IsLoading)
+    private val _cartScreenState = MutableStateFlow<CartScreenState>(CartScreenState.Loading)
     val cartScreenState = _cartScreenState.asStateFlow()
 
     private val _cartScreenEffect = MutableSharedFlow<CartScreenEffect>()
@@ -37,7 +37,7 @@ class CartScreenViewModel @Inject constructor(
 
     private val currentFoodList = mutableListOf<Pair<Food, Int>>()
 
-    private val selectedFoods = mutableListOf<Pair<Food, Int>>()
+    private var selectedFoods = mutableListOf<Pair<Food, Int>>()
 
     private val _currentTotal = MutableStateFlow(0)
     val currentTotal = _currentTotal.asStateFlow()
@@ -84,6 +84,7 @@ class CartScreenViewModel @Inject constructor(
             _cartScreenEffect.emit(
                 CartScreenEffect.NavigateToMakeOrderScreen(
                     selectedFoods.map { it.first.id },
+                    selectedFoods.map { it.second },
                     currentTotal.value
                 )
             )
@@ -94,14 +95,10 @@ class CartScreenViewModel @Inject constructor(
         val foodIndex = currentFoodList.indexOfFirst { it.first == food }
         if (selectedFoods.find { it.first == currentFoodList[foodIndex].first } != null) {
             selectedFoods.remove(currentFoodList[foodIndex])
-            _currentTotal.update {
-                calculateTotalUseCase(selectedFoods)
-            }
+            recalculateCurrentTotal()
         } else {
             selectedFoods.add(currentFoodList[foodIndex])
-            _currentTotal.update {
-                calculateTotalUseCase(selectedFoods)
-            }
+            recalculateCurrentTotal()
         }
     }
 
@@ -109,9 +106,7 @@ class CartScreenViewModel @Inject constructor(
         val index = selectedFoods.indexOfFirst { it.first == food }
         if (index != -1) {
             selectedFoods[index] = food to itemsCount
-            _currentTotal.update {
-                calculateTotalUseCase(selectedFoods)
-            }
+            recalculateCurrentTotal()
         }
     }
 
@@ -165,17 +160,25 @@ class CartScreenViewModel @Inject constructor(
                         if (obtainingCartResult.foodList.isNotEmpty()) {
                             currentFoodList.clear()
                             currentFoodList.addAll(obtainingCartResult.foodList)
+                            selectedFoods = selectedFoods.filter { currentFoodList.contains(it) }.toMutableList()
+                            recalculateCurrentTotal()
                             CartScreenState.FoodList(obtainingCartResult.foodList)
                         } else {
+                            selectedFoods.clear()
+                            recalculateCurrentTotal()
                             CartScreenState.EmptyFoodList
                         }
                     }
 
                     is ObtainingCartResult.NetworkError -> {
+                        selectedFoods.clear()
+                        recalculateCurrentTotal()
                         CartScreenState.NetworkError
                     }
 
                     is ObtainingCartResult.OtherError -> {
+                        selectedFoods.clear()
+                        recalculateCurrentTotal()
                         CartScreenState.OtherError
                     }
                 }
@@ -191,9 +194,7 @@ class CartScreenViewModel @Inject constructor(
                     val index = selectedFoods.indexOfFirst { it.first.id == food.id }
                     if (index != -1) {
                         selectedFoods.removeAt(index)
-                        _currentTotal.update {
-                            calculateTotalUseCase(selectedFoods)
-                        }
+                        recalculateCurrentTotal()
                     }
 
                     currentFoodList.removeAt(foodIndex)
@@ -228,7 +229,7 @@ class CartScreenViewModel @Inject constructor(
                     }
 
                     selectedFoods.clear()
-                    _currentTotal.update { calculateTotalUseCase(selectedFoods) }
+                    recalculateCurrentTotal()
                     _cartScreenState.update {
                         if (currentFoodList.isEmpty()) {
                             CartScreenState.EmptyFoodList
@@ -247,5 +248,9 @@ class CartScreenViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun recalculateCurrentTotal() {
+        _currentTotal.update { calculateTotalUseCase(selectedFoods) }
     }
 }

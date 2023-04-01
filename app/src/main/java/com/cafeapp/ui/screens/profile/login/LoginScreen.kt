@@ -129,15 +129,10 @@ private fun LoginScreenPart(
         )
 
         AnimatedVisibility(
-            visible = loginScreenState == LoginScreenState.NetworkUnavailable ||
-                    loginScreenState == LoginScreenState.WrongCredentialsError
+            visible = loginScreenState is LoginScreenState.SomeError
         ) {
             Text(
-                text = if (loginScreenState == LoginScreenState.NetworkUnavailable) {
-                    UiText.StringResource(R.string.network_unavailable).asString()
-                } else {
-                    UiText.StringResource(R.string.sign_in_error).asString()
-                },
+                text = (loginScreenState as LoginScreenState.SomeError).message.asString(),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,

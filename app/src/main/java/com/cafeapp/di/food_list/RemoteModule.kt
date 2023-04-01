@@ -6,14 +6,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.scopes.ViewModelScoped
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 @Module
 class RemoteModule {
 
-    @ViewModelScoped
+    @Singleton
     @Provides
     fun provideRemoteFoodListRepository(fireStore: FirebaseFirestore): RemoteFoodListRepository =
         RemoteFoodListRepositoryImpl(fireStore)
