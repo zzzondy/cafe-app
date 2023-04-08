@@ -6,14 +6,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MakeOrderScreenTopAppBar(onBackPressed: () -> Unit) {
     TopAppBar(
         title = {
-            Text(text = UiText.StringResource(R.string.make_order).asString())
+            Text(text = UIText.StringResource(R.string.make_order).asString())
         },
         navigationIcon = {
             IconButton(onClick = onBackPressed) {

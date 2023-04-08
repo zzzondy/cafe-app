@@ -21,7 +21,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.core.util.toPxWithDensity
 import com.cafeapp.domain.models.Food
 import com.cafeapp.ui.screens.app.LocalImageLoader
@@ -92,7 +92,7 @@ fun FoodItem(
             )
 
             Text(
-                text = UiText.DynamicText(food?.name ?: "").asString(),
+                text = UIText.DynamicText(food?.name ?: "").asString(),
                 style = MaterialTheme.typography.labelLarge,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
@@ -102,7 +102,7 @@ fun FoodItem(
             )
 
             Text(
-                text = UiText.StringResource(R.string.rubles, food?.price ?: 0).asString(),
+                text = UIText.StringResource(R.string.rubles, food?.price ?: 0).asString(),
                 style = MaterialTheme.typography.labelMedium,
                 textAlign = TextAlign.Start,
                 modifier = modifier

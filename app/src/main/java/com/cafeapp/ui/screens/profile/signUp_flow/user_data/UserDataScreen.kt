@@ -21,7 +21,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.core.util.collectAsEffect
 import com.cafeapp.ui.screens.destinations.UserPhotoScreenDestination
 import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
@@ -56,6 +56,8 @@ fun UserDataScreen(
                 )
                 navigator.navigate(UserPhotoScreenDestination)
             }
+
+            UserDataScreenEffect.NavigateBack -> navigator.popBackStack()
         }
     }
 
@@ -66,11 +68,11 @@ fun UserDataScreen(
             MediumTopAppBar(
                 title = {
                     Text(
-                        text = UiText.StringResource(R.string.user_data_title).asString()
+                        text = UIText.StringResource(R.string.user_data_title).asString()
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navigator.popBackStack() }) {
+                    IconButton(onClick = { userDataScreenViewModel.onEvent(UserDataScreenEvent.OnBackButtonClicked) }) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = stringResource(
@@ -92,7 +94,7 @@ fun UserDataScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = UiText.StringResource(R.string.user_data_hint).asString(),
+                text = UIText.StringResource(R.string.user_data_hint).asString(),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -109,7 +111,7 @@ fun UserDataScreen(
                         )
                     )
                 },
-                label = { Text(text = UiText.StringResource(R.string.first_name).asString()) },
+                label = { Text(text = UIText.StringResource(R.string.first_name).asString()) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Rounded.Person, contentDescription = stringResource(
@@ -136,7 +138,7 @@ fun UserDataScreen(
                         )
                     )
                 },
-                label = { Text(text = UiText.StringResource(R.string.last_name).asString()) },
+                label = { Text(text = UIText.StringResource(R.string.last_name).asString()) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Rounded.Person, contentDescription = stringResource(
@@ -162,7 +164,7 @@ fun UserDataScreen(
                         )
                     )
                 },
-                label = { Text(text = UiText.StringResource(R.string.phone_number).asString()) },
+                label = { Text(text = UIText.StringResource(R.string.phone_number).asString()) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Rounded.Phone, contentDescription = stringResource(
@@ -189,7 +191,7 @@ fun UserDataScreen(
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp)
                     .fillMaxWidth()
             ) {
-                Text(text = UiText.StringResource(R.string.next).asString())
+                Text(text = UIText.StringResource(R.string.next).asString())
             }
         }
     }

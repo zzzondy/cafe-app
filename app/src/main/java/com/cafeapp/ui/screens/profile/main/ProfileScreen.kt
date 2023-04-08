@@ -11,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.ui.screens.destinations.LoginScreenDestination
 import com.cafeapp.ui.screens.destinations.SettingsScreenDestination
 import com.cafeapp.ui.screens.destinations.SignUpScreenDestination
@@ -35,7 +35,7 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             ProfileTopAppBar(
-                title = UiText.StringResource(R.string.profile).asString(),
+                title = UIText.StringResource(R.string.profile).asString(),
                 onSettingsClicked = { navigator.navigate(SettingsScreenDestination) }
             )
         },

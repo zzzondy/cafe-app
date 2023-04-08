@@ -5,6 +5,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,9 +29,8 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.core.util.collectAsEffect
-import com.cafeapp.ui.common.states.LoadingState
 import com.cafeapp.ui.common.ui_components.LoadingDialog
 import com.cafeapp.ui.screens.destinations.ProfileScreenDestination
 import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
@@ -52,17 +53,26 @@ fun UserPhotoScreen(
     userPhotoScreenViewModel: UserPhotoScreenViewModel = hiltViewModel()
 ) {
     val screenState by userPhotoScreenViewModel.userPhotoScreenState.collectAsState()
-    val loadingState by userPhotoScreenViewModel.loadingState.collectAsState()
+
+    var isLoadingDialogActive by remember { mutableStateOf(false) }
+
     userPhotoScreenViewModel.userPhotoScreenEffect.collectAsEffect { effect ->
         when (effect) {
-            UserPhotoScreenEffect.NavigateUp -> navigator.popBackStack(
-                ProfileScreenDestination,
-                inclusive = false
-            )
+            UserPhotoScreenEffect.NavigateBackOnSuccessfulSigning ->
+                navigator.popBackStack(
+                    ProfileScreenDestination,
+                    inclusive = false
+                )
+
+            UserPhotoScreenEffect.NavigateBack -> navigator.popBackStack()
+
+            UserPhotoScreenEffect.ShowLoadingDialog -> isLoadingDialogActive = true
+
+            UserPhotoScreenEffect.HideLoadingDialog -> isLoadingDialogActive = false
         }
     }
 
-    if (loadingState == LoadingState.Loading) {
+    if (isLoadingDialogActive) {
         LoadingDialog()
     }
 
@@ -85,7 +95,7 @@ fun UserPhotoScreen(
             MediumTopAppBar(
                 title = {
                     Text(
-                        text = UiText.StringResource(R.string.upload_profile_photo).asString()
+                        text = UIText.StringResource(R.string.upload_profile_photo).asString()
                     )
                 },
                 navigationIcon = {
@@ -104,7 +114,8 @@ fun UserPhotoScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 ImageSection(
@@ -120,15 +131,18 @@ fun UserPhotoScreen(
             }
 
             item {
-                AnimatedVisibility(visible = screenState != UserPhotoScreenState.Initially) {
+                AnimatedVisibility(
+                    visible = screenState is UserPhotoScreenState.SomeError,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                    enter = slideInVertically(initialOffsetY = { it }),
+                    exit = slideOutVertically(targetOffsetY = { -it })
+                ) {
                     Text(
-                        text = UiText.StringResource(
-                            if (screenState == UserPhotoScreenState.NetworkUnavailableError) {
-                                R.string.network_unavailable
-                            } else {
-                                R.string.some_error
-                            }
-                        ).asString(),
+                        text = if (screenState is UserPhotoScreenState.SomeError) {
+                            (screenState as UserPhotoScreenState.SomeError).message.asString()
+                        } else {
+                            ""
+                        },
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.titleMedium,
                     )
@@ -231,7 +245,7 @@ private fun ButtonsSection(
                 .layoutId(ButtonsConstraintTags.pickPhotoFromGalleryButton)
         ) {
             Text(
-                text = UiText.StringResource(R.string.pick_photo_from_gallery)
+                text = UIText.StringResource(R.string.pick_photo_from_gallery)
                     .asString()
             )
         }
@@ -241,7 +255,7 @@ private fun ButtonsSection(
             modifier = Modifier
                 .layoutId(ButtonsConstraintTags.takePhotoButton)
         ) {
-            Text(text = UiText.StringResource(R.string.take_photo).asString())
+            Text(text = UIText.StringResource(R.string.take_photo).asString())
         }
 
         Button(
@@ -255,7 +269,7 @@ private fun ButtonsSection(
             modifier = Modifier
                 .layoutId(ButtonsConstraintTags.signUpButton)
         ) {
-            Text(text = UiText.StringResource(R.string.sign_up).asString())
+            Text(text = UIText.StringResource(R.string.sign_up).asString())
         }
     }
 }

@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.ui.theme.CafeAppTheme
 
 @Composable
@@ -24,7 +24,7 @@ fun NotAuthenticatedStateScreen(onSignInClick: () -> Unit, onSignUpClick: () -> 
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = UiText.StringResource(R.string.profile_explanation).asString(),
+            text = UIText.StringResource(R.string.profile_explanation).asString(),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .fillMaxWidth()
@@ -37,7 +37,7 @@ fun NotAuthenticatedStateScreen(onSignInClick: () -> Unit, onSignUpClick: () -> 
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp)
         ) {
-            Text(text = UiText.StringResource(R.string.sign_in).asString())
+            Text(text = UIText.StringResource(R.string.sign_in).asString())
         }
 
         OutlinedButton(
@@ -45,7 +45,7 @@ fun NotAuthenticatedStateScreen(onSignInClick: () -> Unit, onSignUpClick: () -> 
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, top = 8.dp)
         ) {
-            Text(text = UiText.StringResource(R.string.sign_up).asString())
+            Text(text = UIText.StringResource(R.string.sign_up).asString())
         }
 
     }

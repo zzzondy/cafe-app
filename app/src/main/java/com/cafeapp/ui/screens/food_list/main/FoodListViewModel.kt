@@ -19,6 +19,7 @@ class FoodListViewModel @Inject constructor(
     private val addFoodToCartUseCase: AddFoodToCartUseCase,
     private val dispatchersProvider: DispatchersProvider
 ) : ViewModel() {
+
     val food = getPagedFoodListUseCase().flowOn(dispatchersProvider.io).cachedIn(viewModelScope)
 
     fun onEvent(event: FoodListEvent) {

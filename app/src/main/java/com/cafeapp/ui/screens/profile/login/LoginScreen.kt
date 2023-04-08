@@ -32,9 +32,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.core.util.collectAsEffect
-import com.cafeapp.ui.common.states.LoadingState
 import com.cafeapp.ui.common.ui_components.LoadingDialog
 import com.cafeapp.ui.screens.profile.ProfileNavGraph
 import com.cafeapp.ui.screens.profile.login.states.LoginScreenEffect
@@ -52,26 +51,29 @@ fun LoginScreen(
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
     val loginScreenState by loginViewModel.loginScreenState.collectAsState()
-    val loadingState by loginViewModel.loadingState.collectAsState()
+
+    var isLoadingDialogActive by remember { mutableStateOf(false) }
 
     loginViewModel.loginScreenEffect.collectAsEffect { effect ->
         when (effect) {
-            LoginScreenEffect.NavigateBackOnSuccessfullySignIn -> {
-                navigator.popBackStack()
-            }
+            LoginScreenEffect.NavigateBack -> navigator.popBackStack()
+
+            LoginScreenEffect.ShowLoadingDialog -> isLoadingDialogActive = true
+
+            LoginScreenEffect.HideLoadingDialog -> isLoadingDialogActive = false
         }
     }
 
-    if (loadingState == LoadingState.Loading) {
+    if (isLoadingDialogActive) {
         LoadingDialog()
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = UiText.StringResource(R.string.sign_in).asString()) },
+                title = { Text(text = UIText.StringResource(R.string.sign_in).asString()) },
                 navigationIcon = {
-                    IconButton(onClick = { navigator.popBackStack() }) {
+                    IconButton(onClick = { loginViewModel.onEvent(LoginScreenEvent.OnBackButtonClicked) }) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.arrow_back_image)
@@ -132,7 +134,11 @@ private fun LoginScreenPart(
             visible = loginScreenState is LoginScreenState.SomeError
         ) {
             Text(
-                text = (loginScreenState as LoginScreenState.SomeError).message.asString(),
+                text = if (loginScreenState is LoginScreenState.SomeError) {
+                    loginScreenState.message.asString()
+                } else {
+                    ""
+                },
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
@@ -151,7 +157,7 @@ private fun LoginScreenPart(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
             ),
-            label = { Text(text = UiText.StringResource(R.string.email).asString()) },
+            label = { Text(text = UIText.StringResource(R.string.email).asString()) },
             keyboardActions = KeyboardActions(onNext = { passwordTextFieldFocusRequester.requestFocus() }),
             leadingIcon = {
                 Icon(
@@ -190,7 +196,7 @@ private fun LoginScreenPart(
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-            label = { Text(text = UiText.StringResource(R.string.password).asString()) },
+            label = { Text(text = UIText.StringResource(R.string.password).asString()) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Rounded.Lock, contentDescription = stringResource(
@@ -233,7 +239,7 @@ private fun LoginScreenPart(
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
-            Text(text = UiText.StringResource(R.string.sign_in).asString())
+            Text(text = UIText.StringResource(R.string.sign_in).asString())
         }
     }
 }

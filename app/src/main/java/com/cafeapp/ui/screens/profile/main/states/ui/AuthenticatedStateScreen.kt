@@ -25,7 +25,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.core.util.toPxWithDensity
 import com.cafeapp.domain.models.User
 import com.cafeapp.ui.screens.app.LocalImageLoader
@@ -126,9 +126,9 @@ fun AuthenticatedStateScreen(
 
         Text(
             text = if (user.displayName == null || user.displayName?.isEmpty() == true) {
-                UiText.StringResource(R.string.user_name).asString()
+                UIText.StringResource(R.string.user_name).asString()
             } else {
-                UiText.DynamicText(user.displayName!!).asString()
+                UIText.DynamicText(user.displayName!!).asString()
             },
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier
@@ -142,7 +142,7 @@ fun AuthenticatedStateScreen(
         )
 
         Text(
-            text = UiText.DynamicText(user.email).asString(),
+            text = UIText.DynamicText(user.email).asString(),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .placeholder(

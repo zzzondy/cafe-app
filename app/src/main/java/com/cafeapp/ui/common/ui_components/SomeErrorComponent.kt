@@ -14,7 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 
 @Composable
 fun SomeErrorComponent(modifier: Modifier = Modifier, onRefresh: () -> Unit = {}) {
@@ -33,7 +33,7 @@ fun SomeErrorComponent(modifier: Modifier = Modifier, onRefresh: () -> Unit = {}
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = UiText.StringResource(R.string.some_error).asString(),
+            text = UIText.StringResource(R.string.some_error).asString(),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
@@ -41,7 +41,7 @@ fun SomeErrorComponent(modifier: Modifier = Modifier, onRefresh: () -> Unit = {}
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = UiText.StringResource(R.string.refresh_error).asString(),
+            text = UIText.StringResource(R.string.refresh_error).asString(),
             style = MaterialTheme.typography.titleMedium,
             maxLines = 2,
             textAlign = TextAlign.Center
@@ -50,7 +50,7 @@ fun SomeErrorComponent(modifier: Modifier = Modifier, onRefresh: () -> Unit = {}
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = onRefresh) {
-            Text(text = UiText.StringResource(R.string.refresh).asString())
+            Text(text = UIText.StringResource(R.string.refresh).asString())
         }
     }
 }

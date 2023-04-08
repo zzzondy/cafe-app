@@ -17,7 +17,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.cafeapp.R
 import com.cafeapp.core.network.rememberNetworkStatus
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.domain.models.Food
 import com.cafeapp.ui.common.ui_components.NetworkWarningComponent
 import com.cafeapp.ui.common.ui_components.SomeErrorComponent
@@ -44,7 +44,7 @@ fun FoodListScreen(
         topBar = {
             MediumTopAppBar(
                 title = {
-                    Text(text = UiText.StringResource(R.string.food_list).asString())
+                    Text(text = UIText.StringResource(R.string.food_list).asString())
                 },
                 scrollBehavior = scrollBehavior,
             )

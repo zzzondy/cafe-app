@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cafeapp.R
 import com.cafeapp.core.providers.dispatchers.DispatchersProvider
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.domain.make_order.models.DeliveryMethod
 import com.cafeapp.domain.make_order.models.OrderDetails
 import com.cafeapp.domain.make_order.models.PaymentMethod
@@ -79,17 +79,17 @@ class MakeOrderScreenViewModel @Inject constructor(
 
                 MakeOrderResult.NetworkError -> {
                     _screenEffect.emit(MakeOrderScreenEffect.HideLoading)
-                    _screenEffect.emit(MakeOrderScreenEffect.ShowSnackbar(UiText.StringResource(R.string.network_unavailable)))
+                    _screenEffect.emit(MakeOrderScreenEffect.ShowSnackbar(UIText.StringResource(R.string.network_unavailable)))
                 }
 
                 MakeOrderResult.OtherError -> {
                     _screenEffect.emit(MakeOrderScreenEffect.HideLoading)
-                    _screenEffect.emit(MakeOrderScreenEffect.ShowSnackbar(UiText.StringResource(R.string.some_error)))
+                    _screenEffect.emit(MakeOrderScreenEffect.ShowSnackbar(UIText.StringResource(R.string.some_error)))
                 }
 
                 MakeOrderResult.UserNotAuthenticated -> {
                     _screenEffect.emit(MakeOrderScreenEffect.HideLoading)
-                    _screenEffect.emit(MakeOrderScreenEffect.ShowSnackbar(UiText.StringResource(R.string.user_not_authenticated)))
+                    _screenEffect.emit(MakeOrderScreenEffect.ShowSnackbar(UIText.StringResource(R.string.user_not_authenticated)))
                 }
             }
         }

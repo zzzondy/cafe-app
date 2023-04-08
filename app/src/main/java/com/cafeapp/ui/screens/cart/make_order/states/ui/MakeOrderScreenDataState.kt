@@ -22,7 +22,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.domain.make_order.models.DeliveryMethod
 import com.cafeapp.domain.make_order.models.PaymentMethod
 
@@ -117,7 +117,7 @@ private fun DeliveryMethodsSection(
                 .padding(16.dp)
         ) {
             Text(
-                text = UiText.StringResource(R.string.delivery_methods).asString(),
+                text = UIText.StringResource(R.string.delivery_methods).asString(),
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -171,7 +171,7 @@ private fun DeliveryMethodsSection(
                             singleLine = true,
                             label = {
                                 Text(
-                                    text = UiText.StringResource(R.string.delivery_address)
+                                    text = UIText.StringResource(R.string.delivery_address)
                                         .asString()
                                 )
                             },
@@ -205,7 +205,7 @@ private fun DeliveryMethodsSection(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = UiText.StringResource(R.string.address).asString(),
+                                text = UIText.StringResource(R.string.address).asString(),
                                 style = MaterialTheme.typography.bodyLarge
                             )
 
@@ -237,7 +237,7 @@ private fun PaymentMethodsSection(
     ElevatedCard(modifier = modifier) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = UiText.StringResource(R.string.choose_payment_method).asString(),
+                text = UIText.StringResource(R.string.choose_payment_method).asString(),
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -286,14 +286,14 @@ private fun TotalSection(total: Int, modifier: Modifier = Modifier) {
     ElevatedCard(modifier = modifier) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = UiText.StringResource(R.string.total).asString(),
+                text = UIText.StringResource(R.string.total).asString(),
                 style = MaterialTheme.typography.titleLarge
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = UiText.StringResource(R.string.rubles, total).asString(),
+                text = UIText.StringResource(R.string.rubles, total).asString(),
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -312,6 +312,6 @@ private fun MakeOrderButton(
         onClick = onClick,
         modifier = modifier
     ) {
-        Text(text = UiText.StringResource(R.string.make_order).asString())
+        Text(text = UIText.StringResource(R.string.make_order).asString())
     }
 }

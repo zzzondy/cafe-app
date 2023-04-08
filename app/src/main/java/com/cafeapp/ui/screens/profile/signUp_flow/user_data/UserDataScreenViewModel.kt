@@ -33,46 +33,65 @@ class UserDataScreenViewModel @Inject constructor(
 
     fun onEvent(event: UserDataScreenEvent) {
         when (event) {
-            is UserDataScreenEvent.FirstNameFieldChanged -> {
-                viewModelScope.launch {
-                    validationFirstNameResult = validateFirstNameUseCase(event.firstName)
-                    _userDataScreenState.update {
-                        if (validationFirstNameResult && validationLastNameResult && validationPhoneNumberResult) {
-                            UserDataScreenState.EnabledNavigationButton
-                        } else {
-                            UserDataScreenState.DisabledNavigationButton
-                        }
-                    }
+            is UserDataScreenEvent.FirstNameFieldChanged -> onFirstNameFieldChanged(event.firstName)
+
+            is UserDataScreenEvent.LastNameFieldChanged -> onLastNameChanged(event.lastName)
+
+            is UserDataScreenEvent.PhoneNumberFieldChanged -> onPhoneNumberChanged(event.phoneNumber)
+
+            is UserDataScreenEvent.OnNextButtonClicked -> onNextButtonClicked()
+
+            is UserDataScreenEvent.OnBackButtonClicked -> onBackButtonClicked()
+        }
+    }
+
+    private fun onFirstNameFieldChanged(firstName: String) {
+        viewModelScope.launch {
+            validationFirstNameResult = validateFirstNameUseCase(firstName)
+            _userDataScreenState.update {
+                if (validationFirstNameResult && validationLastNameResult && validationPhoneNumberResult) {
+                    UserDataScreenState.EnabledNavigationButton
+                } else {
+                    UserDataScreenState.DisabledNavigationButton
                 }
             }
-            is UserDataScreenEvent.LastNameFieldChanged -> {
-                viewModelScope.launch {
-                    validationLastNameResult = validateLastNameUseCase(event.lastName)
-                    _userDataScreenState.update {
-                        if (validationFirstNameResult && validationLastNameResult && validationPhoneNumberResult) {
-                            UserDataScreenState.EnabledNavigationButton
-                        } else {
-                            UserDataScreenState.DisabledNavigationButton
-                        }
-                    }
+        }
+    }
+
+    private fun onLastNameChanged(lastName: String) {
+        viewModelScope.launch {
+            validationLastNameResult = validateLastNameUseCase(lastName)
+            _userDataScreenState.update {
+                if (validationFirstNameResult && validationLastNameResult && validationPhoneNumberResult) {
+                    UserDataScreenState.EnabledNavigationButton
+                } else {
+                    UserDataScreenState.DisabledNavigationButton
                 }
             }
-            is UserDataScreenEvent.PhoneNumberFieldChanged -> {
-                viewModelScope.launch {
-                    validationPhoneNumberResult =
-                        validatePhoneNumberUseCase(event.phoneNumber)
-                    _userDataScreenState.update {
-                        if (validationFirstNameResult && validationLastNameResult && validationPhoneNumberResult) {
-                            UserDataScreenState.EnabledNavigationButton
-                        } else {
-                            UserDataScreenState.DisabledNavigationButton
-                        }
-                    }
+        }
+    }
+
+    private fun onPhoneNumberChanged(phoneNumber: String) {
+        viewModelScope.launch {
+            validationPhoneNumberResult =
+                validatePhoneNumberUseCase(phoneNumber)
+            _userDataScreenState.update {
+                if (validationFirstNameResult && validationLastNameResult && validationPhoneNumberResult) {
+                    UserDataScreenState.EnabledNavigationButton
+                } else {
+                    UserDataScreenState.DisabledNavigationButton
                 }
             }
-            UserDataScreenEvent.OnNextButtonClicked -> {
-                viewModelScope.launch { _userDataScreenEffect.emit(UserDataScreenEffect.NavigateOnUserPhotoScreen) }
-            }
+        }
+    }
+
+    private fun onNextButtonClicked() {
+        viewModelScope.launch { _userDataScreenEffect.emit(UserDataScreenEffect.NavigateOnUserPhotoScreen) }
+    }
+
+    private fun onBackButtonClicked() {
+        viewModelScope.launch {
+            _userDataScreenEffect.emit(UserDataScreenEffect.NavigateBack)
         }
     }
 }

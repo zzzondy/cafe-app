@@ -19,8 +19,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
+import com.cafeapp.core.util.collectAsEffect
 import com.cafeapp.ui.screens.profile.ProfileNavGraph
+import com.cafeapp.ui.screens.profile.settings.states.SettingsScreenEffect
 import com.cafeapp.ui.screens.profile.settings.states.SettingsScreenEvent
 import com.cafeapp.ui.screens.profile.settings.states.SettingsScreenState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -38,13 +40,21 @@ fun SettingsScreen(
     var openSignOutDialog by rememberSaveable { mutableStateOf(false) }
     val uiState by settingsScreenViewModel.settingsScreenState.collectAsState()
 
+    settingsScreenViewModel.screenEffect.collectAsEffect { effect ->
+        when (effect) {
+            SettingsScreenEffect.NavigateBack -> {
+                navigator.popBackStack()
+            }
+        }
+    }
+
     if (openSignOutDialog) {
         SignOutDialog(
             onDismissClicked = { openSignOutDialog = false },
             onConfirmClicked = {
                 settingsScreenViewModel.onEvent(SettingsScreenEvent.SignOutClicked)
                 openSignOutDialog = false
-                navigator.popBackStack()
+                settingsScreenViewModel.onEvent(SettingsScreenEvent.OnBackButtonClicked)
             }
         )
     }
@@ -52,7 +62,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = UiText.StringResource(R.string.settings).asString()) },
+                title = { Text(text = UIText.StringResource(R.string.settings).asString()) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.popBackStack() }) {
                         Icon(
@@ -91,19 +101,19 @@ private fun SignOutDialog(onDismissClicked: () -> Unit, onConfirmClicked: () -> 
         onDismissRequest = { onDismissClicked() },
         title = {
             Text(
-                text = UiText.StringResource(R.string.are_you_sure_you_want_to_exit).asString()
+                text = UIText.StringResource(R.string.are_you_sure_you_want_to_exit).asString()
             )
         },
         confirmButton = {
             TextButton(onClick = {
                 onConfirmClicked()
             }) {
-                Text(text = UiText.StringResource(R.string.sign_out).asString())
+                Text(text = UIText.StringResource(R.string.sign_out).asString())
             }
         },
         dismissButton = {
             TextButton(onClick = { onDismissClicked() }) {
-                Text(text = UiText.StringResource(R.string.cancel).asString())
+                Text(text = UIText.StringResource(R.string.cancel).asString())
             }
         }
     )
@@ -114,7 +124,7 @@ private fun SignOutDialog(onDismissClicked: () -> Unit, onConfirmClicked: () -> 
 private fun LazyListScope.accountSection(onSignOutClicked: () -> Unit) {
     stickyHeader {
         Text(
-            text = UiText.StringResource(R.string.account).asString(),
+            text = UIText.StringResource(R.string.account).asString(),
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)
         )
@@ -122,7 +132,7 @@ private fun LazyListScope.accountSection(onSignOutClicked: () -> Unit) {
 
     item {
         SettingsListItem(
-            text = UiText.StringResource(R.string.sign_out).asString(),
+            text = UIText.StringResource(R.string.sign_out).asString(),
             onClicked = { onSignOutClicked() },
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
             finishedElement = true
@@ -135,7 +145,7 @@ private fun LazyListScope.accountSection(onSignOutClicked: () -> Unit) {
 private fun LazyListScope.settingsSection(onAboutAppClicked: () -> Unit) {
     stickyHeader {
         Text(
-            text = UiText.StringResource(R.string.about_app).asString(),
+            text = UIText.StringResource(R.string.about_app).asString(),
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)
         )
@@ -143,7 +153,7 @@ private fun LazyListScope.settingsSection(onAboutAppClicked: () -> Unit) {
 
     item {
         SettingsListItem(
-            text = UiText.StringResource(R.string.about_app).asString(),
+            text = UIText.StringResource(R.string.about_app).asString(),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
             onClicked = { onAboutAppClicked() },
         )

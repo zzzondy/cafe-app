@@ -1,7 +1,7 @@
 object Dependencies {
     object Compose {
         const val composeVersion = "1.4.2"
-        private const val composeBOMVersion = "2023.01.00"
+        private const val composeBOMVersion = "2023.03.00"
 
         // UI
         const val bom = "androidx.compose:compose-bom:$composeBOMVersion"

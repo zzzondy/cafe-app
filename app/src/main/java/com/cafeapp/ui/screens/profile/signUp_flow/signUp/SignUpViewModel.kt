@@ -2,14 +2,15 @@ package com.cafeapp.ui.screens.profile.signUp_flow.signUp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cafeapp.R
 import com.cafeapp.core.providers.dispatchers.DispatchersProvider
+import com.cafeapp.core.util.UIText
 import com.cafeapp.domain.auth.states.CheckUserResult
 import com.cafeapp.domain.auth.states.validation.ValidationEmailResult
 import com.cafeapp.domain.auth.states.validation.ValidationPasswordResult
 import com.cafeapp.domain.auth.usecase.CheckUserExistsUseCase
 import com.cafeapp.domain.auth.usecase.validation.ValidateEmailUseCase
 import com.cafeapp.domain.auth.usecase.validation.ValidatePasswordUseCase
-import com.cafeapp.ui.common.states.LoadingState
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEffect
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenEvent
 import com.cafeapp.ui.screens.profile.signUp_flow.signUp.states.SignUpScreenState
@@ -33,9 +34,6 @@ class SignUpViewModel @Inject constructor(
     private val _screenEffect = MutableSharedFlow<SignUpScreenEffect>()
     val screenEffect = _screenEffect.asSharedFlow()
 
-    private val _loadingState = MutableStateFlow(LoadingState.NotLoading)
-    val loadingState: StateFlow<LoadingState> = _loadingState
-
     private val _validationEmailState =
         MutableStateFlow<ValidationEmailResult>(ValidationEmailResult.Success)
     val validationEmailState = _validationEmailState.asStateFlow()
@@ -47,35 +45,55 @@ class SignUpViewModel @Inject constructor(
 
     fun onEvent(event: SignUpScreenEvent) {
         when (event) {
-            is SignUpScreenEvent.EmailChanged -> {
-                viewModelScope.launch {
-                    _validationEmailState.value = validateEmailUseCase(event.email)
-                }
-            }
+            is SignUpScreenEvent.EmailChanged -> onEmailChanged(event.email)
 
-            is SignUpScreenEvent.PasswordChanged -> {
-                viewModelScope.launch {
-                    _validationPasswordState.value = validatePasswordUseCase(event.password)
-                }
-            }
+            is SignUpScreenEvent.PasswordChanged -> onPasswordChanged(event.password)
 
-            is SignUpScreenEvent.SignUp -> {
-                viewModelScope.launch(dispatchersProvider.io) {
-                    _loadingState.value = LoadingState.Loading
-                    _signUpScreenState.value =
-                        when (checkUserExistsUseCase(event.email)) {
-                            is CheckUserResult.NotExists -> {
-                                _screenEffect.emit(SignUpScreenEffect.NavigateToDataScreen(event.email, event.password))
-                                SignUpScreenState.Initially
-                            }
-                            is CheckUserResult.NetworkUnavailableError -> SignUpScreenState.NetworkUnavailableError
-                            is CheckUserResult.AlreadyExists -> SignUpScreenState.UserAlreadyExistsError
-                            is CheckUserResult.OtherError -> SignUpScreenState.OtherError
-                        }
-                    _loadingState.value = LoadingState.NotLoading
-                }
-            }
+            is SignUpScreenEvent.SignUp -> onSignUpClicked(event.email, event.password)
+
+            is SignUpScreenEvent.OnBackButtonClicked -> onBackButtonClicked()
         }
     }
 
+    private fun onEmailChanged(email: String) {
+        viewModelScope.launch {
+            _validationEmailState.update { validateEmailUseCase(email) }
+        }
+    }
+
+    private fun onPasswordChanged(password: String) {
+        viewModelScope.launch {
+            _validationPasswordState.update { validatePasswordUseCase(password) }
+        }
+    }
+
+    private fun onSignUpClicked(email: String, password: String) {
+        viewModelScope.launch(dispatchersProvider.io) {
+            _screenEffect.emit(SignUpScreenEffect.ShowLoadingDialog)
+            _signUpScreenState.update {
+                when (checkUserExistsUseCase(email)) {
+                    is CheckUserResult.NotExists -> {
+                        _screenEffect.emit(SignUpScreenEffect.NavigateToDataScreen(email, password))
+                        SignUpScreenState.Initially
+                    }
+                    is CheckUserResult.NetworkUnavailableError -> SignUpScreenState.SomeError(
+                        UIText.StringResource(R.string.network_unavailable)
+                    )
+                    is CheckUserResult.AlreadyExists -> SignUpScreenState.SomeError(
+                        UIText.StringResource(R.string.user_already_exists)
+                    )
+                    is CheckUserResult.OtherError -> SignUpScreenState.SomeError(
+                        UIText.StringResource(R.string.some_error)
+                    )
+                }
+            }
+            _screenEffect.emit(SignUpScreenEffect.HideLoadingDialog)
+        }
+    }
+
+    private fun onBackButtonClicked() {
+        viewModelScope.launch {
+            _screenEffect.emit(SignUpScreenEffect.NavigateBack)
+        }
+    }
 }

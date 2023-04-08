@@ -7,4 +7,6 @@ sealed class SignUpScreenEvent {
     data class PasswordChanged(val password: String) : SignUpScreenEvent()
 
     data class SignUp(val email: String, val password: String) : SignUpScreenEvent()
+
+    object OnBackButtonClicked : SignUpScreenEvent()
 }

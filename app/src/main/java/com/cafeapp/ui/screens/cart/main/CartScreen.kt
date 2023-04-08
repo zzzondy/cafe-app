@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
 import com.cafeapp.core.network.rememberNetworkStatus
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.core.util.collectAsEffect
 import com.cafeapp.ui.common.ui_components.NetworkErrorComponent
 import com.cafeapp.ui.common.ui_components.NetworkWarningComponent
@@ -70,7 +70,7 @@ fun CartScreen(
     Scaffold(
         topBar = {
             CartScreenTopAppBar(
-                title = UiText.StringResource(R.string.cart).asString(),
+                title = UIText.StringResource(R.string.cart).asString(),
                 scrollBehavior = scrollBehavior,
                 onDeleteSelected = { cartScreenViewModel.onEvent(CartScreenEvent.DeleteSelected) }
             )

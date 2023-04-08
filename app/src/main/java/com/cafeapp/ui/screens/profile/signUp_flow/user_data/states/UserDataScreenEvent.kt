@@ -6,4 +6,6 @@ sealed class UserDataScreenEvent {
     data class PhoneNumberFieldChanged(val phoneNumber: String) : UserDataScreenEvent()
 
     object OnNextButtonClicked : UserDataScreenEvent()
+
+    object OnBackButtonClicked : UserDataScreenEvent()
 }

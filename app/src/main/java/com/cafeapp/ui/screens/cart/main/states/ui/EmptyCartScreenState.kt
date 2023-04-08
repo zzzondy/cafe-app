@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.ui.theme.CafeAppTheme
 
 @Composable
@@ -34,7 +34,7 @@ fun EmptyCartScreenState(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = UiText.StringResource(R.string.your_cart_is_empty).asString(),
+            text = UIText.StringResource(R.string.your_cart_is_empty).asString(),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
@@ -42,7 +42,7 @@ fun EmptyCartScreenState(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = UiText.StringResource(R.string.add_something_to_cart).asString(),
+            text = UIText.StringResource(R.string.add_something_to_cart).asString(),
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center
         )

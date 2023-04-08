@@ -32,11 +32,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 import com.cafeapp.core.util.collectAsEffect
 import com.cafeapp.domain.auth.states.validation.ValidationEmailResult
 import com.cafeapp.domain.auth.states.validation.ValidationPasswordResult
-import com.cafeapp.ui.common.states.LoadingState
 import com.cafeapp.ui.common.ui_components.LoadingDialog
 import com.cafeapp.ui.screens.destinations.UserDataScreenDestination
 import com.cafeapp.ui.screens.profile.signUp_flow.SignUpFlowNavGraph
@@ -57,6 +56,10 @@ fun SignUpScreen(
     signUpViewModel: SignUpViewModel = hiltViewModel()
 ) {
     val signUpScreenState by signUpViewModel.signUpScreenState.collectAsState()
+    val passwordValidationState by signUpViewModel.validationPasswordState.collectAsState()
+    val emailValidationState by signUpViewModel.validationEmailState.collectAsState()
+
+    var isLoadingDialogActive by remember { mutableStateOf(false) }
 
     signUpViewModel.screenEffect.collectAsEffect { effect ->
         when (effect) {
@@ -64,22 +67,24 @@ fun SignUpScreen(
                 signUpSharedViewModel.updateEmailAndPassword(effect.email, effect.password)
                 navigator.navigate(UserDataScreenDestination)
             }
+
+            is SignUpScreenEffect.NavigateBack -> navigator.popBackStack()
+
+            is SignUpScreenEffect.ShowLoadingDialog -> isLoadingDialogActive = true
+
+
+            is SignUpScreenEffect.HideLoadingDialog -> isLoadingDialogActive = false
         }
     }
 
-    val emailValidationState by signUpViewModel.validationEmailState.collectAsState()
-    val passwordValidationState by signUpViewModel.validationPasswordState.collectAsState()
-
-    val loadingState by signUpViewModel.loadingState.collectAsState()
-
-    if (loadingState == LoadingState.Loading) {
+    if (isLoadingDialogActive) {
         LoadingDialog()
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = UiText.StringResource(R.string.sign_up).asString()) },
+                title = { Text(text = UIText.StringResource(R.string.sign_up).asString()) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.popBackStack() }) {
                         Icon(
@@ -144,17 +149,14 @@ private fun SignUpScreenPart(
         )
 
         AnimatedVisibility(
-            visible = signUpScreenState is SignUpScreenState.NetworkUnavailableError ||
-                    signUpScreenState is SignUpScreenState.UserAlreadyExistsError
+            visible = signUpScreenState is SignUpScreenState.SomeError
         ) {
             Text(
-                text = UiText.StringResource(
-                    if (signUpScreenState is SignUpScreenState.NetworkUnavailableError)
-                        R.string.network_unavailable
-                    else
-                        R.string.user_already_exists
-                )
-                    .asString(),
+                text = if (signUpScreenState is SignUpScreenState.SomeError) {
+                    signUpScreenState.message.asString()
+                } else {
+                    ""
+                },
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
@@ -189,7 +191,7 @@ private fun SignUpScreenPart(
                     }
                 }
             },
-            label = { Text(text = UiText.StringResource(R.string.email).asString()) },
+            label = { Text(text = UIText.StringResource(R.string.email).asString()) },
             keyboardOptions = KeyboardOptions(
                 autoCorrect = false,
                 keyboardType = KeyboardType.Email,
@@ -200,7 +202,7 @@ private fun SignUpScreenPart(
             supportingText = {
                 AnimatedVisibility(visible = emailValidationState !is ValidationEmailResult.Success) {
                     Text(
-                        text = UiText.StringResource(
+                        text = UIText.StringResource(
                             when (emailValidationState) {
                                 is ValidationEmailResult.EmailIsEmpty -> R.string.email_is_empty
                                 is ValidationEmailResult.NotValidEmail -> R.string.is_not_email
@@ -231,7 +233,7 @@ private fun SignUpScreenPart(
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-            label = { Text(text = UiText.StringResource(R.string.password).asString()) },
+            label = { Text(text = UIText.StringResource(R.string.password).asString()) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Rounded.Lock, contentDescription = stringResource(
@@ -255,7 +257,7 @@ private fun SignUpScreenPart(
             supportingText = {
                 AnimatedVisibility(visible = passwordValidationState !is ValidationPasswordResult.Success) {
                     Text(
-                        text = UiText.StringResource(
+                        text = UIText.StringResource(
                             when (passwordValidationState) {
                                 is ValidationPasswordResult.VeryShortPassword -> R.string.password_is_short
                                 is ValidationPasswordResult.NotContainsLettersOrDigits -> R.string.not_contains_letters_digits
@@ -289,7 +291,7 @@ private fun SignUpScreenPart(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(text = UiText.StringResource(R.string.sign_up).asString())
+            Text(text = UIText.StringResource(R.string.sign_up).asString())
         }
     }
 }

@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import com.cafeapp.R
-import com.cafeapp.core.util.UiText
+import com.cafeapp.core.util.UIText
 
 @Composable
 fun MakeOrderBar(
@@ -47,13 +47,13 @@ fun MakeOrderBar(
             .background(color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp))
     ) {
         Text(
-            text = UiText.StringResource(R.string.total).asString(),
+            text = UIText.StringResource(R.string.total).asString(),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.layoutId(MakeOrderBarTags.totalLabel)
         )
 
         Text(
-            text = UiText.StringResource(R.string.rubles, currentTotal).asString(),
+            text = UIText.StringResource(R.string.rubles, currentTotal).asString(),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.layoutId(MakeOrderBarTags.currentTotal)
         )
@@ -63,7 +63,7 @@ fun MakeOrderBar(
             modifier = Modifier.layoutId(MakeOrderBarTags.makeOrderButton),
             enabled = currentTotal != 0
         ) {
-            Text(text = UiText.StringResource(R.string.make_order).asString())
+            Text(text = UIText.StringResource(R.string.make_order).asString())
         }
     }
 }
