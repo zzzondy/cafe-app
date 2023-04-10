@@ -1,7 +1,7 @@
 package com.cafeapp.ui.screens.cart.make_order.states
 
-import com.cafeapp.domain.make_order.models.PaymentMethod
-import com.cafeapp.domain.make_order.models.DeliveryMethod
+import com.cafeapp.domain.orders.models.PaymentMethod
+import com.cafeapp.domain.orders.models.DeliveryMethod
 
 sealed class MakeOrderScreenState {
     object Loading : MakeOrderScreenState()

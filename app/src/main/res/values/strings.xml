@@ -71,4 +71,7 @@
     <string name="confirm">Confirm</string>
     <string name="make_order_successful">Make order successful</string>
     <string name="make_order_successful_details">Our employees call you with phone number in your profile</string>
+    <string name="orders_list">Orders list</string>
+    <string name="empty_orders_list">Your orders list is empty</string>
+    <string name="empty_orders_list_details">Make order and it will appear here</string>
 </resources>

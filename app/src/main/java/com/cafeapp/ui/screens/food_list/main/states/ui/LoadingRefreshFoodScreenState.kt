@@ -37,5 +37,5 @@ fun LoadingRefreshFoodScreenState(modifier: Modifier = Modifier) {
 }
 
 private object LoadingRefreshStateConfig {
-    const val PLACEHOLDER_ELEMENTS_COUNT = 4
+    const val PLACEHOLDER_ELEMENTS_COUNT = 6
 }

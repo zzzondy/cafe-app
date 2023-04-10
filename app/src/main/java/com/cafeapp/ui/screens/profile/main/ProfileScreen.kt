@@ -12,10 +12,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cafeapp.R
 import com.cafeapp.core.util.UIText
+import com.cafeapp.core.util.collectAsEffect
 import com.cafeapp.ui.screens.destinations.LoginScreenDestination
+import com.cafeapp.ui.screens.destinations.OrdersListScreenDestination
 import com.cafeapp.ui.screens.destinations.SettingsScreenDestination
 import com.cafeapp.ui.screens.destinations.SignUpScreenDestination
 import com.cafeapp.ui.screens.profile.ProfileNavGraph
+import com.cafeapp.ui.screens.profile.main.states.ProfileScreenEffect
+import com.cafeapp.ui.screens.profile.main.states.ProfileScreenEvent
 import com.cafeapp.ui.screens.profile.main.states.UserAuthState
 import com.cafeapp.ui.screens.profile.main.states.ui.AuthenticatedStateScreen
 import com.cafeapp.ui.screens.profile.main.states.ui.NotAuthenticatedStateScreen
@@ -31,12 +35,19 @@ fun ProfileScreen(
     navigator: DestinationsNavigator
 ) {
     val currentAuthState = profileViewModel.userAuthState.collectAsState().value
+    profileViewModel.screenEffect.collectAsEffect { effect ->
+        when (effect) {
+            ProfileScreenEffect.NavigateToSettings -> navigator.navigate(SettingsScreenDestination)
+
+            ProfileScreenEffect.NavigateToOrdersList -> navigator.navigate(OrdersListScreenDestination)
+        }
+    }
 
     Scaffold(
         topBar = {
             ProfileTopAppBar(
                 title = UIText.StringResource(R.string.profile).asString(),
-                onSettingsClicked = { navigator.navigate(SettingsScreenDestination) }
+                onSettingsClicked = { profileViewModel.onEvent(ProfileScreenEvent.OnSettingClicked) }
             )
         },
         modifier = Modifier.padding(bottom = 80.dp)
@@ -50,6 +61,9 @@ fun ProfileScreen(
                 when (currentAuthState) {
                     is UserAuthState.Authenticated -> AuthenticatedStateScreen(
                         user = currentAuthState.user,
+                        onOrdersListClicked = {
+                            profileViewModel.onEvent(ProfileScreenEvent.OnOrdersListClicked)
+                        }
                     )
                     is UserAuthState.NotAuthenticated -> NotAuthenticatedStateScreen(onSignInClick = {
                         navigator.navigate(
@@ -58,17 +72,8 @@ fun ProfileScreen(
                     }, onSignUpClick = { navigator.navigate(SignUpScreenDestination) })
                 }
             }
-
-            item {
-                SettingsPartOfScreen()
-            }
         }
     }
-}
-
-@Composable
-private fun SettingsPartOfScreen() {
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

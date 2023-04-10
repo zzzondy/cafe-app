@@ -1,9 +1,9 @@
 package com.cafeapp.di.make_order
 
-import com.cafeapp.data.make_order.remote.repository.RemoteMakeOrderRepository
-import com.cafeapp.data.make_order.remote.repository.RemoteMakeOrderRepositoryImpl
-import com.cafeapp.data.make_order.repository.MakeOrderRepositoryImpl
-import com.cafeapp.domain.make_order.repository.MakeOrderRepository
+import com.cafeapp.data.orders.remote.make_order.repository.RemoteMakeOrderRepository
+import com.cafeapp.data.orders.remote.make_order.repository.RemoteMakeOrderRepositoryImpl
+import com.cafeapp.data.orders.make_order.MakeOrderRepositoryImpl
+import com.cafeapp.domain.orders.make_order.repository.MakeOrderRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides

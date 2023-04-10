@@ -39,4 +39,4 @@ private fun LocalCartFood.toDomain(): Food = Food(id, name, price, description, 
 
 fun Food.toLocalCartFood(): LocalCartFood = LocalCartFood(id, name, description, price, imageUrl)
 
-private fun CartRemoteFood.toDomain(): Food = Food(id, name, price, description, imageUrl)
+fun CartRemoteFood.toDomain(): Food = Food(id, name, price, description, imageUrl)

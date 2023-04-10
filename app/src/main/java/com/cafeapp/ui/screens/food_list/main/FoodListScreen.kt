@@ -34,7 +34,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 fun FoodListScreen(
     foodListViewModel: FoodListViewModel = hiltViewModel()
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     val pagingItems = foodListViewModel.food.collectAsLazyPagingItems()
 
@@ -42,7 +42,7 @@ fun FoodListScreen(
 
     Scaffold(
         topBar = {
-            MediumTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = UIText.StringResource(R.string.food_list).asString())
                 },

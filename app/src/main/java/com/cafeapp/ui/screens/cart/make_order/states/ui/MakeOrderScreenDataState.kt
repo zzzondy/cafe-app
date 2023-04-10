@@ -23,8 +23,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.cafeapp.R
 import com.cafeapp.core.util.UIText
-import com.cafeapp.domain.make_order.models.DeliveryMethod
-import com.cafeapp.domain.make_order.models.PaymentMethod
+import com.cafeapp.domain.orders.models.DeliveryMethod
+import com.cafeapp.domain.orders.models.PaymentMethod
 
 @Composable
 fun MakeOrderScreenDataState(

@@ -2,8 +2,8 @@ package com.cafeapp.ui.screens.cart.make_order.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.cafeapp.domain.make_order.models.DeliveryMethod
-import com.cafeapp.domain.make_order.models.PaymentMethod
+import com.cafeapp.domain.orders.models.DeliveryMethod
+import com.cafeapp.domain.orders.models.PaymentMethod
 import com.cafeapp.ui.common.ui_components.NetworkErrorComponent
 import com.cafeapp.ui.common.ui_components.SomeErrorComponent
 import com.cafeapp.ui.screens.cart.make_order.states.MakeOrderScreenState
